@@ -101,6 +101,10 @@ function renderSlate(s) {
     ),
     ...chips,
     el("div", { class: "spacer" }),
+    el("a", {
+      class: "backlink", href: `/studio/p/${encodeURIComponent(s.project_id)}`,
+      title: "Open this project in Studio",
+    }, "STUDIO ↗"),
     renderThemeToggle(),
     liveEl,
     cost,

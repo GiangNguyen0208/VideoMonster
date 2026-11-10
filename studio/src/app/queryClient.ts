@@ -1,0 +1,10 @@
+import { QueryClient } from "@tanstack/react-query";
+
+export function createQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      // SSE drives freshness (useSSE invalidates on change), so no polling.
+      queries: { staleTime: 30_000, refetchOnWindowFocus: false, retry: 1 },
+    },
+  });
+}

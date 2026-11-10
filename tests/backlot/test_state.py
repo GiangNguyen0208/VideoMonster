@@ -192,6 +192,43 @@ class TestLibrary:
         assert summary["awaiting_human"] is True
         assert summary["active_stage"] == "script"
         assert summary["series"] is None
+        assert summary["stalled"] is False
+        assert summary["failed"] is False
+        assert summary["latest_render"] is None
+        assert summary["cost_usd"] is None
+
+    def test_summary_studio_fields(self, projects_root):
+        import os
+        p = _make_project(projects_root, "studio-sum")
+        _write(p / "project.json", {"title": "S", "pipeline_type": "cinematic"})
+        _write(p / "checkpoint_script.json", {
+            "stage": "script", "status": "failed", "timestamp": "2026-01-01T01:00:00Z",
+            "artifacts": {}, "cost_snapshot": {"total_spent_usd": 0.42},
+        })
+        (p / "renders").mkdir(exist_ok=True)
+        older, newer = p / "renders" / "draft.mp4", p / "renders" / "final.mp4"
+        older.write_bytes(b"\x00")
+        newer.write_bytes(b"\x00")
+        os.utime(older, (1_000, 1_000))
+        os.utime(newer, (2_000, 2_000))
+        summary = summarize_project(p)
+        assert summary["failed"] is True
+        assert summary["latest_render"] == "renders/final.mp4"
+        assert summary["cost_usd"] == 0.42
+
+    def test_summary_flags_stalled_stage(self, projects_root):
+        import os
+        p = _make_project(projects_root, "stuck")
+        _write(p / "project.json", {"title": "Stuck", "pipeline_type": "cinematic"})
+        _write(p / "checkpoint_script.json", {
+            "stage": "script", "status": "in_progress",
+            "timestamp": "2026-01-01T01:00:00Z", "artifacts": {},
+        })
+        past = time.time() - 60 * 60
+        for f in p.rglob("*"):
+            os.utime(f, (past, past))
+        os.utime(p, (past, past))
+        assert summarize_project(p)["stalled"] is True
 
     def test_series_from_marker(self, projects_root):
         ep1 = _make_project(projects_root, "show-ep01")

@@ -240,6 +240,7 @@ ARTIFACT_FILES = {
     "final_review": "final_review.json",
     "publish_log": "publish_log.json",
     "decision_log": "decision_log.json",
+    "video_analysis_brief": "video_analysis_brief.json",
 }
 
 
@@ -688,6 +689,7 @@ def summarize_project(project_dir: Path) -> dict[str, Any]:
     state = load_board_state(project_dir)
     active = next((s for s in state["stages"] if s["status"] in ("in_progress", "awaiting_human")), None)
     done = [s for s in state["stages"] if s["status"] == "completed"]
+    renders = sorted(state["media"]["renders"], key=lambda r: r.get("mtime") or 0)
     return {
         "project_id": state["project_id"],
         "title": state["title"],
@@ -706,6 +708,10 @@ def summarize_project(project_dir: Path) -> dict[str, Any]:
         "completed_count": len(done),
         "render_count": len(state["media"]["renders"]),
         "scene_count": len((state["storyboard"] or {}).get("scenes", [])),
+        "stalled": any(s.get("stalled") for s in state["stages"]),
+        "failed": any(s["status"] == "failed" for s in state["stages"]),
+        "latest_render": renders[-1]["path"] if renders else None,
+        "cost_usd": (state["cost"] or {}).get("total_spent_usd"),
     }
 
 
@@ -736,6 +742,10 @@ def list_projects(projects_dir: Optional[Path] = None) -> list[dict[str, Any]]:
                 "completed_count": 0,
                 "render_count": 0,
                 "scene_count": 0,
+                "stalled": False,
+                "failed": False,
+                "latest_render": None,
+                "cost_usd": None,
                 "error": "unreadable",
             })
     summaries.sort(key=lambda s: (not s["live"], -(s["last_activity"] or 0)))

@@ -2,7 +2,9 @@
 
 The watcher observes ``projects/`` with watchfiles; on any change it bumps a
 per-project version and wakes SSE subscribers, who tell the browser to
-refetch state. The server never writes to project directories.
+refetch state. The board routes never write to project directories; the
+Studio API (``backlot/studio_api.py``, mounted at ``/api/v1``) owns the only
+write path, and only for Studio intent files.
 """
 
 from __future__ import annotations
@@ -16,7 +18,7 @@ from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
 from backlot.state import (
@@ -27,8 +29,10 @@ from backlot.state import (
     series_from_disk,
     summarize_project,
 )
+from backlot.studio_api import install_studio_api
 
 UI_DIR = Path(__file__).resolve().parent / "ui"
+STUDIO_DIST_DIR = REPO_ROOT / "studio" / "dist"
 THUMB_CACHE_DIR = REPO_ROOT / ".backlot" / "thumbs"
 THUMB_WIDTHS = (320, 640, 960)
 
@@ -109,7 +113,9 @@ def _cached_summaries() -> list[dict]:
                     "poster": None, "live": False, "last_activity": 0,
                     "active_stage": None, "awaiting_human": False,
                     "stage_states": [], "completed_count": 0,
-                    "render_count": 0, "scene_count": 0, "error": "unreadable",
+                    "render_count": 0, "scene_count": 0, "stalled": False,
+                    "failed": False, "latest_render": None, "cost_usd": None,
+                    "error": "unreadable",
                 }
             _summary_cache[entry.name] = cached
         summaries.append(cached)
@@ -173,6 +179,7 @@ async def _lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Backlot", docs_url=None, redoc_url=None, lifespan=_lifespan)
+    install_studio_api(app, PROJECTS_DIR)
 
     # ---- API ----------------------------------------------------------
 
@@ -301,6 +308,29 @@ def create_app() -> FastAPI:
     if UI_DIR.is_dir():
         app.mount("/ui", StaticFiles(directory=UI_DIR), name="ui")
 
+    # ---- Studio (React SPA built into studio/dist) ----------------------
+
+    @app.get("/studio")
+    @app.get("/studio/{spa_path:path}")
+    async def studio_page(spa_path: str = "") -> Response:
+        dist = STUDIO_DIST_DIR.resolve()
+        index = dist / "index.html"
+        if not index.is_file():
+            return HTMLResponse(_STUDIO_NOT_BUILT, status_code=503)
+        if spa_path:
+            target = (dist / spa_path).resolve()
+            try:
+                target.relative_to(dist)
+            except ValueError:
+                raise HTTPException(status_code=403, detail="path escapes studio")
+            if target.is_file():
+                return FileResponse(target)
+            # Missing hashed asset → real 404, not the SPA shell.
+            if spa_path.startswith("assets/"):
+                raise HTTPException(status_code=404, detail="asset not found")
+        # Client-side route (/studio/library, /studio/p/<id>, ...).
+        return FileResponse(index)
+
     # The board is a long-lived SPA: a tab keeps running whatever board.js it
     # loaded, and browsers heuristically cache /ui assets. no-cache forces a
     # conditional revalidation (cheap 304 via ETag) on every load so UI fixes
@@ -310,6 +340,9 @@ def create_app() -> FastAPI:
         response = await call_next(request)
         path = request.url.path
         if path == "/" or path.startswith("/ui") or path.startswith("/p/"):
+            response.headers["Cache-Control"] = "no-cache"
+        elif path.startswith("/studio") and not path.startswith("/studio/assets/"):
+            # Hashed /studio/assets/* may cache; the shell must revalidate.
             response.headers["Cache-Control"] = "no-cache"
         return response
 
@@ -329,6 +362,14 @@ def _safe_project_dir(project_id: str) -> Path:
     if not project_dir.is_dir():
         raise HTTPException(status_code=404, detail=f"unknown project: {project_id}")
     return project_dir
+
+
+_STUDIO_NOT_BUILT = """<!doctype html><meta charset="utf-8"><title>Studio not built</title>
+<body style="font-family:sans-serif;padding:2rem">
+<h1>Studio is not built yet</h1>
+<p>Run <code>make studio-build</code>, then reload. For live development run
+<code>make studio-dev</code> and open the Vite URL instead.</p>
+<p><a href="/">Open the classic Backlot board</a></p></body>"""
 
 
 def _sse(payload: dict) -> str:

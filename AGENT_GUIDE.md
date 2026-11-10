@@ -4,6 +4,44 @@ Start here. This is the complete operating guide and agent contract for OpenMont
 
 For architecture, key files, and conventions see [`PROJECT_CONTEXT.md`](PROJECT_CONTEXT.md).
 
+## Projects Created in Studio
+
+Studio (the browser UI at `/studio`, served by Backlot) lets a user describe a video through a wizard. It creates the project folder with `init_project()` and writes the user's brief to `projects/<id>/studio/intake.json` (schema `studio.intake/1`). It never writes checkpoints — you still run the whole pipeline.
+
+**Trigger:** the request says "Continue Studio project `<id>`", or the project you are working on has `studio/intake.json`.
+
+**Required behavior:**
+
+1. **Read** `projects/<id>/project.json` and `projects/<id>/studio/intake.json` before anything else. Keep the existing project id and `pipeline_type`; do not re-run `init_project` with a different type.
+2. **Treat the intake as the brief.** Skip onboarding. Do not re-ask what it already answers:
+   - `brief.topic`, `brief.audience`, `brief.platform` + `brief.aspect`, `brief.duration_seconds`, `brief.tone`, `brief.must_include`, `brief.avoid`, `language`
+   - `style_playbook` (`null` means "propose one")
+   - `budget.cap_usd` (`0` means free/local tools only — ask before any paid call), `advanced.checkpoint_policy`
+   - `advanced.production_mode` (screen-demo: `real_capture` or `synthetic_terminal`; `null` means you choose)
+
+   Ask only about what is missing or contradictory.
+3. **`reference.url` set** → follow the Reference Video Entry Point below, using `reference.notes` as the user's keep/change guidance.
+4. **Source media** for this project is listed in `studio/inputs.json` (schema `studio.inputs/1`) and stored under `inputs/`.
+   - `files[]` entries carry `path` (relative to the project, e.g. `inputs/talk.mp4`), `kind` (`footage` or `reference`), `media` (`video`/`audio`/`image`/`subtitle`), `size`, and, when ffprobe could read them, `duration_s`, `width`, `height`, `codec`.
+   - Use these files directly as the pipeline's source media (run `source_media_review` on them); never ask the user to move or re-upload them. A `kind: "reference"` file is a reference video, not footage to edit.
+   - `references[]` entries (`url`, `notes`) trigger the reference-analysis flow (`skills/meta/video-reference-analyst.md`) before you confirm the pipeline. Save the result as `artifacts/video_analysis_brief.json` so Studio can show what you learned at the first review point. Studio never fetches these links; you do.
+   - `brief.target_languages` (localization-dub) lists the languages to translate into. `music_track` names a track the user picked from `music_library/`; offer it as the "Music: library" option.
+5. **Everything else is unchanged.** Run Mandatory Preflight and show the provider menu. At the proposal step, still present both composition runtimes and the composition mode. `advanced.render_runtime_preference` and `advanced.composition_mode_preference` are the user's stated preferences, not decisions; mention them, but let the user pick at the gate.
+6. **Log the intake** as the first `decision_log` entry: category `pipeline_selection`, subject "Studio intake brief", selected `pipeline_type`, reason "chosen by the user in Studio (studio/intake.json)".
+7. **Do not edit `studio/intake.json` or `studio/inputs.json`.** Studio owns them.
+
+**Review points answered in Studio.** The user can approve, request changes, or stop at any review point from the browser. Studio writes a decision file to `projects/<id>/studio/decisions/<decision-id>.json` (schema `studio.decision/1`); it never writes checkpoints.
+
+1. **At every gate** (after writing `status="awaiting_human"` and presenting the summary), run `python -m backlot await-decision <id> <stage>` in the background, then end your turn (`skills/meta/checkpoint-protocol.md` Step 5.7). Exit 0 prints the decision as JSON; exit 2 means none arrived in time.
+2. **Only apply a decision whose `stage` and `checkpoint_timestamp` match the current `awaiting_human` checkpoint.** `await-decision` already filters; if you read files yourself, ignore stale ones and mention them in the decision log.
+3. **Apply it exactly like a chat reply:**
+   - `approve` → `write_checkpoint(..., status="completed", human_approved=True)`, then continue.
+   - `revise` → redo the stage with `notes` as the user's feedback (any language — it is their words), re-review, write a new `awaiting_human` checkpoint.
+   - `abort` → stop the production and say so.
+4. **Proposal picks** (`proposal`: `selected_concept_id`, `approved_budget_usd`, `render_runtime`, `composition_mode`, `music_source`, `music_track`, `voice`) are the user's choices. `music_track` is a file in `music_library/` (only with `music_source: "user_library"`). Record each one as its own `decision_log` entry with `source: "studio"`: `concept_selection`, `budget_tradeoff`, `render_runtime_selection` (with every runtime you offered in `options_considered`), `composition_mode`, `music_source`, `voice_selection`. Write the picks into the approved `proposal_packet` (`selected_concept`, `approval.approved_budget_usd`, `production_plan.render_runtime`, …).
+5. **Log every applied decision** to `decision_log` with `source: "studio"` (category `approval_policy` for plain approve/revise/abort), then mark it consumed: `python -m backlot consume-decision <id> <decision-id>`.
+6. **Fallback:** if the background wait was not running (new session, `/studio-continue <id>`), run `python -m backlot await-decision <id> --timeout 0` to read a pending decision for any review point.
+
 ## First Interaction — Onboarding
 
 When the user's first message is vague, exploratory, or asks what you can do ("make me a video", "what can you do?", "help me create something", "I want to make content"), read the onboarding skill **before** doing anything else:

@@ -94,6 +94,11 @@
             "minimum": 0,
             "maximum": 1,
             "description": "Agent's confidence in this decision (0 = uncertain, 1 = certain)"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["agent", "chat", "studio"],
+            "description": "Where the deciding input came from: the agent's own call, the user's chat reply, or a Studio review decision (projects/<id>/studio/decisions/). Optional."
           }
         },
         "additionalProperties": false

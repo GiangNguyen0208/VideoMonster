@@ -1,0 +1,339 @@
+# Studio UI — Phase Status
+
+**Agents: read this file before working on Studio.** Pick up the first phase that is not `done`,
+then read its spec in `phases/`. Update this file whenever you change a phase's state, finish a
+checklist item, or leave work half-done: future sessions rely on it to resume.
+
+Status values: `not started` · `in progress` · `blocked` · `done`
+
+| Phase | Name | Status | Last update |
+|---|---|---|---|
+| 0 | [Foundation](phases/phase-0-foundation.md) | done | 2026-11-10 |
+| 1 | [Read-only parity](phases/phase-1-read-only-parity.md) | done | 2026-11-10 |
+| 2 | [Setup center](phases/phase-2-setup-center.md) | done | 2026-11-10 |
+| 3 | [New video wizard](phases/phase-3-new-video-wizard.md) | done | 2026-11-10 |
+| L10n | Localization: Vietnamese (`vi`) for phases 0–3, plus the i18n rule for 4–7 | done | 2026-11-10 |
+| 4 | [Review & approve](phases/phase-4-review-and-approve.md) | done | 2026-11-10 |
+| 5 | [Footage & references](phases/phase-5-footage-and-references.md) | done | 2026-11-10 |
+| 6 | [Results & cost](phases/phase-6-results-and-cost.md) | not started | — |
+| 7 | [Hosted readiness](phases/phase-7-hosted-readiness.md) | not started | — |
+
+## Resume here — snapshot 2026-11-10
+
+**Where things stand**
+- **Done:** Phases 0–5 and cross-cutting Localization (en + vi). Each phase section below has its checklist, deviations and verification notes.
+- **Next:** Phase 6 — Results & cost (`phases/phase-6-results-and-cost.md`). Start it only when the user asks. When you do, mark it `in progress` in the table above before writing code.
+- **Phase 7** (hosted readiness) is design and interfaces only.
+- **Git:** nothing is committed. All Studio work sits uncommitted on `main`. The user commits only on request, so don't commit unprompted. `git status` shows the full list:
+  - modified: `AGENT_GUIDE.md`, agent entry files, `Makefile`, CI, `backlot/*`, `schemas/artifacts/decision_log.schema.json`, `skills/meta/checkpoint-protocol.md`
+  - new: `backlot/studio_*.py`, `backlot/project_store.py`, `backlot/setup_probe.py`, `studio/`, `docs/ui-plan/`, tests
+
+**Rules every phase follows**
+1. **Studio is a companion to the agent CLI.** It writes *intent* files under `projects/<id>/studio/` and media under `projects/<id>/inputs/`. It never writes checkpoints or agent artifacts (`03-architecture.md` §1, §3.4).
+2. **Every UI string exists in both `studio/src/i18n/en.ts` and `vi.ts`.** The parity test enforces it. At least one Vitest test per phase runs in Vietnamese. Engine data (titles, scripts, file names) is shown as-is.
+3. **API errors the UI explains** come back as `{detail, code}`, and the UI translates `code`.
+4. **Each `/api/v1` write needs `X-Studio-Token`.** The client (`lib/api/client.ts`, `sendFile` in `lib/api/uploads.ts`) adds it.
+5. **When agent behaviour changes,** update `AGENT_GUIDE.md` "Projects Created in Studio" and add or extend a test in `tests/contracts/test_studio_wizard_contract.py`.
+6. **Docs are in English.** Update this file and the phase spec's "Implementation notes" before reporting a phase done.
+
+**Code map**
+
+| Area | Where |
+|---|---|
+| Server entry, read API, SSE, `/media`, `/studio` static | `backlot/server.py`, `backlot/state.py` (board state; `ARTIFACT_FILES` lists the artifacts Studio sees) |
+| Write API router (all `/api/v1` routes, feature flags) | `backlot/studio_api.py` |
+| Storage seam | `backlot/project_store.py` |
+| Setup center (Phase 2) | `backlot/setup_probe.py`, `backlot/studio_setup.py`, `backlot/studio_jobs.py` |
+| Catalog, intake, kickoff, demos (Phase 3) | `backlot/studio_catalog.py` |
+| Review decisions (Phase 4) | `backlot/studio_decisions.py`; agent CLI `await-decision` / `consume-decision` in `backlot/__main__.py` |
+| Uploads, references, music library (Phase 5) | `backlot/studio_uploads.py` |
+| Frontend API hooks | `studio/src/lib/api/` (`client`, `queries`, `setup`, `catalog`, `decisions`, `uploads`, `useSSE`) |
+| Pages | `studio/src/routes/` (`home`, `library`, `project`, `setup`, `settings`, `new/` wizard) |
+| Features | `studio/src/features/{library,project,setup,demos,review,uploads,music}` |
+| Goals → pipelines, footage needs | `studio/src/content/goals.ts`; labels in `content/labels.ts` |
+| i18n | `studio/src/i18n/` (`en.ts` source, `vi.ts`, `index.ts` store and hooks) |
+| UI primitives | `studio/src/components/ui/` |
+| Agent instructions | `AGENT_GUIDE.md` "Projects Created in Studio", `skills/meta/checkpoint-protocol.md` Step 5.7, `.claude/commands/reel.md` step 0, `.claude/commands/studio-continue.md` |
+| Python tests | `tests/backlot/test_studio_{api,setup,catalog,decisions,uploads}.py`, `tests/contracts/test_studio_wizard_contract.py` |
+| UI tests | `studio/src/**/*.test.ts(x)`; helpers in `studio/src/test/` (`setup.ts` resets locale, session and the upload queue) |
+
+**Studio ↔ agent files** (schemas in `03-architecture.md` §3)
+
+| File | Written by | Read by | Since |
+|---|---|---|---|
+| `projects/<id>/studio/intake.json` (`studio.intake/1`) | wizard; editable until the first checkpoint | agent at kickoff | Phase 3 |
+| `projects/<id>/studio/decisions/<id>.json` (`studio.decision/1`); renamed `<id>.consumed.json` | review panel | agent at each gate (`await-decision`, then `consume-decision`) | Phase 4 |
+| `projects/<id>/studio/inputs.json` (`studio.inputs/1`) + `projects/<id>/inputs/*` | uploads and reference links | agent at kickoff (source media, reference analysis) | Phase 5 |
+| `music_library/*` (or `MUSIC_LIBRARY_DIR`) | music picker uploads | agent music step (`tools/audio/music_library.py`) | Phase 5 |
+| `projects/<id>/artifacts/video_analysis_brief.json` | agent | review panel ("What the agent learned") | Phase 5 |
+
+**Open items**
+- **Not yet verified with a live agent.** Each needs a real agent session; the API side of each is covered by tests and real-server checks.
+  - Phase 3: a kickoff run where the brief is not re-asked
+  - Phase 4: a full run approved only from Studio, and a mixed chat/Studio run
+  - Phase 5: a footage-led run using the uploaded file, and a "make something like this" run showing the analysis
+- **Backlog / known gaps:**
+  - No edit-brief screen (`PATCH /intake` exists).
+  - No voice picker at the proposal review.
+  - Wizard uploads queued in the tab are lost if it is closed mid-upload.
+  - The JS bundle is ~630 kB (Vite warns above 500 kB); lazy-load routes in a later phase.
+  - The classic board is not localized.
+
+**Environment quirks (this machine)**
+- **Python:** there is no `python` binary. Use `.venv/bin/python` or `make` targets.
+- **Restarting the server:**
+  1. Find the process: `lsof -tiTCP:4750 -sTCP:LISTEN`.
+  2. Kill that PID. `pkill -f "backlot serve"` does not always match it.
+  3. Start it again: `.venv/bin/python -m backlot serve`, or `make studio-open`.
+  4. Run `make studio-build` first so `/studio` serves the latest UI.
+- **Playwright:** use the cached Chromium at `~/Library/Caches/ms-playwright/chromium-1228/…`. A scratch install with past check scripts lives in `/tmp/pwshot` (`p5.mjs` is the Phase 5 run).
+- **Test output:** the `rtk` wrapper rewrites test output. Use `rtk proxy npx vitest run` for raw Vitest output. `studio/.vitest/` is ignored.
+- **Secrets:** do not read `.env` or `.env.example` values.
+
+## How to verify (any phase)
+
+```bash
+.venv/bin/python -m pytest tests/backlot tests/contracts -q        # Python (1727 passed, 10 skipped at Phase 5)
+make studio-check                                                 # UI: lint, typecheck, format, unit tests (88), build
+make studio-build && make studio-open                             # manual check at http://127.0.0.1:4750/studio
+```
+
+---
+
+## Phase 0 — Foundation · done
+
+- [x] `studio/` scaffold: Vite 8, React 19, TypeScript, Tailwind v4, React Router, TanStack Query, RHF + Zod, ESLint, Prettier, Vitest
+- [x] Design tokens from `backlot/ui/board.css` in `studio/src/index.css` (`@theme`), light/dark synced through `localStorage["backlot.theme"]`
+- [x] UI primitives in `studio/src/components/ui/` (Button, Card, Badge, Banner, Dialog/Drawer, Tabs, EmptyState, Spinner, StepStatus)
+- [x] App shell, router, error boundary, 404, placeholder pages
+- [x] Backlot serves `studio/dist` at `/studio` with SPA fallback; 503 page when not built (`backlot/server.py`)
+- [x] `backlot/studio_api.py`: `/api/v1/session`, CSRF guard (`X-Studio-Token` + local Origin) on all non-GET `/api/v1/*`, `current_user` seam
+- [x] `backlot/project_store.py`: `ProjectStore` protocol + `DiskProjectStore` (atomic JSON writes, path-escape guard)
+- [x] `studio/src/lib/api`: token-aware client, `useSSE` hook
+- [x] `python -m backlot open --studio`; Makefile `studio-*` targets; CI job "Validate Studio UI"
+- [x] Tests: `tests/backlot/test_studio_api.py`, Vitest suites under `studio/src/**`
+
+Notes and deviations:
+- Uses React 19 and Tailwind v4 (latest at implementation time); the docs were updated to match.
+- Tailwind tokens are defined in CSS (`@theme inline`), so there is no `tailwind.config.ts`.
+
+## Phase 1 — Read-only parity · done
+
+- [x] Typed models (`studio/src/lib/api/types.ts`) and live queries `useProjects` / `useProject` (`queries.ts`, SSE-invalidated)
+- [x] Adapters in `studio/src/features/project/adapters.ts`: status derivation (waiting / failed / stalled / working / paused / done / empty), progress, decision-log collapse, activity lines
+- [x] Plain-language labels in `studio/src/content/labels.ts` (step names, video-type names)
+- [x] Home: "Waiting for you" banner + sections Waiting / Needs attention / In progress / Recent results, first-run empty state
+- [x] Library: cards (poster, type, status, progress, cost, live), search, status filter, type filter, series grouping; filters stored in the URL
+- [x] Project page: header, status banner, step timeline with review-point markers, result player, tabs (Research/Brief, Concept & plan, Script, Storyboard, Decisions, Activity); opens the tab of the step under review; read-only "reply in your agent chat" notice
+- [x] Live updates over library and project SSE
+- [x] Classic board ↔ Studio links (`backlot/ui/board.js`, `backlot/ui/index.html`)
+- [x] Tests: adapters, filters, page tests on a fixture captured from `scripts/backlot_simulate_run.py`, live-update tests; Python tests for the new summary fields
+
+Notes:
+- `summarize_project` (`backlot/state.py`) gained additive fields `stalled`, `failed`, `latest_render`, `cost_usd`, also present in the unreadable-project fallbacks.
+- Fixtures `studio/src/test/fixtures/*.json` come from the simulate-run project. Regenerate them if the board-state shape changes.
+- Verified against the real server with Playwright, using the cached Chromium in `~/Library/Caches/ms-playwright/chromium-1228`:
+  - pages render with no errors;
+  - there is no horizontal overflow at 375 px;
+  - the Library goes live through working → waiting → paused → video ready during a simulated run.
+- Known, pre-existing: the classic board requests `/favicon.ico`, which returns 404. It is harmless and not caused by Studio.
+
+## Phase 2 — Setup center · done
+
+- [x] `backlot/setup_probe.py`: a subprocess capability probe that prints JSON (provider summary, per-tool facts, per-video-type coverage)
+- [x] `backlot/studio_setup.py`:
+  - tier computation (onboarding tiers)
+  - video-type states `ready` / `limited` / `locked`
+  - unlock offers grouped per env var, ranked by video types unlocked, then improved
+  - masked key status
+  - atomic `.env` writer that preserves comments, order and other keys, writes mode 600, and removes a key when given an empty value
+- [x] `backlot/studio_jobs.py`: in-process job table (dedupes running jobs of the same kind); `GET /api/v1/jobs/{id}`
+- [x] API routes:
+  - `GET /api/v1/setup` returns 202 with a job while the first check runs
+  - `POST /api/v1/setup/recheck`
+  - `PUT /api/v1/setup/env`: allowlisted keys, values never echoed, 403 with `STUDIO_READONLY_ENV=1`, 409 before the first check
+- [x] Setup page:
+  - tier card
+  - verbatim warnings
+  - works-now list (headline capabilities first)
+  - video-type list with an Unlock anchor
+  - top-3 unlock cards (plain-language title, unlock/improve chips, sign-up link, masked "Save and check" form)
+  - "All providers" and "Hardware unlocks" drawers
+- [x] Home "You're on free, local tools — Unlock more" nudge for zero-key machines (dismissible)
+- [x] Tests: `tests/backlot/test_studio_setup.py` (26), Vitest `routes/setup.test.tsx` and `features/setup/UnlockCard.test.tsx`
+
+Notes and deviations:
+- **Key allowlist.** The spec said "keys listed in `.env.example`". The implementation instead allowlists every `env:` dependency declared by a registered tool, which is derived from the registry and so can't drift from the tools. It also avoids reading example env files.
+- **Probe PATH fix.** The probe prepends `dirname(sys.executable)` to PATH. When the server runs as `.venv/bin/python` without an activated venv, `piper` and other console scripts are otherwise invisible, and Voice-over wrongly showed as unavailable (tts 0/19).
+  - The same gap affects agents that run tools without activating the venv. The tools themselves were left unchanged.
+- **Video-type states.** "Locked" means a required tool's capability is missing. "Limited" means a headline optional capability is missing (images, video, voice, music, avatar, sound effects). Other optional gaps, such as 3D, are not shown.
+- **Verification.** The real server (Playwright, no real key entered) reports tier Zero-key with Voice-over (Piper) listed. "Explain a topic" is locked (needs AI images); the other 11 types work, and clip-factory is fully ready. There is no overflow at 375 px and no console errors. The probe takes about 6–10 s.
+
+## Phase 3 — New video wizard · done
+
+- [x] 3.1 Catalog APIs in `backlot/studio_catalog.py`:
+  - `GET /api/v1/pipelines`: 12 user-facing manifests with stages and review flags, reference support, playbooks, production modes and default budget, merged with the Setup lock state (`availability`, `checked`). The first call starts the capability check.
+  - `GET /api/v1/styles`: presets and custom playbooks, with palette swatches.
+- [x] 3.2 `studio/src/content/goals.ts`: 12 goals, each with a preset and example topics from `PROMPT_GALLERY.md`, plus the `like-this` entry.
+- [x] 3.3 Wizard `/studio/new` (`studio/src/routes/new/`), 4 steps; step held in `?step=`; RHF + Zod (`wizard.ts`):
+  1. Goal cards with Ready / Works now / Locked badges. Locked cards link to Setup.
+  2. Brief, adapted per goal: example chips, platform (sets aspect), length, tone, and production mode for screen-demo. *Advanced:* must include, avoid, language.
+  3. Style cards filtered by `compatible_playbooks`. Budget shows "Free — runs locally" on Zero-key. *Advanced:* runtime preference, look, review points.
+  4. Review with a "Change" link per row and an editable title.
+- [x] 3.4 Project and intake endpoints:
+  - `POST /api/v1/projects` validates (Pydantic `IntakeIn` plus catalog checks), picks a unique id (word-boundary slug plus 4 hex characters), runs `init_project`, and writes `studio/intake.json`. It never writes checkpoints. Returns 409 for locked types and 422 for an unknown type, style or mode.
+  - `GET/PATCH /api/v1/projects/{id}/intake`: editable until the first checkpoint exists; the type is fixed.
+- [x] 3.5 `GET /api/v1/projects/{id}/kickoff`. The project page shows "Waiting for the agent to start…" and the *Start your agent* panel (`features/project/KickoffPanel.tsx`) until the agent writes something.
+- [x] 3.6 Agent contract part 1:
+  - `AGENT_GUIDE.md` gained the "Projects Created in Studio" section.
+  - Step 0 in `.claude/commands/reel.md`.
+  - One line each in `CODEX.md`, `CURSOR.md`, `COPILOT.md`, `AGENTS.md` and `.windsurfrules`.
+- [x] 3.7 Demos:
+  - `GET /api/v1/demos` and `POST /api/v1/demos/{name}/render`. The job reports progress parsed from Remotion output; `progress` and `output` were added to `Job`.
+  - Home "Try a demo" cards (`features/demos/DemoCards.tsx`) with progress bar and player.
+- [x] Tests:
+  - `tests/backlot/test_studio_catalog.py` (35)
+  - `tests/contracts/test_studio_wizard_contract.py`: catalog, goals and agent entry points stay in sync
+  - Vitest: `routes/new/new.test.tsx`, `routes/new/wizard.test.ts`, `features/demos/DemoCards.test.tsx` (64 total)
+
+Notes and deviations:
+- **Wizard flow.** Kickoff is shown on the project page rather than on a separate wizard screen, so "start your agent" and "watch it here" are the same page. See "Implementation notes" in the phase spec.
+- **Intake shape.** It gained `title`, `updated_at`, `advanced.checkpoint_policy` and `advanced.production_mode`. `platform` values are `youtube` / `shorts` / `linkedin` / `other`. `03-architecture.md` §3.1 is updated.
+- **No intake edit UI yet.** `PATCH` exists; an "edit brief" screen is still in the backlog.
+- **Superseded by Phase 5:** the wizard now has a dynamic step list (`stepsFor()` in `wizard.ts`). Footage goals get an "Add your footage" step after the goal. `?step=` holds the step key (`goal|footage|brief|look|review`), not a number. screen-demo's production mode moved from the brief step to the footage step.
+- **Bundle size.** The production bundle was about 550 kB at Phase 3 and ~630 kB at Phase 5 (Vite warns at 500 kB). Lazy-load routes if it grows.
+- **`.vitest/`** (JSON reports written by the `rtk` wrapper) is git- and prettier-ignored.
+- **Verification on the real server (Playwright):**
+  - Goal → Create took about 18 s, with no console errors and no overflow at 375 px. "Explain a topic" is shown as locked on this Zero-key machine.
+  - The test project was deleted afterwards.
+  - A real demo render (`animated-reel-20s`) from the browser took about 185 s; progress went 0→96 % and the video plays.
+- **Not yet verified:** a manual end-to-end agent run from the kickoff command (acceptance: the brief is not re-asked, on `animated-explainer` and `screen-demo`). It needs a real agent session. `animated-explainer` is locked here without an image key.
+
+## Localization (vi) — cross-cutting · done
+
+Requested before Phase 4: Studio UI in English and Vietnamese for everything shipped in Phases 0–3, and every later phase spec must include localization. The rules are in `03-architecture.md` §8.
+
+- [x] **i18n core** (`studio/src/i18n/`), no new dependency:
+  - typed catalogs: `en.ts` is the source; `vi.ts` is typed as `Messages`
+  - locale store: `localStorage["studio.locale"]`, browser-language default, `<html lang>`, cross-tab sync
+  - `useT()` for components, `msg()` for helpers
+- [x] **Language picker** (`app/LanguageSelect.tsx`) in the header (EN/VI) and on Settings. Settings is now a real page; its other sections arrive in Phase 6.
+- [x] **Phase 0 strings:** shell, nav, theme toggle, skip link, error boundary, 404, placeholder, server-down, spinner and dialog defaults.
+- [x] **Phase 1 strings:**
+  - Home, Library (filters now ids plus catalog labels), project card, Project page, banners
+  - step and status labels (`stepLabels.ts` → `STEP_TONES` + `stepLabel()`), activity lines, decisions
+  - brief, concept, script, storyboard and result views; relative time (`fmtAgo`, `fmtClock`)
+- [x] **Phase 2 strings:**
+  - Setup page; tiers are translated on the client by tier id, falling back to the server label
+  - capability and video-type names, video-type states, unlock cards, key form, Home nudge
+- [x] **Phase 3 strings:**
+  - goal titles, promises and examples moved from `goals.ts` into the catalogs (`goalText()`)
+  - tone ids (`toneLabel()`); platform names; wizard steps
+  - Zod error keys (`errorText()`); review rows; kickoff panel (notes by agent id); demo cards
+- [x] **Tests:**
+  - `src/i18n/i18n.test.tsx`: key parity incl. label maps, no empty strings, locale store, browser detection, header switch, full wizard in Vietnamese, cross-tab change
+  - existing suites run in `en` (`test/setup.ts` resets the locale)
+  - 72 Vitest tests
+- [x] **Docs:** `03-architecture.md` §8 Localization, plus a Localization section in each Phase 4–7 spec (4.5 in Phase 4).
+
+Notes and decisions:
+- **Agent-facing data stays neutral.**
+  - `intake.json` gets English tone labels whatever the UI language (`toneForIntake`).
+  - `language` (narration) defaults to the UI locale (`vi` → `vi`).
+  - The kickoff command stays English. The user's free text is stored as typed.
+- **Not translated (data):** project content, registry install hints and runtime warnings, playbook descriptions, demo titles, API `detail` strings. The exception is 409 on create, which maps to `wizard.lockedError`.
+- **Verified on the real server** with Playwright in a `vi-VN` browser:
+  - every page renders in Vietnamese with `lang=vi`
+  - no overflow at 375 px
+  - the only console errors are the expected `/kickoff` 404s on a project not created in Studio (pre-existing, handled)
+- The classic Backlot board (`backlot/ui/`) was not localized; it is outside Studio.
+
+## Phase 4 — Review & approve · done
+
+- [x] 4.1 Decision API (`backlot/studio_decisions.py`):
+  - `POST`, `GET` and `DELETE /api/v1/projects/{id}/decisions`
+  - validation: the checkpoint must be `awaiting_human` with a matching timestamp; revise needs notes; the concept must exist; the runtime must be available; one decision per review
+  - errors are returned as `{detail, code}`
+- [x] 4.2 Review panel (`studio/src/features/review/`):
+  - shown on the project page when a step is waiting
+  - shows the agent's self-review and the cost so far
+  - proposal picker: concept, budget, Remotion and HyperFrames side by side with the agent's rationale and machine availability, look, music
+  - script: per-section comments
+  - actions: approve, request changes (notes required), stop (confirmation)
+  - states: sent (with Retract and a `/studio-continue` fallback command) → applying → next step, live over SSE
+  - opt-in browser notification
+- [x] 4.3 Agent contract part 2:
+  - `AGENT_GUIDE.md` "Review points answered in Studio"
+  - `skills/meta/checkpoint-protocol.md` Step 5.7
+  - `python -m backlot await-decision` / `consume-decision`
+  - `.claude/commands/studio-continue.md`
+- [x] 4.4 Chat approvals: a pending decision whose checkpoint moved on is reported `stale` and ignored by the agent; the panel says when the step changed since the last answer
+- [x] 4.5 Localization: all review strings in `en` + `vi`, error codes translated, notes stored verbatim
+- [x] Tests:
+  - `tests/backlot/test_studio_decisions.py` (17): validation matrix, lifecycle, chat or revise makes a decision stale, CLI wait/timeout/late arrival/consume, decision log with `source: "studio"`
+  - contract test for the agent instructions
+  - Vitest `features/review/ReviewPanel.test.tsx` (10, incl. Vietnamese); 82 total
+
+Notes and deviations:
+- **New CLI `consume-decision`.** It was added so the agent marks a decision applied with one command instead of renaming files.
+- **Schema change:** `schemas/artifacts/decision_log.schema.json` gained an optional `source` (`agent` | `chat` | `studio`). `additionalProperties: false` previously rejected the `source: "studio"` the spec requires.
+- **Panel scope.**
+  - For scene_plan, assets, character_design, edit and publish, the panel shows the actions and points at the tab that already renders the step (storyboard/filmstrip, result player). It does not duplicate those views.
+  - There is no voice picker yet; voice stays with the agent's proposal.
+- **Docs fix.** `phases/phase-7-hosted-readiness.md` no longer cites not-yet-existing `docs/ui-plan/hosted/*.md` as backticked paths; `tests/contracts/test_skill_reference_paths.py` flagged it.
+- **Verified on the real server** with Playwright and the CLI as the "agent":
+  - Proposal approved in Studio wrote exactly one file; `await-decision` returned it.
+  - After `consume-decision`, the page showed "applying" live, then the script review appeared.
+  - A revise request in Vietnamese reached the agent verbatim.
+  - The rewritten checkpoint showed the "step changed" notice; `history/` kept old versions; `decision_log` got `source: "studio"`.
+  - No console errors, no overflow at 375 px. The test project was deleted.
+- **Not yet verified:** a full real-agent run (proposal → publish approved only from Studio) and a mixed chat/Studio run. Both need a live agent session.
+
+## Phase 5 — Footage & references · done
+
+- [x] 5.1 Uploads:
+  - `backlot/studio_uploads.py` + routes in `studio_api.py`; `FEATURES.uploads = True`
+  - raw-body streaming into `inputs/` with a partial file then rename; `STUDIO_MAX_UPLOAD_MB` (default 8192)
+  - extension/MIME allowlist (415); traversal names rejected (`bad_name`); duplicate names get `-2`, `-3`
+  - ffprobe metadata (duration, resolution, codec) indexed in `studio/inputs.json`
+  - delete allowed only before the first checkpoint (`already_started`)
+- [x] 5.2 References: `POST/DELETE /projects/{id}/references`, http(s) only, never fetched; the wizard link is copied in; reference *files* are uploads with `kind: "reference"`
+- [x] 5.3 Wizard:
+  - "Add your footage" step for footage goals: drag-drop, client checks (type, size, minimum length), blob preview
+  - screen-demo upload vs animated terminal sets `production_mode`; localization-dub asks for target languages
+  - files upload after create through an app-level queue; the project page shows progress
+- [x] 5.4 Project page "Footage & links" panel: files with metadata, preview from `/media`, delete before start, upload more, reference links and reference-video upload, "still uploading" banner
+- [x] 5.5 Music library:
+  - `GET/POST /api/v1/music` and `/music/tracks/{name}`
+  - `MusicPicker` (preview, upload) on the Look step (`intake.music_track`) and on the proposal review when "Music library" is picked (`proposal.music_track`)
+- [x] 5.6 Agent contract part 3: `AGENT_GUIDE.md` "Projects Created in Studio" item 4 (inputs, references → `video_analysis_brief.json`, target languages, music track); `/reel` step 0; proposal picks list `music_track`
+- [x] 5.7 Reference results: board loads `video_analysis_brief`; review panel shows "What the agent learned from your reference" at research/idea/proposal
+- [x] 5.8 Localization: `uploads`, `music`, `wizard.footage`, `review.reference` in `en` + `vi`; upload error codes translated; `fmtBytes` follows the locale
+- [x] Tests:
+  - `tests/backlot/test_studio_uploads.py` (26): streaming (256 MB through `stream_to_folder`, peak < 8 MB), traversal/type/size/empty rejections, duplicate names, delete rules, ffprobe on a generated clip, references, wizard seeding, intake fields, music library
+  - contract tests for agent instructions and footage-goal production modes
+  - Vitest `features/uploads/uploads.test.tsx` (5, incl. Vietnamese) + 1 review-panel test; 88 total
+  - pytest `tests/backlot` + `tests/contracts`: 1727 passed, 10 skipped
+
+Notes and deviations:
+- **Raw body, not multipart.** `python-multipart` isn't installed. A raw body is also simpler to stream and lets XHR report upload progress.
+- **Upload timing.** Uploads happen *after* the project is created; the spec implied during the wizard, but a project folder is needed first. Queued files are lost if the tab is closed mid-upload; the panel shows what arrived.
+- **TestClient limits.** TestClient buffers request bodies on the client, so the memory-ceiling test measures `stream_to_folder` directly. The real-server run below covers the HTTP path.
+- **Verified on the real server** (Playwright, Chromium):
+  - Wizard (Polish my talking video): the browser read the 6 s duration; blob preview played; after create, the file uploaded on the project page and showed `640×360`.
+  - Drag-drop of a second file worked; the server preview played; delete worked.
+  - **1 GB upload:** 6.2 s, progress 0 → 100 % in ~20 steps. Server RSS went from 43 MB to a 55 MB peak.
+  - No console errors; no overflow at 375 px. The test project was deleted.
+- **Not yet verified:**
+  - a real `talking-head` / `clip-factory` agent run using the uploaded file
+  - a real "make something like this" run showing the analysis at the first review point
+
+Both need a live agent session.
+
+## Phase 6 — Results & cost · not started
+
+- See `phases/phase-6-results-and-cost.md` (includes its Localization section).
+
+## Phase 7 — Hosted readiness · not started
+
+- See `phases/phase-7-hosted-readiness.md`. It covers design and interfaces only; `ProjectStore` (Phase 0) is the seam it builds on.

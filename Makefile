@@ -9,7 +9,7 @@ PIP = "$(RUN_PYTHON)" -m pip
 
 .DEFAULT_GOAL := setup
 
-.PHONY: setup install install-dev install-gpu bootstrap test test-contracts lint clean preflight demo demo-list hyperframes-doctor hyperframes-warm venv ensure-venv
+.PHONY: setup install install-dev install-gpu bootstrap test test-contracts lint clean preflight demo demo-list hyperframes-doctor hyperframes-warm venv ensure-venv studio-install studio-dev studio-build studio-open studio-test studio-check
 
 # ---- Virtual environment ----
 
@@ -82,6 +82,7 @@ setup: bootstrap
 	@echo "  Optional: run 'make install-gpu' if you have an NVIDIA GPU."
 	@echo "  Optional: run 'make hyperframes-doctor' to fully validate the HyperFrames runtime."
 	@echo "  Optional: run 'make hyperframes-warm' anytime to refresh the npx cache to the latest hyperframes version."
+	@echo "  Optional: run 'make studio-build' to build the Studio web UI (served at http://127.0.0.1:4750/studio)."
 
 # ---- Individual installs ----
 
@@ -132,6 +133,29 @@ lint: ensure-venv
 	"$(RUN_PYTHON)" -m py_compile tools/tool_registry.py
 	"$(RUN_PYTHON)" -m py_compile tools/cost_tracker.py
 	"$(RUN_PYTHON)" -m py_compile tools/analysis/composition_validator.py
+
+# ---- Studio (React UI in studio/, served by Backlot at /studio) ----
+
+studio-install:
+	cd studio && npm ci
+
+studio-dev:
+	@echo "==> Studio dev server (Vite) proxies /api, /media, /thumb to Backlot on :$${BACKLOT_PORT:-4750}."
+	@echo "    Start Backlot in another terminal: $(RUN_PYTHON) -m backlot serve"
+	cd studio && npm run dev
+
+studio-build:
+	cd studio && npm run build
+	@echo "==> Studio built. Run 'make studio-open' (or: $(RUN_PYTHON) -m backlot open --studio)."
+
+studio-open: ensure-venv
+	"$(RUN_PYTHON)" -m backlot open --studio
+
+studio-test:
+	cd studio && npm test
+
+studio-check:
+	cd studio && npm run lint && npm run typecheck && npm run format:check && npm test && npm run build
 
 clean:
 	$(BASE_PYTHON) -c "import pathlib, shutil; excluded=[pathlib.Path('$(VENV_DIR)'), pathlib.Path('venv')]; skip=lambda p: any(p == root or root in p.parents for root in excluded); roots=[p for p in pathlib.Path('.').rglob('__pycache__') if not skip(p)]; [shutil.rmtree(p) for p in roots]; files=[p for p in pathlib.Path('.').rglob('*.pyc') if not skip(p)]; [p.unlink() for p in files]"
