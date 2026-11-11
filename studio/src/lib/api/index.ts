@@ -4,5 +4,6 @@ export * from "./catalog";
 export * from "./decisions";
 export * from "./setup";
 export * from "./uploads";
+export * from "./results";
 export type * from "./types";
 export { useSSE, SSE_DEBOUNCE_MS } from "./useSSE";

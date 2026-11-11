@@ -9,7 +9,6 @@ intake at kickoff (AGENT_GUIDE.md "Projects created in Studio").
 
 from __future__ import annotations
 
-import importlib.util
 import re
 import secrets
 import subprocess
@@ -22,6 +21,8 @@ from typing import Any, Literal, Optional
 import yaml
 from pydantic import BaseModel, Field, field_validator
 
+from backlot import machine_store
+from backlot.project_store import ProjectFiles, ProjectStore
 from backlot.state import REPO_ROOT
 from backlot.studio_jobs import Job
 
@@ -136,7 +137,7 @@ def list_styles() -> list[dict[str, Any]]:
                 "mood": identity.get("mood"),
                 "best_for": identity.get("best_for"),
                 "palette": swatches[:6],
-                "custom": not (REPO_ROOT / "styles" / f"{name}.yaml").is_file(),
+                "custom": not machine_store.repo_file_exists(f"styles/{name}.yaml"),
             }
         )
     return styles
@@ -144,7 +145,7 @@ def list_styles() -> list[dict[str, Any]]:
 
 def budget_defaults() -> dict[str, Any]:
     try:
-        config = yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8")) or {}
+        config = yaml.safe_load(machine_store.read_text(CONFIG_PATH) or "") or {}
     except (OSError, yaml.YAMLError):
         config = {}
     budget = config.get("budget") or {}
@@ -280,17 +281,17 @@ def slugify(text: str, max_len: int = 40) -> str:
     return slug.strip("-") or "video"
 
 
-def new_project_id(title: str, root: Path) -> str:
+def new_project_id(title: str, store: ProjectStore) -> str:
     base = slugify(title)
     for _ in range(20):
         candidate = f"{base}-{secrets.token_hex(2)}"
-        if not (root / candidate).exists():
+        if not store.exists(candidate):
             return candidate
     raise RuntimeError("could not find a free project id")
 
 
-def has_checkpoint(project_dir: Path) -> bool:
-    return any(project_dir.glob("checkpoint_*.json"))
+def has_checkpoint(files: ProjectFiles) -> bool:
+    return bool(files.list("", "checkpoint_*.json"))
 
 
 # ---- kickoff -------------------------------------------------------------------
@@ -329,12 +330,7 @@ def kickoff(project_id: str) -> dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def _render_demo_module():
-    spec = importlib.util.spec_from_file_location("_om_render_demo", RENDER_DEMO_SCRIPT)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"cannot load {RENDER_DEMO_SCRIPT}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return machine_store.load_repo_script(RENDER_DEMO_SCRIPT, "_om_render_demo")
 
 
 def demo_output(name: str) -> Path:
@@ -351,8 +347,10 @@ def list_demos() -> list[dict[str, Any]]:
                 "name": name,
                 "title": name.replace("-", " ").capitalize(),
                 "description": module.DEMO_DESCRIPTIONS.get(name, "Checked-in Remotion demo"),
-                "rendered": video.is_file(),
-                "video_url": f"/media/{DEMO_PROJECT_ID}/renders/{name}.mp4" if video.is_file() else None,
+                "rendered": machine_store.file_exists(video),
+                "video_url": f"/media/{DEMO_PROJECT_ID}/renders/{name}.mp4"
+                if machine_store.file_exists(video)
+                else None,
             }
         )
     return out
@@ -414,5 +412,5 @@ def render_demo_job(name: str, job: Job, command: Optional[list[str]] = None) ->
     job.progress = 1.0
     video = demo_output(name)
     return {
-        "video_url": f"/media/{DEMO_PROJECT_ID}/renders/{name}.mp4" if video.is_file() else None
+        "video_url": f"/media/{DEMO_PROJECT_ID}/renders/{name}.mp4" if machine_store.file_exists(video) else None
     }

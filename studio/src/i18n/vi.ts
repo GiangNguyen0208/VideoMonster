@@ -190,6 +190,8 @@ export const vi: Messages = {
   library: {
     title: "Thư viện",
     intro: "Tất cả video của bạn, đang làm và đã xong.",
+    monthSpend: (amount, projects) =>
+      `Đã chi tháng này: ${amount}${projects ? ` cho ${projects} video` : ""}`,
     search: "Tìm video",
     filterByStatus: "Lọc theo trạng thái",
     filterByType: "Lọc theo loại video",
@@ -236,7 +238,6 @@ export const vi: Messages = {
     tabs: { decisions: "Quyết định", activity: "Hoạt động" },
     result: {
       heading: "Video của bạn",
-      earlier: (n) => `${n} bản xuất trước đó`,
     },
     brief: {
       heading: "Bản mô tả",
@@ -501,9 +502,102 @@ export const vi: Messages = {
   },
   settings: {
     title: "Cài đặt",
-    intro:
-      "Tuỳ chọn của Studio. Giới hạn chi tiêu, chính sách duyệt và mặc định đầu ra có ở Giai đoạn 6.",
+    intro: "Ngôn ngữ của Studio, cùng giới hạn chi tiêu và các mặc định agent sử dụng.",
     languageHint: "Ngôn ngữ của Studio. Agent vẫn dùng ngôn ngữ bạn chat với nó.",
+    loading: "Đang tải cài đặt",
+    loadError: "Không tải được cài đặt. Studio còn đang chạy không?",
+    spending: {
+      title: "Chi tiêu",
+      intro:
+        "Các giới hạn agent kiểm tra trước khi dùng dịch vụ trả phí. Công cụ miễn phí chạy trên máy không bị tính.",
+      mode: "Khi video sắp vượt ngân sách",
+      total: "Ngân sách mỗi video (USD)",
+      totalHint: "Dùng khi video không đặt ngân sách riêng trong wizard.",
+      singleAction: (amount) => `Hỏi tôi trước mọi thao tác đơn lẻ trên ${amount}`,
+      singleActionHint: "Một ảnh, clip hay lời đọc có giá cao hơn mức này cần bạn đồng ý.",
+      newTool: "Hỏi tôi trước khi dùng một dịch vụ trả phí lần đầu trong một video",
+    },
+    defaults: {
+      title: "Mặc định",
+      intro:
+        "Điểm khởi đầu cho video mới. Bản mô tả hoặc câu trả lời của bạn ở điểm duyệt được ưu tiên.",
+      review: "Điểm duyệt",
+      policies: {
+        guided: "Ở các bước chính (khuyên dùng)",
+        manual_all: "Sau mọi bước",
+        auto_noncreative: "Chỉ các bước sáng tạo",
+      },
+      resolution: "Kích thước video",
+      shapes: {
+        "1280x720": "ngang HD",
+        "1920x1080": "ngang Full HD",
+        "2560x1440": "ngang 2K",
+        "3840x2160": "ngang 4K",
+        "1080x1920": "dọc (Shorts, Reels, TikTok)",
+        "1080x1080": "vuông",
+      },
+      fps: "Tốc độ khung hình",
+      fpsValue: (n) => `${n} khung hình/giây`,
+    },
+    save: "Lưu cài đặt",
+    saving: "Đang lưu…",
+    saved: "Đã lưu. Agent dùng các giá trị này từ video tiếp theo.",
+    footnote:
+      "Lưu vào config.yaml trong thư mục OpenMontage. Các cài đặt khác trong đó được giữ nguyên.",
+    errors: {
+      amount: "Nhập số tiền từ 0 đến 10.000",
+      invalid: "Giá trị này không hợp lệ",
+      save: "Không lưu được. Hãy thử lại.",
+      locked: "Server này đã tắt việc sửa cài đặt.",
+    },
+  },
+  result: {
+    download: "Tải xuống",
+    downloadShort: "Tải",
+    downloadFile: (name) => `Tải xuống ${name}`,
+    open: "Mở",
+    variants: "Các phiên bản",
+    publishHeading: "Sẵn sàng đăng",
+    noPublishText: "Agent chưa viết nội dung bài đăng — tạm thời có tiêu đề.",
+    fields: { title: "Tiêu đề", description: "Mô tả", hashtags: "Hashtag" },
+    copyField: (label) => `Sao chép ${label.toLowerCase()}`,
+    exportHeading: "Gói xuất bản",
+    exportFolder: (files, size) => `${files} file · ${size}`,
+    exportFile: (size) => `1 file · ${size}`,
+    downloadExport: "Tải gói xuất bản",
+    askToExport:
+      "Chưa có gói xuất bản. Hãy nhờ agent xuất cho một nền tảng — nó gói video, phụ đề và nội dung bài đăng lại với nhau.",
+  },
+  cost: {
+    heading: "Chi phí",
+    ofBudget: (spent, budget) => `${spent} trên ngân sách ${budget}`,
+    spentOnly: (spent) => `Đã chi ${spent}`,
+    barLabel: (spent, reserved, remaining) =>
+      `Đã chi ${spent}, đã giữ chỗ ${reserved}, còn lại ${remaining}`,
+    spent: "Đã chi",
+    reserved: "Đã giữ chỗ",
+    remaining: "Còn lại",
+    over: "Video này đã vượt ngân sách. Agent sẽ hỏi trước khi chi thêm.",
+    modes: {
+      observe: { title: "Chỉ theo dõi", body: "Chi phí được ghi lại; không chặn gì." },
+      warn: { title: "Cảnh báo tôi", body: "Agent dừng lại và hỏi bạn trước khi vượt ngân sách." },
+      cap: { title: "Giới hạn cứng", body: "Mọi thao tác làm vượt ngân sách đều bị từ chối." },
+    },
+    byTool: "Theo công cụ",
+    byStep: "Theo bước",
+    tool: "Công cụ",
+    runs: "Lượt dùng",
+    free: "Miễn phí (trên máy)",
+    plusReserved: (amount) => `+ ${amount} giữ chỗ`,
+    noStep: "Khác",
+    statuses: {
+      completed: "đã trả",
+      failed: "thất bại (vẫn bị tính)",
+      reserved: "giữ chỗ",
+      estimated: "ước tính",
+      refunded: "hoàn lại",
+    },
+    statusCount: (label, n) => `${n} ${label}`,
   },
   wizard: {
     stepsLabel: "Các bước",

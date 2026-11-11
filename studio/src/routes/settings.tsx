@@ -1,5 +1,6 @@
 import { LanguageSelect } from "@/app/LanguageSelect";
 import { Card } from "@/components/ui";
+import { SettingsForm } from "@/features/settings/SettingsForm";
 import { useT } from "@/i18n";
 
 export function SettingsPage() {
@@ -15,6 +16,9 @@ export function SettingsPage() {
         <p className="text-sm text-text-2">{t.settings.languageHint}</p>
         <LanguageSelect />
       </Card>
+      <div className="max-w-2xl">
+        <SettingsForm />
+      </div>
     </section>
   );
 }

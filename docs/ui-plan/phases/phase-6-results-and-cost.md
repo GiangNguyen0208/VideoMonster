@@ -64,3 +64,30 @@
 
 - **pytest:** cost aggregation over fixture ledgers (every status); settings round-trip and validation; download headers; path guard on download.
 - **Playwright:** result player and download; cost panel numbers; settings form validation.
+
+## Implementation notes
+
+- **Results** (`backlot/studio_results.py`).
+  - `GET /api/v1/projects/{id}/results` returns render variants (board renders joined with `render_report.outputs` by path), publish text and export info.
+    - Label and facts come from the report; ffprobe fills resolution and duration when the report has none. Results are cached by path, mtime and size.
+    - **Copy text** comes from the newest `publish_log` entry with `metadata_used`, falling back to the project title. Hashtags get a `#` prefix.
+    - **Export** is the newest `exported` entry whose `export_path` resolves inside the project; paths outside it are ignored.
+  - `GET /api/v1/projects/{id}/export` sends a file export as-is. A folder export is zipped into a temp file: media is stored, text is deflated, symlinks are skipped, and the temp file is deleted after sending.
+  - **Download:** `/media/{id}/{path}?download=1` adds `Content-Disposition: attachment`; the path guard is unchanged.
+  - **UI** (`features/result/ResultPanel.tsx`, which replaces Phase 1's `ResultView`): player, Download button, version list (label, facts, per-file download), "Ready to post" with copy buttons, export card.
+  - **Home → Recent results:** each card has Download and Open links, so a finished video is one click from Home.
+- **Cost** (`backlot/studio_cost.py`).
+  - `GET /api/v1/projects/{id}/cost` takes its totals from `CostTracker.cost_snapshot()` itself, so they match the agent's numbers exactly. If the tracker can't load the log, the same sums are computed directly.
+  - The budget is the log's `budget_total_usd`, else the Studio intake's `cap_usd`, else `config.yaml`.
+  - **Stage attribution.** `cost_log.json` has no stage field, so an entry belongs to the first stage whose checkpoint timestamp is at or after it. Later entries go to the next stage without a checkpoint.
+  - **"Free (local)"** means a tool never priced above $0. A refunded paid tool shows $0.00, not "free".
+  - `GET /api/v1/cost/summary?since=<ISO with zone>` returns money spent (completed and failed entries) across projects. The Library uses the local month start.
+- **Settings** (`backlot/studio_settings.py`).
+  - `GET/PUT /api/v1/settings` covers `budget.{mode,total_usd,single_action_approval_usd,require_approval_for_new_paid_tool}`, `checkpoint.policy` and `output.{default_resolution,default_fps}`. The spec's `output.resolution` and `output.fps` are named `default_*` in `config.yaml`.
+  - Validation is Pydantic with `extra="forbid"`. Resolutions and fps come from fixed lists (`choices` in the GET). A bad value is a 422 with `loc` = `body.section.key`, and the UI marks that field.
+  - **No `ruamel.yaml`.** The fallback edits the matching `key: value` lines in place and keeps comments in their column. A missing key goes at the end of its section, and a missing section is appended. The result must round-trip through `yaml.safe_load` and `OpenMontageConfig`, and is written atomically. `STUDIO_READONLY_CONFIG=1` turns writing off (403).
+- **"Picked up by the next agent run".** Before this phase nothing read `config.yaml` except the model class. `AGENT_GUIDE.md` (infrastructure files) now tells the agent to:
+  - build `CostTracker` from `OpenMontageConfig.load().budget`;
+  - use `checkpoint.policy` and the output defaults;
+  - re-read the file at the start of each production.
+- **Formatting.** `fmtMoney` uses `Intl` currency formatting: `$1,234.50` in en and `1.234,50 US$` in vi, with up to 4 decimals for sub-cent amounts. `fmtBytes` was already locale-aware (Phase 5).

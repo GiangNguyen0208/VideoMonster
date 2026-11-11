@@ -280,7 +280,7 @@ def create_app() -> FastAPI:
     # ---- Media (range requests handled by FileResponse) ---------------
 
     @app.get("/media/{project_id}/{file_path:path}")
-    async def media(project_id: str, file_path: str) -> FileResponse:
+    async def media(project_id: str, file_path: str, download: bool = False) -> FileResponse:
         project_dir = _safe_project_dir(project_id)
         target = (project_dir / file_path).resolve()
         try:
@@ -289,6 +289,9 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=403, detail="path escapes project")
         if not target.is_file():
             raise HTTPException(status_code=404, detail="media not found")
+        if download:
+            # ?download=1 → save-as with the file's own name (Studio results).
+            return FileResponse(target, filename=target.name, content_disposition_type="attachment")
         return FileResponse(target)
 
     # ---- UI ------------------------------------------------------------

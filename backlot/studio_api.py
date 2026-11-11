@@ -2,8 +2,16 @@
 
 Studio is a companion to the agent CLI: it writes *intents* under
 ``projects/<id>/studio/`` and never touches checkpoints or artifacts the agent
-owns (docs/ui-plan/03-architecture.md). Phase 0 ships only the skeleton:
-session/CSRF plumbing, the ``current_user`` seam, and the ``ProjectStore``.
+owns (docs/ui-plan/03-architecture.md).
+
+Hosted-readiness seams (docs/ui-plan/hosted/design.md):
+- every route depends on ``current_user`` (router-level dependency);
+- every project route resolves its project through ``project_access``, which
+  calls ``authorize(user, project_id, access)`` before handing out a
+  ``ProjectFiles`` handle;
+- project files go through ``ProjectStore``, machine files through
+  ``backlot/machine_store.py`` — never the filesystem directly
+  (tests/contracts/test_studio_store_contract.py).
 """
 
 from __future__ import annotations
@@ -12,15 +20,26 @@ import asyncio
 import os
 import secrets
 from dataclasses import dataclass
-from typing import Optional
+from datetime import datetime
+from typing import Callable, Literal, Optional
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
+from starlette.background import BackgroundTask
 
-from backlot import __version__, studio_catalog, studio_decisions, studio_setup, studio_uploads
-from backlot.project_store import DiskProjectStore, ProjectStore, ProjectStoreError
+from backlot import (
+    __version__,
+    studio_catalog,
+    studio_cost,
+    studio_decisions,
+    studio_results,
+    studio_settings,
+    studio_setup,
+    studio_uploads,
+)
+from backlot.project_store import DiskProjectStore, ProjectFiles, ProjectStore, ProjectStoreError
 from backlot.studio_jobs import jobs
 
 API_PREFIX = "/api/v1"
@@ -34,8 +53,12 @@ FEATURES: dict[str, bool] = {
     "wizard": True,
     "decisions": True,
     "uploads": True,
-    "cost": False,
+    "cost": True,
+    "results": True,
+    "settings": True,
 }
+
+Access = Literal["view", "edit"]
 
 
 @dataclass(frozen=True)
@@ -49,12 +72,38 @@ LOCAL_USER = User(id="local", display_name="Local user")
 
 def current_user() -> User:
     """Auth seam. Local v1 always returns the single local user; hosted mode
-    (Phase 7) replaces this dependency with real session auth."""
+    replaces this dependency with session auth (hosted/design.md §2)."""
     return LOCAL_USER
+
+
+def authorize(user: User, project_id: str, access: Access) -> bool:
+    """Authorization seam. Local: the one user owns every project. Hosted:
+    owners may ``edit``; shared viewers may only ``view`` (hosted/design.md §2.3)."""
+    return True
 
 
 def get_store(request: Request) -> ProjectStore:
     return request.app.state.project_store
+
+
+def project_access(access: Access) -> Callable[..., ProjectFiles]:
+    """Dependency: the ``ProjectFiles`` of ``{project_id}``, after checking
+    the user may ``access`` it. Unknown and forbidden projects are both 404,
+    so ids of other tenants' projects are not revealed."""
+
+    def dependency(
+        project_id: str,
+        store: ProjectStore = Depends(get_store),
+        user: User = Depends(current_user),
+    ) -> ProjectFiles:
+        try:
+            if authorize(user, project_id, access):
+                return store.files(project_id)
+        except ProjectStoreError:
+            pass
+        raise HTTPException(status_code=404, detail=f"unknown project: {project_id}")
+
+    return dependency
 
 
 def _origin_allowed(origin: Optional[str]) -> bool:
@@ -105,18 +154,7 @@ def _ensure_probe() -> None:
         _start_probe()
 
 
-def _project_dir(store: ProjectStore, project_id: str):
-    try:
-        return store.project_dir(project_id)
-    except ProjectStoreError:
-        raise HTTPException(status_code=404, detail=f"unknown project: {project_id}") from None
-
-
-def _decision_error(exc: studio_decisions.DecisionError) -> JSONResponse:
-    return JSONResponse({"detail": exc.detail, "code": exc.code}, status_code=exc.status)
-
-
-def _upload_error(exc: studio_uploads.UploadError) -> JSONResponse:
+def _coded_error(exc: studio_decisions.DecisionError | studio_uploads.UploadError) -> JSONResponse:
     return JSONResponse({"detail": exc.detail, "code": exc.code}, status_code=exc.status)
 
 
@@ -134,8 +172,17 @@ def _check_choices(intake: studio_catalog.IntakeIn) -> None:
         raise HTTPException(status_code=422, detail=str(exc)) from None
 
 
+def _studio_project(files: ProjectFiles) -> dict:
+    intake = files.read_json(studio_catalog.INTAKE_PATH)
+    if intake is None:
+        raise HTTPException(status_code=404, detail="project was not created in Studio")
+    return intake
+
+
 def _build_router() -> APIRouter:
-    router = APIRouter(prefix=API_PREFIX)
+    router = APIRouter(prefix=API_PREFIX, dependencies=[Depends(current_user)])
+    viewer = Depends(project_access("view"))
+    editor = Depends(project_access("edit"))
 
     @router.get("/session")
     async def session(request: Request, user: User = Depends(current_user)) -> dict:
@@ -223,23 +270,19 @@ def _build_router() -> APIRouter:
                     detail="this video type needs more setup first — see Setup",
                 )
         doc = studio_catalog.intake_document(intake)
-        root = store.root
-        project_id = studio_catalog.new_project_id(doc["title"], root)
+        project_id = studio_catalog.new_project_id(doc["title"], store)
 
         def create() -> None:
-            from lib.checkpoint import init_project
-
-            init_project(
+            files = store.create_project(
                 project_id,
                 title=doc["title"],
                 pipeline_type=intake.pipeline_type,
-                pipeline_dir=root,
                 style_playbook=intake.style_playbook,
             )
-            store.write_json(project_id, studio_catalog.INTAKE_PATH, doc)
+            files.write_json(studio_catalog.INTAKE_PATH, doc)
             if intake.reference.url:
                 studio_uploads.add_reference(
-                    store.project_dir(project_id),
+                    files,
                     studio_uploads.ReferenceIn(
                         url=intake.reference.url, notes=intake.reference.notes or ""
                     ),
@@ -250,79 +293,69 @@ def _build_router() -> APIRouter:
         return {"project_id": project_id, "kickoff": studio_catalog.kickoff(project_id)}
 
     @router.get("/projects/{project_id}/intake")
-    async def get_intake(project_id: str, store: ProjectStore = Depends(get_store)) -> dict:
-        project_dir = _project_dir(store, project_id)
-        intake = store.read_json(project_id, studio_catalog.INTAKE_PATH)
-        if intake is None:
-            raise HTTPException(status_code=404, detail="project was not created in Studio")
-        return {"intake": intake, "editable": not studio_catalog.has_checkpoint(project_dir)}
+    async def get_intake(files: ProjectFiles = viewer) -> dict:
+        def read() -> dict:
+            intake = _studio_project(files)
+            return {"intake": intake, "editable": not studio_catalog.has_checkpoint(files)}
+
+        return await asyncio.to_thread(read)
 
     @router.patch("/projects/{project_id}/intake")
-    async def update_intake(
-        project_id: str,
-        intake: studio_catalog.IntakeIn,
-        store: ProjectStore = Depends(get_store),
-    ) -> dict:
-        project_dir = _project_dir(store, project_id)
-        current = store.read_json(project_id, studio_catalog.INTAKE_PATH)
-        if current is None:
-            raise HTTPException(status_code=404, detail="project was not created in Studio")
-        if studio_catalog.has_checkpoint(project_dir):
-            raise HTTPException(
-                status_code=409, detail="the agent has started; tell it about changes in chat"
-            )
-        if intake.pipeline_type != current.get("pipeline_type"):
-            raise HTTPException(status_code=422, detail="video type cannot change after creation")
-        await asyncio.to_thread(_check_choices, intake)
-        doc = studio_catalog.intake_document(intake, created_at=current.get("created_at"))
-        store.write_json(project_id, studio_catalog.INTAKE_PATH, doc)
-        return {"intake": doc, "editable": True}
+    async def update_intake(intake: studio_catalog.IntakeIn, files: ProjectFiles = editor) -> dict:
+        def update() -> dict:
+            current = _studio_project(files)
+            if studio_catalog.has_checkpoint(files):
+                raise HTTPException(
+                    status_code=409, detail="the agent has started; tell it about changes in chat"
+                )
+            if intake.pipeline_type != current.get("pipeline_type"):
+                raise HTTPException(status_code=422, detail="video type cannot change after creation")
+            _check_choices(intake)
+            doc = studio_catalog.intake_document(intake, created_at=current.get("created_at"))
+            files.write_json(studio_catalog.INTAKE_PATH, doc)
+            return {"intake": doc, "editable": True}
+
+        return await asyncio.to_thread(update)
 
     @router.get("/projects/{project_id}/kickoff")
-    async def get_kickoff(project_id: str, store: ProjectStore = Depends(get_store)) -> dict:
-        project_dir = _project_dir(store, project_id)
-        if store.read_json(project_id, studio_catalog.INTAKE_PATH) is None:
-            raise HTTPException(status_code=404, detail="project was not created in Studio")
-        return {
-            **studio_catalog.kickoff(project_id),
-            "started": studio_catalog.has_checkpoint(project_dir),
-        }
+    async def get_kickoff(files: ProjectFiles = viewer) -> dict:
+        def read() -> dict:
+            _studio_project(files)
+            return {
+                **studio_catalog.kickoff(files.project_id),
+                "started": studio_catalog.has_checkpoint(files),
+            }
+
+        return await asyncio.to_thread(read)
 
     # ---- review decisions (Phase 4) -----------------------------------
 
     @router.get("/projects/{project_id}/decisions")
-    async def get_decisions(project_id: str, store: ProjectStore = Depends(get_store)) -> dict:
-        project_dir = _project_dir(store, project_id)
-        items = await asyncio.to_thread(studio_decisions.list_decisions, project_dir)
-        return {"decisions": items}
+    async def get_decisions(files: ProjectFiles = viewer) -> dict:
+        return {"decisions": await asyncio.to_thread(studio_decisions.list_decisions, files)}
 
     @router.post("/projects/{project_id}/decisions", status_code=201)
     async def post_decision(
-        project_id: str,
         body: studio_decisions.DecisionIn,
-        store: ProjectStore = Depends(get_store),
+        files: ProjectFiles = editor,
         user: User = Depends(current_user),
     ):
-        project_dir = _project_dir(store, project_id)
         probe = studio_setup.probe_cache.data
         runtimes = (probe or {}).get("summary", {}).get("composition_runtimes") if probe else None
         try:
             decision = await asyncio.to_thread(
-                studio_decisions.record, project_dir, body, user_id=user.id, runtimes=runtimes
+                studio_decisions.record, files, body, user_id=user.id, runtimes=runtimes
             )
         except studio_decisions.DecisionError as exc:
-            return _decision_error(exc)
+            return _coded_error(exc)
         return JSONResponse(decision, status_code=201)
 
     @router.delete("/projects/{project_id}/decisions/{decision_id}", status_code=204)
-    async def delete_decision(
-        project_id: str, decision_id: str, store: ProjectStore = Depends(get_store)
-    ):
-        project_dir = _project_dir(store, project_id)
+    async def delete_decision(decision_id: str, files: ProjectFiles = editor):
         try:
-            await asyncio.to_thread(studio_decisions.retract, project_dir, decision_id)
+            await asyncio.to_thread(studio_decisions.retract, files, decision_id)
         except studio_decisions.DecisionError as exc:
-            return _decision_error(exc)
+            return _coded_error(exc)
         return Response(status_code=204)
 
     # ---- footage & references (Phase 5) -------------------------------
@@ -332,109 +365,155 @@ def _build_router() -> APIRouter:
         return studio_uploads.limits()
 
     @router.get("/projects/{project_id}/inputs")
-    async def get_inputs(project_id: str, store: ProjectStore = Depends(get_store)) -> dict:
-        project_dir = _project_dir(store, project_id)
-        index = await asyncio.to_thread(studio_uploads.list_inputs, project_dir)
-        return {**index, "started": studio_catalog.has_checkpoint(project_dir)}
+    async def get_inputs(files: ProjectFiles = viewer) -> dict:
+        def read() -> dict:
+            index = studio_uploads.list_inputs(files)
+            return {**index, "started": studio_catalog.has_checkpoint(files)}
+
+        return await asyncio.to_thread(read)
 
     @router.post("/projects/{project_id}/uploads", status_code=201)
     async def upload(
-        project_id: str,
         request: Request,
         name: str = Query(min_length=1, max_length=255),
         kind: studio_uploads.UploadKind = "footage",
-        store: ProjectStore = Depends(get_store),
+        files: ProjectFiles = editor,
     ):
-        project_dir = _project_dir(store, project_id)
         try:
-            path, media = await studio_uploads.stream_to_folder(
-                project_dir / studio_uploads.INPUTS_DIR,
+            info, media = await studio_uploads.save_upload(
+                files,
                 name,
                 request.headers.get("content-type"),
                 request.stream(),
                 _declared_size(request),
             )
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
-        entry = await asyncio.to_thread(studio_uploads.add_file, project_dir, path, media, kind)
+            return _coded_error(exc)
+        entry = await asyncio.to_thread(studio_uploads.add_file, files, info, media, kind)
         return JSONResponse(entry, status_code=201)
 
     @router.delete("/projects/{project_id}/uploads/{name}", status_code=204)
-    async def delete_upload(project_id: str, name: str, store: ProjectStore = Depends(get_store)):
-        project_dir = _project_dir(store, project_id)
+    async def delete_upload(name: str, files: ProjectFiles = editor):
         try:
             await asyncio.to_thread(
-                studio_uploads.remove_file,
-                project_dir,
-                name,
-                studio_catalog.has_checkpoint(project_dir),
+                lambda: studio_uploads.remove_file(files, name, studio_catalog.has_checkpoint(files))
             )
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
+            return _coded_error(exc)
         return Response(status_code=204)
 
     @router.post("/projects/{project_id}/references", status_code=201)
-    async def add_reference(
-        project_id: str,
-        body: studio_uploads.ReferenceIn,
-        store: ProjectStore = Depends(get_store),
-    ):
-        project_dir = _project_dir(store, project_id)
+    async def add_reference(body: studio_uploads.ReferenceIn, files: ProjectFiles = editor):
         try:
-            entry = await asyncio.to_thread(studio_uploads.add_reference, project_dir, body)
+            entry = await asyncio.to_thread(studio_uploads.add_reference, files, body)
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
+            return _coded_error(exc)
         return JSONResponse(entry, status_code=201)
 
     @router.delete("/projects/{project_id}/references/{ref_id}", status_code=204)
-    async def delete_reference(
-        project_id: str, ref_id: str, store: ProjectStore = Depends(get_store)
-    ):
-        project_dir = _project_dir(store, project_id)
+    async def delete_reference(ref_id: str, files: ProjectFiles = editor):
         try:
             await asyncio.to_thread(
-                studio_uploads.remove_reference,
-                project_dir,
-                ref_id,
-                studio_catalog.has_checkpoint(project_dir),
+                lambda: studio_uploads.remove_reference(
+                    files, ref_id, studio_catalog.has_checkpoint(files)
+                )
             )
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
+            return _coded_error(exc)
         return Response(status_code=204)
 
     # ---- music library ------------------------------------------------
 
     @router.get("/music")
     async def music() -> dict:
-        tracks = await asyncio.to_thread(studio_uploads.list_music)
-        return {"tracks": tracks}
+        return {"tracks": await asyncio.to_thread(studio_uploads.list_music)}
 
     @router.post("/music", status_code=201)
     async def upload_music(request: Request, name: str = Query(min_length=1, max_length=255)):
         try:
-            if studio_uploads.media_kind(name) != "audio":
-                raise studio_uploads.UploadError(
-                    415, "unsupported_type", "only audio files go in the music library"
-                )
-            path, _ = await studio_uploads.stream_to_folder(
-                studio_uploads.music_dir(),
-                name,
-                request.headers.get("content-type"),
-                request.stream(),
-                _declared_size(request),
+            saved = await studio_uploads.save_music(
+                name, request.headers.get("content-type"), request.stream(), _declared_size(request)
             )
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
+            return _coded_error(exc)
         tracks = await asyncio.to_thread(studio_uploads.list_music)
-        track = next(t for t in tracks if t["name"] == path.name)
-        return JSONResponse(track, status_code=201)
+        entry = next((t for t in tracks if t["name"] == saved), None)
+        if entry is None:
+            # Saved, but the library moved (MUSIC_LIBRARY_DIR changed) meanwhile.
+            return _coded_error(studio_uploads.UploadError(404, "unknown_track", "no such track"))
+        return JSONResponse(entry, status_code=201)
 
     @router.get("/music/tracks/{name:path}")
     async def music_file(name: str):
         try:
             return FileResponse(studio_uploads.music_track(name))
         except studio_uploads.UploadError as exc:
-            return _upload_error(exc)
+            return _coded_error(exc)
+
+    # ---- results, cost & settings (Phase 6) ---------------------------
+
+    @router.get("/projects/{project_id}/results")
+    async def results(files: ProjectFiles = viewer) -> dict:
+        return await asyncio.to_thread(
+            lambda: studio_results.list_results(files, files.board_state())
+        )
+
+    @router.get("/projects/{project_id}/export")
+    async def export(files: ProjectFiles = viewer):
+        target = await asyncio.to_thread(
+            lambda: studio_results.export_target(files, files.board_state())
+        )
+        if target is None:
+            raise HTTPException(status_code=404, detail="the agent has not exported this video")
+        rel, is_folder = target
+        if not is_folder:
+            path = files.local_file(rel)
+            return FileResponse(path, filename=path.name)
+        bundle, cleanup = await asyncio.to_thread(files.zip_dir, rel)
+        return FileResponse(
+            bundle,
+            filename=f"{files.project_id}-export.zip",
+            media_type="application/zip",
+            background=BackgroundTask(cleanup),
+        )
+
+    @router.get("/projects/{project_id}/cost")
+    async def cost(files: ProjectFiles = viewer) -> dict:
+        def build():
+            intake = files.read_json(studio_catalog.INTAKE_PATH) or {}
+            cap = (intake.get("budget") or {}).get("cap_usd")
+            settings = studio_settings.read_settings()["settings"]["budget"]
+            data = studio_cost.project_cost(
+                files,
+                files.board_state().get("stages") or [],
+                budget_cap_usd=cap if isinstance(cap, (int, float)) else settings["total_usd"],
+            )
+            return {**data, "budget_mode": settings["mode"]}
+
+        return await asyncio.to_thread(build)
+
+    @router.get("/cost/summary")
+    async def cost_summary(since: str, store: ProjectStore = Depends(get_store)) -> dict:
+        try:
+            start = datetime.fromisoformat(since.replace("Z", "+00:00"))
+        except ValueError:
+            raise HTTPException(status_code=422, detail="since must be an ISO date-time") from None
+        if start.tzinfo is None:
+            raise HTTPException(status_code=422, detail="since needs a time zone")
+        return await asyncio.to_thread(studio_cost.spent_since, store, start)
+
+    @router.get("/settings")
+    async def get_settings() -> dict:
+        return await asyncio.to_thread(studio_settings.read_settings)
+
+    @router.put("/settings")
+    async def put_settings(body: studio_settings.SettingsIn) -> dict:
+        if os.environ.get("STUDIO_READONLY_CONFIG") == "1":
+            raise HTTPException(status_code=403, detail="editing config.yaml is disabled on this server")
+        try:
+            return await asyncio.to_thread(studio_settings.write_settings, body)
+        except studio_settings.SettingsError as exc:
+            raise HTTPException(status_code=500, detail=str(exc)) from None
 
     # ---- demos --------------------------------------------------------
 

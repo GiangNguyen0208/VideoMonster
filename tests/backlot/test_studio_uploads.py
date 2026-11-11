@@ -15,6 +15,7 @@ from fastapi.testclient import TestClient
 from backlot import server as server_mod
 from backlot import state as state_mod
 from backlot import studio_setup, studio_uploads
+from backlot.project_store import stream_into
 from backlot.studio_api import TOKEN_HEADER
 from lib.checkpoint import CANONICAL_STAGE_ARTIFACTS, init_project, write_checkpoint
 from tests.contracts.test_phase0_contracts import sample_artifact
@@ -141,7 +142,7 @@ def test_size_cap_and_empty_files(client, root, monkeypatch):
 def test_large_upload_streams_without_buffering(tmp_path):
     """256 MB written through the server's streaming path never sits in memory.
 
-    Measured on ``stream_to_folder`` itself: TestClient buffers request bodies
+    Measured on ``stream_into`` (what ``DiskProjectFiles.write_stream`` uses): TestClient buffers request bodies
     on the client side, which would hide what the server does.
     """
     size = 256 * 1024 * 1024
@@ -153,13 +154,11 @@ def test_large_upload_streams_without_buffering(tmp_path):
 
     tracemalloc.start()
     try:
-        path, kind = asyncio.run(
-            studio_uploads.stream_to_folder(tmp_path / "inputs", "long.mp4", "video/mp4", chunks())
-        )
+        path = asyncio.run(stream_into(tmp_path / "inputs", "long.mp4", chunks(), max_bytes=size))
         _, peak = tracemalloc.get_traced_memory()
     finally:
         tracemalloc.stop()
-    assert kind == "video" and path.stat().st_size == size
+    assert path.stat().st_size == size
     assert peak < 8 * 1024 * 1024, f"peak {peak / 1e6:.1f} MB"
 
 
@@ -282,6 +281,14 @@ def test_music_library_list_upload_and_play(client, tmp_path):
     assert video.status_code == 415
     assert client.get("/api/v1/music/tracks/..%2F..%2Fsecret.mp3").status_code == 404
     assert client.get("/api/v1/music/tracks/missing.mp3").status_code == 404
+
+
+def test_music_upload_answers_404_when_the_saved_track_is_not_listed(client, monkeypatch):
+    # The library moved between saving and listing (e.g. MUSIC_LIBRARY_DIR changed).
+    monkeypatch.setattr(studio_uploads, "list_music", lambda: [])
+    res = client.post("/api/v1/music", params={"name": "calm_piano.mp3"}, content=b"ID3" + b"\x00" * 64,
+                      headers={"Content-Type": "audio/mpeg"})
+    assert res.status_code == 404 and res.json()["code"] == "unknown_track"
 
 
 def test_safe_name_keeps_unicode_and_cleans_symbols():

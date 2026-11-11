@@ -43,7 +43,7 @@
 
 ## Deliverables
 
-- New files under docs/ui-plan/hosted/: `design.md`, `threat-model.md`, `sync-protocol.md`
+- New files: `docs/ui-plan/hosted/design.md`, `docs/ui-plan/hosted/threat-model.md`, `docs/ui-plan/hosted/sync-protocol.md`
 - `backlot/project_store.py`: final protocol plus `ObjectProjectStore` stub (raises `NotImplementedError`)
 - A contract test proving every v1 module touches the filesystem only through `ProjectStore`
 
@@ -57,3 +57,42 @@
 
 - **pytest:** the store contract test (AST or import scan); `current_user` is required on every v1 route (route introspection).
 - **Review:** design docs reviewed by a maintainer before any hosted implementation starts.
+
+## Implementation notes
+
+- **Two seams, not one.** Project data goes through `backlot/project_store.py`; machine-local resources (`config.yaml`, `.env`, `music_library/`, demo renders, ffprobe, loading `render_demo.py`) go through the new `backlot/machine_store.py`. In hosted mode the machine resources never live on the server (`hosted/design.md` §5), so they need a separate boundary.
+- **`ProjectStore` final protocol:**
+  - `root` (`None` when hosted)
+  - `list_ids`, `exists`
+  - `files(id) → ProjectFiles`
+  - `create_project(...)`
+  - `read_json` / `write_json` (kept for compatibility)
+- **`ProjectFiles` (per project):**
+  - `read_json`, `write_json` (atomic), `stat`, `list(rel_dir, pattern, recursive)`, `delete`, `rename` (atomic, `TargetExists`)
+  - `write_stream` (async, partial file + unique name, `WriteTooLarge` / `EmptyWrite`)
+  - `safe_rel` (agent-recorded paths), `local_file`, `zip_dir`, `board_state`
+- `ObjectProjectStore(tenant_id, bucket, database_url)` raises `NotImplementedError`; `hosted/design.md` §3 maps each method.
+- **Refactor.** Every v1 module was moved onto the two stores:
+  - `studio_decisions`, `studio_uploads`, `studio_results`, `studio_cost` and `studio_catalog` take a `ProjectFiles` (or the store);
+  - `studio_settings` and `studio_setup` read and write through `machine_store`;
+  - the `await-decision` / `consume-decision` CLI uses `DiskProjectStore(...).files(id)`, and `consume-decision` prints the new file name.
+  - API behaviour is unchanged: the full Python suite, the Vitest suite and the Phase 5 and 6 browser runs pass unchanged.
+- **Auth seams in code:**
+  - `APIRouter(dependencies=[Depends(current_user)])`;
+  - `project_access(access)` dependency on every `{project_id}` route, calling `authorize(user, project_id, access)` (local: always true; view vs edit per route in `hosted/design.md` §2.3);
+  - a forbidden project answers exactly like an unknown one (404).
+- **Contract test** `tests/contracts/test_studio_store_contract.py`:
+  - AST scan of every v1 module for direct filesystem calls (`open`, Path I/O methods, `os`/`shutil`/`tempfile`/`zipfile`/`glob`/`importlib`), with a self-test of the scanner;
+  - route introspection: `current_user` on every v1 route, `project_access` on every project route;
+  - authorization hides forbidden projects;
+  - the disk store satisfies the protocols; the object store is a stub.
+- **Not changed (design only):**
+  - OIDC sign-in, session-bound CSRF, configurable hosts, signed media URLs;
+  - the connector program;
+  - per-user locale on the profile;
+  - hosted error codes and screens.
+
+## Follow-up 7.1 — Review hardening
+
+A code review of the Phase 7 changes found path-safety and robustness issues in the store seam, the API and the contract scanner. They are fixed in Phase 7.1; steps and progress are tracked in `docs/ui-plan/STATUS.md` (section "Phase 7.1 — Review hardening").
+

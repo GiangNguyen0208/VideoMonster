@@ -28,6 +28,7 @@ Studio is a **companion** to the agent chat, not a replacement for it. The codin
 2. [`02-use-cases.md`](02-use-cases.md): who the users are, what they want to do, the goal→pipeline map and the UX principles.
 3. [`03-architecture.md`](03-architecture.md): the companion model, the disk contract between UI and agent, the API additions, security, and the hosted path.
 4. [`phases/`](phases/): the implementation phases. Each one can ship on its own.
+5. [`hosted/`](hosted/): the hosted multi-user design (Phase 7). It covers [`design.md`](hosted/design.md), [`sync-protocol.md`](hosted/sync-protocol.md) and [`threat-model.md`](hosted/threat-model.md). Design only; nothing is deployed.
 
 | Phase | Name | Ships |
 |---|---|---|

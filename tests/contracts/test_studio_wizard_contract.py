@@ -60,3 +60,9 @@ def test_wizard_footage_goals_match_manifests():
     modes = {p["name"]: {m["name"] for m in p["production_modes"]} for p in list_pipeline_catalog(None)}
     for pipeline, mode in re.findall(r'pipeline_type: "([a-z-]+)"[^}]*?upload_mode: "([a-z_]+)"', goals, re.S):
         assert mode in modes[pipeline], (pipeline, mode)
+
+
+def test_agent_instructions_read_studio_settings():
+    guide = (REPO_ROOT / "AGENT_GUIDE.md").read_text(encoding="utf-8")
+    for needle in ("OpenMontageConfig.load()", "cost_log.json", "checkpoint.policy", "output.default_resolution"):
+        assert needle in guide, needle

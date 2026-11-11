@@ -235,7 +235,8 @@ The agent:
 Infrastructure files:
 
 - `lib/checkpoint.py` — read/write checkpoints, stage validation
-- `tools/cost_tracker.py` — budget governance
+- `tools/cost_tracker.py` — budget governance. Create it from the user's settings in `config.yaml` (`OpenMontageConfig.load().budget`: `mode`, `total_usd`, `reserve_pct`, `single_action_approval_usd`, `require_approval_for_new_paid_tool`) with `cost_log_path=projects/<id>/cost_log.json`. A Studio intake's `budget.cap_usd` replaces `total_usd` for that project.
+- `config.yaml` — user defaults, editable from Studio → Settings: budget (above), `checkpoint.policy` (when the intake has no `advanced.checkpoint_policy`), `output.default_resolution` / `output.default_fps` (render defaults when the brief doesn't imply others). Re-read it at the start of each production; never edit it yourself.
 - `lib/pipeline_loader.py` — manifest loading and helpers
 
 ## Project Directory Convention

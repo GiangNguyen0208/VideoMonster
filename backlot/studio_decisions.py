@@ -12,16 +12,14 @@ decision is *stale*: the agent ignores it and Studio asks for a new review.
 
 from __future__ import annotations
 
-import json
-import os
 import re
 import secrets
-import tempfile
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
+
+from backlot.project_store import MissingSource, ProjectFiles, TargetExists
 
 DECISIONS_DIR = "studio/decisions"
 SCHEMA = "studio.decision/1"
@@ -63,35 +61,23 @@ class DecisionError(Exception):
 # ---- reading state --------------------------------------------------------------
 
 
-def _read_json(path: Path) -> Optional[dict[str, Any]]:
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    return data if isinstance(data, dict) else None
+def current_checkpoint(files: ProjectFiles, stage: str) -> Optional[dict[str, Any]]:
+    return files.read_json(f"checkpoint_{stage}.json")
 
 
-def current_checkpoint(project_dir: Path, stage: str) -> Optional[dict[str, Any]]:
-    return _read_json(project_dir / f"checkpoint_{stage}.json")
-
-
-def awaiting_checkpoints(project_dir: Path) -> list[dict[str, Any]]:
+def awaiting_checkpoints(files: ProjectFiles) -> list[dict[str, Any]]:
     out = []
-    for path in sorted(project_dir.glob("checkpoint_*.json")):
-        cp = _read_json(path)
+    for info in files.list("", "checkpoint_*.json"):
+        cp = files.read_json(info.path)
         if cp and cp.get("status") == "awaiting_human" and cp.get("stage"):
             out.append(cp)
     return out
 
 
-def _decisions_dir(project_dir: Path) -> Path:
-    return project_dir / DECISIONS_DIR
-
-
-def _decision_state(decision: dict[str, Any], consumed: bool, project_dir: Path) -> str:
+def _decision_state(decision: dict[str, Any], consumed: bool, files: ProjectFiles) -> str:
     if consumed:
         return "consumed"
-    cp = current_checkpoint(project_dir, str(decision.get("stage", "")))
+    cp = current_checkpoint(files, str(decision.get("stage", "")))
     if (
         cp
         and cp.get("status") == "awaiting_human"
@@ -103,44 +89,40 @@ def _decision_state(decision: dict[str, Any], consumed: bool, project_dir: Path)
     return "stale"
 
 
-def list_decisions(project_dir: Path) -> list[dict[str, Any]]:
-    folder = _decisions_dir(project_dir)
-    if not folder.is_dir():
-        return []
+def list_decisions(files: ProjectFiles) -> list[dict[str, Any]]:
     out = []
-    for path in folder.glob("*.json"):
-        consumed = path.name.endswith(CONSUMED_SUFFIX)
-        data = _read_json(path)
+    for info in files.list(DECISIONS_DIR, "*.json"):
+        consumed = info.name.endswith(CONSUMED_SUFFIX)
+        data = files.read_json(info.path)
         if not data or data.get("schema") != SCHEMA:
             continue
-        out.append({**data, "state": _decision_state(data, consumed, project_dir)})
+        out.append({**data, "state": _decision_state(data, consumed, files)})
     out.sort(key=lambda d: str(d.get("created_at", "")), reverse=True)
     return out
 
 
-def pending_for(project_dir: Path, stage: Optional[str] = None) -> Optional[dict[str, Any]]:
+def pending_for(files: ProjectFiles, stage: Optional[str] = None) -> Optional[dict[str, Any]]:
     """Oldest pending decision matching a current ``awaiting_human`` checkpoint
     (for ``stage`` if given). This is what the agent should apply next."""
     pending = [
         d
-        for d in list_decisions(project_dir)
+        for d in list_decisions(files)
         if d["state"] == "pending" and (stage is None or d.get("stage") == stage)
     ]
     if not pending:
         return None
     pending.sort(key=lambda d: str(d.get("created_at", "")))
     decision = pending[0]
-    return {**decision, "file": str(_decisions_dir(project_dir) / f"{decision['id']}.json")}
+    rel = _decision_rel(decision["id"])
+    return {**decision, "file": str(files.local_file(rel))}
 
 
 # ---- validation + write ---------------------------------------------------------
 
 
-def _proposal_packet(project_dir: Path) -> Optional[dict[str, Any]]:
-    from backlot.state import load_board_state
-
+def _proposal_packet(files: ProjectFiles) -> Optional[dict[str, Any]]:
     try:
-        artifacts = load_board_state(project_dir).get("artifacts") or {}
+        artifacts = files.board_state().get("artifacts") or {}
     except Exception:
         return None
     packet = artifacts.get("proposal_packet")
@@ -148,12 +130,12 @@ def _proposal_packet(project_dir: Path) -> Optional[dict[str, Any]]:
 
 
 def validate(
-    project_dir: Path,
+    files: ProjectFiles,
     body: DecisionIn,
     runtimes: Optional[dict[str, bool]] = None,
 ) -> dict[str, Any]:
     """Raise ``DecisionError`` unless ``body`` may be recorded; returns the checkpoint."""
-    cp = current_checkpoint(project_dir, body.stage)
+    cp = current_checkpoint(files, body.stage)
     if not cp or cp.get("status") != "awaiting_human":
         raise DecisionError(409, "not_awaiting", "this step is not waiting for review")
     if cp.get("timestamp") != body.checkpoint_timestamp:
@@ -164,14 +146,14 @@ def validate(
         d["state"] == "pending"
         and d.get("stage") == body.stage
         and d.get("checkpoint_timestamp") == body.checkpoint_timestamp
-        for d in list_decisions(project_dir)
+        for d in list_decisions(files)
     ):
         raise DecisionError(409, "already_decided", "a decision for this review is already waiting")
 
     picks = body.proposal
     if picks and body.action == "approve":
         if picks.selected_concept_id is not None:
-            packet = _proposal_packet(project_dir) or {}
+            packet = _proposal_packet(files) or {}
             ids = {
                 str(c.get("id"))
                 for c in packet.get("concept_options") or []
@@ -186,27 +168,14 @@ def validate(
     return cp
 
 
-def _atomic_write(path: Path, data: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            json.dump(data, fh, indent=2, ensure_ascii=False)
-            fh.write("\n")
-        os.replace(tmp, path)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
-
-
 def record(
-    project_dir: Path,
+    files: ProjectFiles,
     body: DecisionIn,
     *,
     user_id: str,
     runtimes: Optional[dict[str, bool]] = None,
 ) -> dict[str, Any]:
-    validate(project_dir, body, runtimes)
+    validate(files, body, runtimes)
     now = datetime.now(timezone.utc)
     decision_id = f"{now.strftime('%Y%m%dT%H%M%SZ')}-{body.stage}-{secrets.token_hex(3)}"
     decision = {
@@ -221,33 +190,40 @@ def record(
         "source": "studio",
         "user": user_id,
     }
-    _atomic_write(_decisions_dir(project_dir) / f"{decision_id}.json", decision)
+    files.write_json(_decision_rel(decision_id), decision)
     return {**decision, "state": "pending"}
 
 
-def _decision_path(project_dir: Path, decision_id: str) -> Path:
+def _decision_rel(decision_id: str, consumed: bool = False) -> str:
     if not DECISION_ID_RE.match(decision_id):
         raise DecisionError(404, "unknown_decision", "no such decision")
-    return _decisions_dir(project_dir) / f"{decision_id}.json"
+    return f"{DECISIONS_DIR}/{decision_id}{CONSUMED_SUFFIX if consumed else '.json'}"
 
 
-def retract(project_dir: Path, decision_id: str) -> None:
-    path = _decision_path(project_dir, decision_id)
-    if not path.is_file():
-        consumed = path.with_name(f"{decision_id}{CONSUMED_SUFFIX}")
-        if consumed.is_file():
+def retract(files: ProjectFiles, decision_id: str) -> None:
+    rel = _decision_rel(decision_id)
+    if files.stat(rel) is None:
+        if files.stat(_decision_rel(decision_id, consumed=True)) is not None:
             raise DecisionError(409, "already_consumed", "the agent already applied this decision")
         raise DecisionError(404, "unknown_decision", "no such decision")
-    path.unlink()
+    files.delete(rel)
 
 
-def consume(project_dir: Path, decision_id: str) -> Path:
-    """Agent side: mark a decision applied (rename to ``<id>.consumed.json``)."""
-    path = _decision_path(project_dir, decision_id)
-    target = path.with_name(f"{decision_id}{CONSUMED_SUFFIX}")
-    if target.is_file():
-        return target
-    if not path.is_file():
+def consume(files: ProjectFiles, decision_id: str) -> str:
+    """Agent side: mark a decision applied (rename to ``<id>.consumed.json``).
+    Returns the new file name."""
+    rel = _decision_rel(decision_id)
+    target = _decision_rel(decision_id, consumed=True)
+    if files.stat(target) is not None:
+        return target.rsplit("/", 1)[-1]
+    if files.stat(rel) is None:
         raise DecisionError(404, "unknown_decision", "no such decision")
-    os.replace(path, target)
-    return target
+    try:
+        files.rename(rel, target)
+    except TargetExists:
+        pass  # consumed concurrently — same outcome
+    except MissingSource:
+        # Retracted (or consumed and moved) between the check and the rename.
+        if files.stat(target) is None:
+            raise DecisionError(404, "unknown_decision", "no such decision") from None
+    return target.rsplit("/", 1)[-1]

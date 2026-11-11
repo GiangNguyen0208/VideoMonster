@@ -10,7 +10,8 @@ import {
   type StatusFilter,
 } from "@/features/library/filters";
 import { useT } from "@/i18n";
-import { useProjects } from "@/lib/api";
+import { useMonthSpend, useProjects } from "@/lib/api";
+import { fmtMoney } from "@/lib/format";
 import { cn } from "@/lib/cn";
 import { ServerDown } from "./ServerDown";
 
@@ -40,12 +41,18 @@ export function LibraryPage() {
     [all],
   );
   const shown = filterProjects(all, { q, status, type });
+  const month = useMonthSpend().data;
 
   return (
     <section className="space-y-6">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{t.library.title}</h1>
         <p className="mt-1 text-text-2">{t.library.intro}</p>
+        {month && (
+          <p className="mt-2 text-sm text-text-3">
+            {t.library.monthSpend(fmtMoney(month.spent_usd), month.projects)}
+          </p>
+        )}
       </header>
 
       <div className="flex flex-wrap items-center gap-3">

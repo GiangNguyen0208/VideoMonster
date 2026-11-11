@@ -15,26 +15,36 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | L10n | Localization: Vietnamese (`vi`) for phases 0–3, plus the i18n rule for 4–7 | done | 2026-11-10 |
 | 4 | [Review & approve](phases/phase-4-review-and-approve.md) | done | 2026-11-10 |
 | 5 | [Footage & references](phases/phase-5-footage-and-references.md) | done | 2026-11-10 |
-| 6 | [Results & cost](phases/phase-6-results-and-cost.md) | not started | — |
-| 7 | [Hosted readiness](phases/phase-7-hosted-readiness.md) | not started | — |
+| 6 | [Results & cost](phases/phase-6-results-and-cost.md) | done | 2026-11-11 |
+| 7 | [Hosted readiness](phases/phase-7-hosted-readiness.md) | done | 2026-11-11 |
+| 7.1 | [Review hardening](#phase-71--review-hardening--done) (follow-up to the Phase 7 code review) | done | 2026-11-11 |
 
-## Resume here — snapshot 2026-11-10
+## Resume here — snapshot 2026-11-11
 
 **Where things stand**
-- **Done:** Phases 0–5 and cross-cutting Localization (en + vi). Each phase section below has its checklist, deviations and verification notes.
-- **Next:** Phase 6 — Results & cost (`phases/phase-6-results-and-cost.md`). Start it only when the user asks. When you do, mark it `in progress` in the table above before writing code.
-- **Phase 7** (hosted readiness) is design and interfaces only.
-- **Git:** nothing is committed. All Studio work sits uncommitted on `main`. The user commits only on request, so don't commit unprompted. `git status` shows the full list:
+- **Done:** every planned phase (0–7) and cross-cutting Localization (en + vi). Each phase section below has its checklist, deviations and verification notes.
+- **Also done: Phase 7.1 — Review hardening** (section at the end of this file): fixes from the Phase 7 code review (store path safety, consume race, API robustness, stricter contract scanner).
+- **Next:** nothing is scheduled.
+  - The local Studio is complete.
+  - Hosted Studio is designed in `hosted/` (`design.md`, `sync-protocol.md`, `threat-model.md`). It needs a maintainer review (checklist in `hosted/threat-model.md` §5) before migration step H1 (`hosted/design.md` §9) starts.
+  - Do not start hosted work, or any new phase, unless the user asks. Add a new row to the table above first.
+- **Git:** nothing is committed. All Studio work sits uncommitted on the current feature branch (`git branch --show-current`), not on `main`. The user commits only on request, so don't commit unprompted. `git status` shows the full list:
   - modified: `AGENT_GUIDE.md`, agent entry files, `Makefile`, CI, `backlot/*`, `schemas/artifacts/decision_log.schema.json`, `skills/meta/checkpoint-protocol.md`
   - new: `backlot/studio_*.py`, `backlot/project_store.py`, `backlot/setup_probe.py`, `studio/`, `docs/ui-plan/`, tests
+  - `config.yaml` is *not* modified. Real-server checks back it up and restore it after saving settings.
 
 **Rules every phase follows**
 1. **Studio is a companion to the agent CLI.** It writes *intent* files under `projects/<id>/studio/` and media under `projects/<id>/inputs/`. It never writes checkpoints or agent artifacts (`03-architecture.md` §1, §3.4).
 2. **Every UI string exists in both `studio/src/i18n/en.ts` and `vi.ts`.** The parity test enforces it. At least one Vitest test per phase runs in Vietnamese. Engine data (titles, scripts, file names) is shown as-is.
 3. **API errors the UI explains** come back as `{detail, code}`, and the UI translates `code`.
 4. **Each `/api/v1` write needs `X-Studio-Token`.** The client (`lib/api/client.ts`, `sendFile` in `lib/api/uploads.ts`) adds it.
-5. **When agent behaviour changes,** update `AGENT_GUIDE.md` "Projects Created in Studio" and add or extend a test in `tests/contracts/test_studio_wizard_contract.py`.
-6. **Docs are in English.** Update this file and the phase spec's "Implementation notes" before reporting a phase done.
+5. **No direct filesystem access in v1 modules.**
+   - Project files go through `ProjectStore` / `ProjectFiles` (`backlot/project_store.py`).
+   - Machine files go through `backlot/machine_store.py`.
+   - Project routes get their `ProjectFiles` from `project_access("view"|"edit")`.
+   - `tests/contracts/test_studio_store_contract.py` fails otherwise.
+6. **When agent behaviour changes,** update `AGENT_GUIDE.md` "Projects Created in Studio" and add or extend a test in `tests/contracts/test_studio_wizard_contract.py`.
+7. **Docs are in English.** Update this file and the phase spec's "Implementation notes" before reporting a phase done.
 
 **Code map**
 
@@ -42,19 +52,23 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 |---|---|
 | Server entry, read API, SSE, `/media`, `/studio` static | `backlot/server.py`, `backlot/state.py` (board state; `ARTIFACT_FILES` lists the artifacts Studio sees) |
 | Write API router (all `/api/v1` routes, feature flags) | `backlot/studio_api.py` |
-| Storage seam | `backlot/project_store.py` |
+| Storage seams (Phase 7) | `backlot/project_store.py` (`ProjectStore`, `ProjectFiles`, `DiskProjectStore`, `ObjectProjectStore` stub, shared atomic/stream helpers); `backlot/machine_store.py` (`config.yaml`, `.env`, `music_library/`, demos, ffprobe) |
+| Auth seams (Phase 7) | `current_user`, `authorize`, `project_access` in `backlot/studio_api.py` |
+| Hosted design (Phase 7) | `docs/ui-plan/hosted/design.md`, `docs/ui-plan/hosted/sync-protocol.md`, `docs/ui-plan/hosted/threat-model.md` |
 | Setup center (Phase 2) | `backlot/setup_probe.py`, `backlot/studio_setup.py`, `backlot/studio_jobs.py` |
 | Catalog, intake, kickoff, demos (Phase 3) | `backlot/studio_catalog.py` |
 | Review decisions (Phase 4) | `backlot/studio_decisions.py`; agent CLI `await-decision` / `consume-decision` in `backlot/__main__.py` |
 | Uploads, references, music library (Phase 5) | `backlot/studio_uploads.py` |
-| Frontend API hooks | `studio/src/lib/api/` (`client`, `queries`, `setup`, `catalog`, `decisions`, `uploads`, `useSSE`) |
+| Results and export, cost, settings (Phase 6) | `backlot/studio_results.py`, `backlot/studio_cost.py`, `backlot/studio_settings.py`; `?download=1` on `/media` in `backlot/server.py` |
+| Frontend API hooks | `studio/src/lib/api/` (`client`, `queries`, `setup`, `catalog`, `decisions`, `uploads`, `results`, `useSSE`) |
 | Pages | `studio/src/routes/` (`home`, `library`, `project`, `setup`, `settings`, `new/` wizard) |
-| Features | `studio/src/features/{library,project,setup,demos,review,uploads,music}` |
+| Features | `studio/src/features/{library,project,setup,demos,review,uploads,music,result,cost,settings}` |
+| Formatting (locale-aware money, sizes, times) | `studio/src/lib/format.ts` (+ `format.test.ts`) |
 | Goals → pipelines, footage needs | `studio/src/content/goals.ts`; labels in `content/labels.ts` |
 | i18n | `studio/src/i18n/` (`en.ts` source, `vi.ts`, `index.ts` store and hooks) |
 | UI primitives | `studio/src/components/ui/` |
 | Agent instructions | `AGENT_GUIDE.md` "Projects Created in Studio", `skills/meta/checkpoint-protocol.md` Step 5.7, `.claude/commands/reel.md` step 0, `.claude/commands/studio-continue.md` |
-| Python tests | `tests/backlot/test_studio_{api,setup,catalog,decisions,uploads}.py`, `tests/contracts/test_studio_wizard_contract.py` |
+| Python tests | `tests/backlot/test_studio_{api,setup,catalog,decisions,uploads,results_cost}.py`, `tests/backlot/test_project_store.py`, `tests/contracts/test_studio_wizard_contract.py`, `tests/contracts/test_studio_store_contract.py` |
 | UI tests | `studio/src/**/*.test.ts(x)`; helpers in `studio/src/test/` (`setup.ts` resets locale, session and the upload queue) |
 
 **Studio ↔ agent files** (schemas in `03-architecture.md` §3)
@@ -66,17 +80,22 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | `projects/<id>/studio/inputs.json` (`studio.inputs/1`) + `projects/<id>/inputs/*` | uploads and reference links | agent at kickoff (source media, reference analysis) | Phase 5 |
 | `music_library/*` (or `MUSIC_LIBRARY_DIR`) | music picker uploads | agent music step (`tools/audio/music_library.py`) | Phase 5 |
 | `projects/<id>/artifacts/video_analysis_brief.json` | agent | review panel ("What the agent learned") | Phase 5 |
+| `config.yaml` (allowlisted keys only) | Settings page | agent at the start of each production (`OpenMontageConfig.load()`) | Phase 6 |
+| `projects/<id>/cost_log.json`, `renders/`, `artifacts/{render_report,publish_log}.json` | agent | cost panel, results panel, export download (read-only) | Phase 6 |
 
 **Open items**
 - **Not yet verified with a live agent.** Each needs a real agent session; the API side of each is covered by tests and real-server checks.
   - Phase 3: a kickoff run where the brief is not re-asked
   - Phase 4: a full run approved only from Studio, and a mixed chat/Studio run
   - Phase 5: a footage-led run using the uploaded file, and a "make something like this" run showing the analysis
+  - Phase 6: an agent run that picks up changed settings and writes a real `cost_log.json`, `render_report` and export
+  - Phase 7: maintainer review of the hosted design docs (required before any hosted code)
 - **Backlog / known gaps:**
   - No edit-brief screen (`PATCH /intake` exists).
   - No voice picker at the proposal review.
   - Wizard uploads queued in the tab are lost if it is closed mid-upload.
-  - The JS bundle is ~630 kB (Vite warns above 500 kB); lazy-load routes in a later phase.
+  - The JS bundle is ~650 kB (Vite warns above 500 kB); lazy-load routes in a later phase.
+  - Cost stage attribution is inferred from checkpoint times, because `cost_log.json` has no stage field. A `stage` field in `tools/cost_tracker.py` entries would make it exact.
   - The classic board is not localized.
 
 **Environment quirks (this machine)**
@@ -86,15 +105,15 @@ Status values: `not started` · `in progress` · `blocked` · `done`
   2. Kill that PID. `pkill -f "backlot serve"` does not always match it.
   3. Start it again: `.venv/bin/python -m backlot serve`, or `make studio-open`.
   4. Run `make studio-build` first so `/studio` serves the latest UI.
-- **Playwright:** use the cached Chromium at `~/Library/Caches/ms-playwright/chromium-1228/…`. A scratch install with past check scripts lives in `/tmp/pwshot` (`p5.mjs` is the Phase 5 run).
+- **Playwright:** use the cached Chromium at `~/Library/Caches/ms-playwright/chromium-1228/…`. A scratch install with past check scripts lives in `/tmp/pwshot` (`p5.mjs` and `p6.mjs` are the Phase 5 and 6 runs; `p6-fixture.sh` builds the project `p6.mjs` expects, then delete `projects/studio-p6-e2e`; back up `config.yaml` before `p6.mjs`, because it saves settings).
 - **Test output:** the `rtk` wrapper rewrites test output. Use `rtk proxy npx vitest run` for raw Vitest output. `studio/.vitest/` is ignored.
 - **Secrets:** do not read `.env` or `.env.example` values.
 
 ## How to verify (any phase)
 
 ```bash
-.venv/bin/python -m pytest tests/backlot tests/contracts -q        # Python (1727 passed, 10 skipped at Phase 5)
-make studio-check                                                 # UI: lint, typecheck, format, unit tests (88), build
+.venv/bin/python -m pytest tests/backlot tests/contracts -q        # Python (1763 passed, 10 skipped at Phase 7)
+make studio-check                                                 # UI: lint, typecheck, format, unit tests (97), build
 make studio-build && make studio-open                             # manual check at http://127.0.0.1:4750/studio
 ```
 
@@ -330,10 +349,106 @@ Notes and deviations:
 
 Both need a live agent session.
 
-## Phase 6 — Results & cost · not started
+## Phase 6 — Results & cost · done
 
-- See `phases/phase-6-results-and-cost.md` (includes its Localization section).
+- [x] 6.1 Results:
+  - `backlot/studio_results.py`; `GET /projects/{id}/results`, `GET /projects/{id}/export` (zip of an export folder or the exported file)
+  - `/media/...?download=1` sends an attachment
+  - `features/result/ResultPanel.tsx`: player, Download, versions with label, resolution, duration, fps and size, copy-ready title, description and hashtags, export card or "ask the agent to export"
+  - Home "Recent results" has Download and Open under each card (one click from Home)
+- [x] 6.2 Cost:
+  - `backlot/studio_cost.py`; `GET /projects/{id}/cost` (snapshot from `CostTracker`, by tool, by step, by status, entries) and `GET /cost/summary?since=`
+  - `features/cost/CostPanel.tsx`: spent / reserved / remaining bar against the budget, over-budget alert, budget mode in plain words, by-tool table with "Free (local)", by-step table, status counts
+  - Library header shows this month's spend
+- [x] 6.3 Settings:
+  - `backlot/studio_settings.py`; `GET/PUT /api/v1/settings` with an allowlist, Pydantic validation (field-level 422), in-place line edits that keep comments, round-trip check, atomic write
+  - `features/settings/SettingsForm.tsx` on `/settings`: Spending (mode, budget per video, single-action limit, new paid tool) and Defaults (review points, video size, frame rate, with the engine key in a tooltip)
+- [x] 6.4 Agent contract: `AGENT_GUIDE.md` infrastructure files tell the agent to build `CostTracker` from `config.yaml` and use the checkpoint and output defaults. Contract test `test_agent_instructions_read_studio_settings`.
+- [x] 6.5 Localization: `result`, `cost`, `settings`, `library.monthSpend` in `en` + `vi`. `fmtMoney` uses `Intl` (`1.234,50 US$` in vi). Config values stay engine ids.
+- [x] Tests:
+  - `tests/backlot/test_studio_results_cost.py` (17):
+    - ledger totals equal `CostTracker` for every status, plus stage attribution and broken ledgers
+    - month-to-date spend
+    - settings round-trip (comments kept, `OpenMontageConfig` reads it), field-level 422, missing keys and sections, token and lock
+    - download header and path guard
+    - results with report labels and publish text
+    - export zip and outside paths ignored
+    - ffprobe facts
+  - Vitest `lib/format.test.ts` (2, en + vi), `features/result/results.test.tsx` (7, incl. Vietnamese); 97 total
+  - pytest `tests/backlot` + `tests/contracts`: 1746 passed, 10 skipped
 
-## Phase 7 — Hosted readiness · not started
+Notes and deviations:
+- **Phase 1 component replaced.** `ResultView` was removed; `ResultPanel` replaces it.
+- **Settings keys.** They are `output.default_resolution` / `output.default_fps` (the real `config.yaml` keys), with fixed choices.
+- **No ruamel.** `ruamel.yaml` is not installed, so the documented line-edit fallback is used. It touches only the changed lines.
+- **Stage costs are inferred** from checkpoint times; see the backlog item in "Resume here".
+- **Verified on the real server** (Playwright) with a fixture project: two renders, a render report, a publish log with an export folder, and a cost ledger with every status.
+  - **Home → Download** saved the latest video in one click.
+  - **Versions:** listed with the TikTok label and ffprobe facts; the bundle downloaded as `<id>-export.zip` with 2 files; the player loads.
+  - **Cost:** the panel showed $0.35 spent, $0.40 reserved and $1.25 remaining, equal to `CostTracker.cost_snapshot()`.
+  - **Library:** showed "Spent this month: $0.35 across 1 video".
+  - **Settings:** the empty amount was blocked on the client. Saving changed exactly 3 lines of `config.yaml`, and `OpenMontageConfig.load()` read the new values; the file was restored afterwards.
+  - **Vietnamese:** the cost panel reads `0,35 US$ trên ngân sách 2,00 US$`.
+  - No console errors; no overflow at 375 px. The fixture project was deleted.
+  - **Found and fixed during this run:** a refunded paid tool was labelled "Free (local)". The API now returns an explicit `free` flag.
+- **Not yet verified:** a live agent run that reads changed settings and produces a real ledger and export.
 
-- See `phases/phase-7-hosted-readiness.md`. It covers design and interfaces only; `ProjectStore` (Phase 0) is the seam it builds on.
+## Phase 7 — Hosted readiness · done
+
+- [x] 7.1 Store abstraction:
+  - `backlot/project_store.py` final protocol: `ProjectStore` plus the per-project `ProjectFiles` handle (JSON, stat/list, delete/rename, streamed writes, safe agent paths, local file, zip, board state); `DiskProjectStore`; `ObjectProjectStore` stub (`NotImplementedError`)
+  - `backlot/machine_store.py` for machine-local resources
+  - every v1 module refactored onto the two stores (decisions, uploads, results, cost, catalog, settings, setup, API, CLI); no behaviour change
+- [x] 7.2 Auth seam:
+  - `current_user` on the router (every route), `authorize(user, project_id, access)` + `project_access("view"|"edit")` on every project route; forbidden = unknown (404)
+  - OIDC, sessions, tenancy, roles, session-bound CSRF, configurable hosts specified in `hosted/design.md` §2
+- [x] 7.3 Sync connector spec: `hosted/sync-protocol.md`
+  - 18 file classes with owner, direction and conflict rule, reviewed against `03-architecture.md` §3
+  - pairing, change feed, resumable content-addressed pushes, decision signing/stale/retract/consume, ordering, lifecycle, offline, capability report, channel security
+- [x] 7.4 Threat model: `hosted/threat-model.md`. 18 risks (incl. every risk named in the spec), each with a mitigation, its status today and an owner (shipped phase or hosted step H1–H7); residual risks; review checklist.
+- [x] 7.5 Operational notes: `hosted/design.md` §6 (no server jobs) and §7 (quotas, retention, observability, backups)
+- [x] 7.6 Localization (design): per-user locale on the profile, hosted error codes, new screens in both catalogs, server-side e-mail catalog (`hosted/design.md` §8). No UI strings changed this phase.
+- [x] Tests:
+  - `tests/contracts/test_studio_store_contract.py` (17): AST scan of 9 v1 modules plus a scanner self-test; `current_user` on every v1 route; `project_access` on every project route; forbidden projects hidden; protocol conformance; stub raises
+  - pytest `tests/backlot` + `tests/contracts`: 1763 passed, 10 skipped; Vitest unchanged (97)
+
+Notes and deviations:
+- **Second seam: `machine_store.py`.** The spec named only `ProjectStore`, but `config.yaml`, `.env` and the music library are not project data, and hosted mode keeps them off the server.
+- **CLI output.** `consume-decision` now prints the consumed file name, as before, but `studio_decisions.consume` returns a name instead of a `Path`.
+- **Verified on the real server after the refactor:**
+  - Phase 5 browser run: wizard upload, drag-drop, preview, delete. The 1 GB upload took 7.2 s with server RSS at most 56 MB.
+  - Decision lifecycle via the API and CLI: record, `await-decision`, `consume-decision`, state `consumed`; deleting an upload after the agent started → 409 `already_started`.
+  - Phase 6 browser run (results, export zip, cost numbers, settings save, Vietnamese). `config.yaml` was restored.
+  - Test projects were deleted.
+- **Flaky Phase 5 test fixed.** `features/uploads/uploads.test.tsx` failed about one run in three under `make studio-check`.
+  - Cause: every wizard step has a Next button, so a second click could land on the previous step's button before the step changed.
+  - Fix: the test now waits for each step's heading before clicking again. Six consecutive full runs passed.
+  - Pattern for future wizard tests: wait for the next heading before pressing Next again.
+- **Not done (by design):** any hosted implementation (auth, DB/object store, signed media, connector). The docs need maintainer review first.
+
+## Phase 7.1 — Review hardening · done
+
+Follow-up to the code review of Phase 7 (store and auth seams). Fixes one bug, four risks, three nits and one open question. No UI strings change. Plan: one step per row below; tick a step only after its tests pass, with a one-line note.
+
+- [x] 7.1.1 `ProjectFiles` path safety (`backlot/project_store.py`). Done; tests: `tests/backlot/test_project_store.py` (new, 15), `test_export_path_naming_the_project_itself_is_ignored` in `tests/backlot/test_studio_results_cost.py`:
+  - **bug:** `safe_rel` returned `"."` for the project folder itself, so `export_path: "."` made `/export` answer 500 → must return `None` (404)
+  - **risk:** `list` checked containment only for symlinked files, not for files under a symlinked folder → always check, like `zip_dir`
+  - **risk:** `rename` checked the target and then called `os.replace`, which can overwrite under a race → `os.link` + `unlink` (no overwrite), `MissingSource` for a vanished source
+  - **question, decided:** ids starting with `_` or `.` (hidden by `list_ids`, e.g. the hosted `_trash`) are rejected by `validate_project_id`
+- [x] 7.1.2 Decision consume race (`backlot/studio_decisions.py`). Done; test `test_consume_after_a_concurrent_retract_is_unknown` in `tests/backlot/test_studio_decisions.py`. Detail: a decision retracted between `stat` and `rename` → `unknown_decision`, not an uncaught `FileNotFoundError`
+- [x] 7.1.3 API robustness (`backlot/studio_api.py`, `backlot/studio_catalog.py`). Done; test `test_music_upload_answers_404_when_the_saved_track_is_not_listed` in `tests/backlot/test_studio_uploads.py`, existing API tests unchanged:
+  - `upload_music` no longer raises `StopIteration` (500) when the saved track is not listed → 404 `unknown_track`
+  - store calls in async routes (`intake`, `kickoff`, `inputs`, upload/reference deletes) run in `asyncio.to_thread`, ready for a network-backed store
+  - unused `import importlib.util` removed from the catalog
+- [x] 7.1.4 Contract scanner hardening (`tests/contracts/test_studio_store_contract.py`). Done; the scanner is now an `ast.NodeVisitor` with per-function exemptions; new self-tests `test_the_scanner_catches_hidden_imports_and_self`, `test_the_scanner_allows_annotated_store_handles`; all 9 v1 modules still scan clean (no code changes needed). Also flags `import shutil as sh`-style aliases:
+  - `from os import remove`-style imports of filesystem modules are flagged
+  - `self` is no longer an exempt receiver; `files` / `store` are exempt only as parameters annotated `ProjectFiles` / `ProjectStore`
+- [x] 7.1.5 Docs and close-out: `hosted/threat-model.md` (T1, T10), `hosted/sync-protocol.md` §4.3, test counts, snapshot above
+- [x] Tests: pytest `tests/backlot` + `tests/contracts` 1791 passed, 10 skipped (was 1769; +22). `make studio-check` green, Vitest unchanged (97).
+
+Notes and deviations:
+- **Scanner also flags `import <fs module> as <alias>`**, beyond the plan, since an alias hides the module name the same way a `from` import does.
+- **`rename` fallback.** On file systems without hard links (`os.link` raises another `OSError`), `rename` falls back to check-then-`os.replace`; the race remains there only.
+- **`server._safe_project_dir` unchanged.** The legacy read-only board still accepts `_`/`.` ids; only the Studio store refuses them.
+- **Verified on the real server** (`/tmp/pwshot/p71-smoke.sh`, recreate it from this note if missing): `export_path: "."` → `/export` 404 and `results.export` null; `/api/v1/projects/_trash/inputs` → 404; decision record → `await-decision` → `consume-decision` → state `consumed`; retract after consume → 409; consuming twice is idempotent. Test project deleted.
+

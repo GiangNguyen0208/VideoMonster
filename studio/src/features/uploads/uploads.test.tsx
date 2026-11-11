@@ -189,8 +189,12 @@ describe("Footage step in the wizard", () => {
     await user.click(screen.getByRole("button", { name: "Next" }));
     await user.type(await screen.findByLabelText("What is the video about?"), "My conference talk");
     await user.click(screen.getByRole("button", { name: "Next" }));
-    await user.click(await screen.findByRole("button", { name: "Next" }));
-    expect(await screen.findByText(/1 file · 2 KB/)).toBeInTheDocument();
+    // Wait for each step before pressing Next again: every step has a Next
+    // button, so an early click would land on the previous one.
+    expect(await screen.findByRole("heading", { name: "Look & budget" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Next" }));
+    expect(await screen.findByRole("heading", { name: "Review & create" })).toBeInTheDocument();
+    expect(screen.getByText(/1 file · 2 KB/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Create video" }));
 
     await waitFor(() => expect(server.created).toHaveLength(1));
@@ -221,7 +225,9 @@ describe("Footage step in the wizard", () => {
     expect(await within(panel).findByText("2 KB · 12:34 · 1920×1080")).toBeInTheDocument();
     await waitFor(() => expect(within(panel).queryByText(/Uploading/)).toBeNull());
     expect(screen.queryByText(/still uploading/)).toBeNull();
-  });
+    // The whole wizard plus the project page: slower than most tests when the
+    // suite runs in parallel.
+  }, 15_000);
 
   it("asks for target languages when dubbing", async () => {
     serve();

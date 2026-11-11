@@ -8,7 +8,8 @@ import { BriefView } from "@/features/project/BriefView";
 import { ConceptView } from "@/features/project/ConceptView";
 import { DecisionsView } from "@/features/project/DecisionsView";
 import { KickoffPanel } from "@/features/project/KickoffPanel";
-import { ResultView } from "@/features/project/ResultView";
+import { CostPanel } from "@/features/cost/CostPanel";
+import { ResultPanel } from "@/features/result/ResultPanel";
 import { ScriptView } from "@/features/project/ScriptView";
 import { StepTimeline } from "@/features/project/StepTimeline";
 import { StoryboardView } from "@/features/project/StoryboardView";
@@ -137,7 +138,9 @@ function ProjectView({ state }: { state: BoardState }) {
         </section>
       )}
 
-      <ResultView projectId={state.project_id} renders={state.media.renders} />
+      <ResultPanel projectId={state.project_id} renders={state.media.renders} />
+
+      <CostPanel projectId={state.project_id} />
 
       {tabs.length > 0 && <Tabs items={tabs} value={active} onChange={setTab} />}
     </article>

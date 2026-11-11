@@ -1,9 +1,15 @@
 /** Formatting + URL helpers — ports of backlot/ui/lib.js so both UIs agree. */
 import { getLocale, msg } from "@/i18n";
 
+/** USD in the UI language's format: "$1,234.50" (en) / "1.234,50 US$" (vi). */
 export function fmtMoney(v: number | null | undefined): string {
   if (v == null || !Number.isFinite(v)) return "—";
-  return `$${v.toFixed(2)}`;
+  return new Intl.NumberFormat(getLocale(), {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: Math.abs(v) > 0 && Math.abs(v) < 0.01 ? 4 : 2,
+  }).format(v);
 }
 
 export function fmtDuration(seconds: number | null | undefined): string {

@@ -95,16 +95,14 @@ def cmd_serve(port: int) -> int:
     return 0
 
 
-def _project_dir(project_id: str):
-    from backlot.project_store import ProjectStoreError, validate_project_id
+def _project_files(project_id: str):
+    from backlot.project_store import DiskProjectStore, ProjectStoreError
     from backlot.state import PROJECTS_DIR
 
     try:
-        validate_project_id(project_id)
+        return DiskProjectStore(PROJECTS_DIR).files(project_id)
     except ProjectStoreError:
         return None
-    path = PROJECTS_DIR / project_id
-    return path if path.is_dir() else None
 
 
 def cmd_await_decision(project_id: str, stage: str | None, timeout: float, poll: float = 1.0) -> int:
@@ -117,13 +115,13 @@ def cmd_await_decision(project_id: str, stage: str | None, timeout: float, poll:
 
     from backlot.studio_decisions import pending_for
 
-    project_dir = _project_dir(project_id)
-    if project_dir is None:
+    files = _project_files(project_id)
+    if files is None:
         print(f"await-decision: unknown project {project_id!r}", file=sys.stderr)
         return 3
     deadline = time.monotonic() + max(0.0, timeout)
     while True:
-        decision = pending_for(project_dir, stage)
+        decision = pending_for(files, stage)
         if decision:
             print(json.dumps(decision, indent=2, ensure_ascii=False))
             return 0
@@ -141,16 +139,16 @@ def cmd_await_decision(project_id: str, stage: str | None, timeout: float, poll:
 def cmd_consume_decision(project_id: str, decision_id: str) -> int:
     from backlot.studio_decisions import DecisionError, consume
 
-    project_dir = _project_dir(project_id)
-    if project_dir is None:
+    files = _project_files(project_id)
+    if files is None:
         print(f"consume-decision: unknown project {project_id!r}", file=sys.stderr)
         return 3
     try:
-        path = consume(project_dir, decision_id)
+        name = consume(files, decision_id)
     except DecisionError as exc:
         print(f"consume-decision: {exc.detail}", file=sys.stderr)
         return 3
-    print(f"consume-decision: {path.name}")
+    print(f"consume-decision: {name}")
     return 0
 
 

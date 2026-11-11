@@ -16,6 +16,7 @@ from backlot import __main__ as cli
 from backlot import server as server_mod
 from backlot import state as state_mod
 from backlot import studio_decisions, studio_setup
+from backlot.project_store import DiskProjectStore
 from backlot.studio_api import TOKEN_HEADER
 from lib.checkpoint import CANONICAL_STAGE_ARTIFACTS, init_project, write_checkpoint
 from tests.contracts.test_phase0_contracts import sample_artifact
@@ -64,6 +65,10 @@ def _body(cp: dict, **over) -> dict:
     data = {"stage": cp["stage"], "checkpoint_timestamp": cp["timestamp"], "action": "approve"}
     data.update(over)
     return data
+
+
+def _project(root):
+    return DiskProjectStore(root).files(PID)
 
 
 def _files(root) -> list[str]:
@@ -160,11 +165,28 @@ def test_list_retract_and_consume_lifecycle(client, root):
     assert client.delete(f"/api/v1/projects/{PID}/decisions/..%2F..%2Fx").status_code == 404
 
     did = client.post(f"/api/v1/projects/{PID}/decisions", json=_body(cp)).json()["id"]
-    studio_decisions.consume(root / PID, did)
+    studio_decisions.consume(_project(root), did)
     listed = client.get(f"/api/v1/projects/{PID}/decisions").json()["decisions"]
     assert listed[0]["state"] == "consumed"
     res = client.delete(f"/api/v1/projects/{PID}/decisions/{did}")
     assert res.status_code == 409 and res.json()["code"] == "already_consumed"
+
+
+def test_consume_after_a_concurrent_retract_is_unknown(client, root, monkeypatch):
+    cp = _at_proposal(root)
+    did = client.post(f"/api/v1/projects/{PID}/decisions", json=_body(cp)).json()["id"]
+    files = _project(root)
+    real_rename = files.rename
+
+    def retract_then_rename(src, dst):
+        # The user retracts in Studio between consume's check and its rename.
+        files.delete(src)
+        real_rename(src, dst)
+
+    monkeypatch.setattr(files, "rename", retract_then_rename)
+    with pytest.raises(studio_decisions.DecisionError) as err:
+        studio_decisions.consume(files, did)
+    assert err.value.code == "unknown_decision" and _files(root) == []
 
 
 def test_approval_in_chat_makes_a_pending_decision_stale(client, root):
@@ -174,7 +196,7 @@ def test_approval_in_chat_makes_a_pending_decision_stale(client, root):
     _checkpoint(root, "proposal", "completed", human_approved=True)
     listed = client.get(f"/api/v1/projects/{PID}/decisions").json()["decisions"]
     assert listed[0]["state"] == "stale"
-    assert studio_decisions.pending_for(root / PID) is None
+    assert studio_decisions.pending_for(_project(root)) is None
 
 
 def test_revised_checkpoint_makes_old_decision_stale(client, root):
@@ -194,7 +216,7 @@ def test_revised_checkpoint_makes_old_decision_stale(client, root):
 def test_await_decision_returns_a_matching_decision(root, capsys):
     cp = _at_proposal(root)
     decision = studio_decisions.record(
-        root / PID, studio_decisions.DecisionIn(**_body(cp)), user_id="local"
+        _project(root), studio_decisions.DecisionIn(**_body(cp)), user_id="local"
     )
     assert cli.main(["await-decision", PID, "proposal", "--timeout", "0"]) == 0
     out = json.loads(capsys.readouterr().out)
@@ -210,7 +232,7 @@ def test_await_decision_returns_a_matching_decision(root, capsys):
 
 def test_await_decision_ignores_stale_and_other_stages(root, capsys):
     cp = _at_proposal(root)
-    studio_decisions.record(root / PID, studio_decisions.DecisionIn(**_body(cp)), user_id="local")
+    studio_decisions.record(_project(root), studio_decisions.DecisionIn(**_body(cp)), user_id="local")
     assert cli.main(["await-decision", PID, "script", "--timeout", "0"]) == 2
     _checkpoint(root, "proposal")  # rewritten → decision is stale
     assert cli.main(["await-decision", PID, "proposal", "--timeout", "0"]) == 2
@@ -231,7 +253,7 @@ def test_await_decision_picks_up_a_late_decision(root, capsys):
 
     def later():
         time.sleep(0.2)
-        studio_decisions.record(root / PID, studio_decisions.DecisionIn(**_body(cp)), user_id="local")
+        studio_decisions.record(_project(root), studio_decisions.DecisionIn(**_body(cp)), user_id="local")
 
     threading.Thread(target=later).start()
     assert cli.cmd_await_decision(PID, "proposal", timeout=5, poll=0.05) == 0

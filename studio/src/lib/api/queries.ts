@@ -8,10 +8,13 @@ export const queryKeys = {
   project: (id: string) => ["project", id] as const,
   decisions: (id: string) => ["decisions", id] as const,
   inputs: (id: string) => ["inputs", id] as const,
+  results: (id: string) => ["results", id] as const,
+  cost: (id: string) => ["cost", id] as const,
 };
 
 /** Library summaries, kept live by the library SSE stream. */
 export function useProjects() {
+  // Prefix match: also refreshes the month-to-date spend.
   useSSE("/api/library/events", [queryKeys.projects]);
   return useQuery({
     queryKey: queryKeys.projects,
@@ -28,6 +31,8 @@ export function useProject(projectId: string) {
     queryKeys.project(projectId),
     queryKeys.decisions(projectId),
     queryKeys.inputs(projectId),
+    queryKeys.results(projectId),
+    queryKeys.cost(projectId),
   ]);
   return useQuery({
     queryKey: queryKeys.project(projectId),

@@ -13,12 +13,12 @@ import os
 import re
 import subprocess
 import sys
-import tempfile
 import threading
 import time
 from pathlib import Path
 from typing import Any, Optional
 
+from backlot import machine_store
 from backlot.state import REPO_ROOT
 
 ENV_PATH = REPO_ROOT / ".env"
@@ -269,9 +269,10 @@ def _unquote(raw: str) -> str:
 def read_env_file(env_path: Optional[Path] = None) -> dict[str, str]:
     env_path = env_path or ENV_PATH
     values: dict[str, str] = {}
-    if not env_path.is_file():
+    text = machine_store.read_text(env_path)
+    if text is None:
         return values
-    for line in env_path.read_text(encoding="utf-8", errors="replace").splitlines():
+    for line in text.splitlines():
         if line.lstrip().startswith("#"):
             continue
         match = _ENV_LINE_RE.match(line)
@@ -317,11 +318,7 @@ def write_env_var(key: str, value: str, env_path: Optional[Path] = None) -> None
     if "\n" in value or "\r" in value or "\x00" in value:
         raise ValueError("value must be a single line")
 
-    lines = (
-        env_path.read_text(encoding="utf-8", errors="replace").splitlines()
-        if env_path.is_file()
-        else []
-    )
+    lines = (machine_store.read_text(env_path) or "").splitlines()
     new_line = f"{key}={_format_value(value)}" if value else None
     out: list[str] = []
     replaced = False
@@ -338,13 +335,4 @@ def write_env_var(key: str, value: str, env_path: Optional[Path] = None) -> None
             out.append("")
         out.append(new_line)
 
-    env_path.parent.mkdir(parents=True, exist_ok=True)
-    fd, tmp = tempfile.mkstemp(prefix=".env.", suffix=".tmp", dir=env_path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as fh:
-            fh.write("\n".join(out) + ("\n" if out else ""))
-        os.chmod(tmp, 0o600)
-        os.replace(tmp, env_path)
-    except BaseException:
-        Path(tmp).unlink(missing_ok=True)
-        raise
+    machine_store.write_text(env_path, "\n".join(out) + ("\n" if out else ""), mode=0o600)

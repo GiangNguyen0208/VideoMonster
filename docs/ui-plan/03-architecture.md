@@ -217,8 +217,12 @@ All routes are mounted at `/api/v1` by `backlot/studio_api.py`. Reads reuse exis
 | `DELETE /api/v1/projects/{id}/uploads/{name}` | 5 | Remove an upload before the first checkpoint | — |
 | `POST /api/v1/projects/{id}/references` / `DELETE …/{ref_id}` | 5 | Add or remove a reference link (http(s) only, never fetched) | — |
 | `GET /api/v1/music`, `POST /api/v1/music?name=`, `GET /api/v1/music/tracks/{name}` | 5 | List, upload and preview music-library tracks | `MUSIC_LIBRARY_DIR` resolution of `tools/audio/music_library.py` |
-| `GET /api/v1/projects/{id}/cost` | 6 | Ledger + snapshot | `tools/cost_tracker.py` (`cost_log.json`, `cost_snapshot`) |
-| `GET/PUT /api/v1/settings` | 6 | Budget, checkpoint policy, output defaults | `config.yaml`, `lib/config_model.py` |
+| `GET /api/v1/projects/{id}/results` | 6 | Render variants with facts, copy-ready publish text, export info | `render_report`, `publish_log`, ffprobe |
+| `GET /api/v1/projects/{id}/export` | 6 | The exported file, or a zip of the export folder | `publish_log.entries[].export_path` |
+| `GET /media/{id}/{path}?download=1` | 6 | Same file, sent as an attachment | existing `/media` guard |
+| `GET /api/v1/projects/{id}/cost` | 6 | Snapshot, by tool, by step, by status, entries | `tools/cost_tracker.py` (`cost_log.json`, `cost_snapshot`) |
+| `GET /api/v1/cost/summary?since=` | 6 | Money spent across projects since a date (Library month total) | `cost_log.json` |
+| `GET/PUT /api/v1/settings` | 6 | Budget, checkpoint policy, output defaults (allowlisted keys, comments kept) | `config.yaml`, `lib/config_model.py` |
 
 Studio's own writes under `studio/` already trigger the existing watcher. That gives Studio live updates for free: the agent's consumption of a decision shows up on screen with no extra plumbing.
 
@@ -226,7 +230,7 @@ Studio's own writes under `studio/` already trigger the existing watcher. That g
 
 | Concern | Control |
 |---|---|
-| Remote access | Keep the `127.0.0.1` bind and `TrustedHostMiddleware`. Studio is localhost-only until Phase 7. |
+| Remote access | Keep the `127.0.0.1` bind and `TrustedHostMiddleware`. Studio stays localhost-only; hosted controls are designed in `hosted/threat-model.md`. |
 | CSRF from other local sites | Every non-GET request needs an `X-Studio-Token` header from `GET /api/v1/session` and a same-origin `Origin`. |
 | Path traversal | Project ids validated by `_safe_project_dir`. Upload and intake paths are resolved and checked with `relative_to(project_dir)`, as `/media` does. |
 | Secret handling | `PUT /setup/env` accepts only keys that a registered tool declares as an `env:` dependency. Values are write-only (the UI shows "set ••••1234"). `.env` is rewritten atomically. Values are never logged or returned. |
@@ -248,7 +252,18 @@ Studio's own writes under `studio/` already trigger the existing watcher. That g
 
 ## 7. Hosted path (Phase 7, design only)
 
-The v1 choices are made so hosting later is an addition, not a rewrite.
+The v1 choices are made so hosting later is an addition, not a rewrite. The full design is in [`hosted/design.md`](hosted/design.md), the connector protocol in [`hosted/sync-protocol.md`](hosted/sync-protocol.md), and the risks in [`hosted/threat-model.md`](hosted/threat-model.md). What exists in code today:
+
+- **Two filesystem seams.**
+  - `backlot/project_store.py`: `ProjectStore` plus a per-project `ProjectFiles` handle, `DiskProjectStore`, and an `ObjectProjectStore` stub.
+  - `backlot/machine_store.py`: `config.yaml`, `.env`, `music_library/`, demos and ffprobe.
+  - `tests/contracts/test_studio_store_contract.py` fails if any v1 module touches the filesystem directly.
+- **Auth seams.**
+  - `current_user` is a router-level dependency on every v1 route.
+  - Every project route resolves its project through `project_access("view"|"edit")`, which calls `authorize(user, project_id, access)`.
+  - Unknown and forbidden projects both answer 404.
+
+The original plan, kept for reference:
 
 - **`ProjectStore` interface.** Studio API code reads and writes through it, never through `Path` directly. v1 is `DiskProjectStore`; later an object-storage plus metadata-DB store.
 - **Auth seam.** All `/api/v1` routes depend on a `current_user` dependency. In v1 it always returns the local user. Hosted mode swaps in real auth (OIDC/session) and per-user project namespaces.
