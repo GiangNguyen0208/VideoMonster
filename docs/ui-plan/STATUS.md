@@ -28,10 +28,8 @@ Status values: `not started` · `in progress` · `blocked` · `done`
   - The local Studio is complete.
   - Hosted Studio is designed in `hosted/` (`design.md`, `sync-protocol.md`, `threat-model.md`). It needs a maintainer review (checklist in `hosted/threat-model.md` §5) before migration step H1 (`hosted/design.md` §9) starts.
   - Do not start hosted work, or any new phase, unless the user asks. Add a new row to the table above first.
-- **Git:** nothing is committed. All Studio work sits uncommitted on the current feature branch (`git branch --show-current`), not on `main`. The user commits only on request, so don't commit unprompted. `git status` shows the full list:
-  - modified: `AGENT_GUIDE.md`, agent entry files, `Makefile`, CI, `backlot/*`, `schemas/artifacts/decision_log.schema.json`, `skills/meta/checkpoint-protocol.md`
-  - new: `backlot/studio_*.py`, `backlot/project_store.py`, `backlot/setup_probe.py`, `studio/`, `docs/ui-plan/`, tests
-  - `config.yaml` is *not* modified. Real-server checks back it up and restore it after saving settings.
+- **Git:** Phases 0–7.1 are committed on the current feature branch (`git branch --show-current`), not on `main`; the latest is `a29e00f feat(studio): add results, cost, settings, and hosted-readiness work`. The user commits only on request, so don't commit unprompted. `config.yaml` is *not* modified; real-server checks back it up and restore it after saving settings.
+- **Docs:** `04-ui-flows.md` (added 2026-11-11) describes the as-built UI. It covers 17 use cases with their API calls and errors, plus sequence diagrams, flowcharts and state diagrams; all 18 Mermaid blocks render. Update it when a screen, route or error code changes.
 
 **Rules every phase follows**
 1. **Studio is a companion to the agent CLI.** It writes *intent* files under `projects/<id>/studio/` and media under `projects/<id>/inputs/`. It never writes checkpoints or agent artifacts (`03-architecture.md` §1, §3.4).
