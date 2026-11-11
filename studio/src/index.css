@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens mirror backlot/ui/board.css so Studio and the classic board
+ * read as one product. Theme is driven by [data-theme] on <html>, shared with
+ * Backlot through localStorage "backlot.theme".
+ */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+:root {
+  color-scheme: dark;
+  --bg: #0a0a0c;
+  --surface: #101013;
+  --surface-2: #16161a;
+  --surface-3: #1c1c21;
+  --border: #232329;
+  --border-soft: #1a1a1f;
+  --text: #ececef;
+  --text-2: #a0a0a9;
+  --text-3: #5f5f68;
+  --amber: #f0a83c;
+  --amber-dim: rgba(240, 168, 60, 0.14);
+  --green: #4fc283;
+  --green-dim: rgba(79, 194, 131, 0.12);
+  --red: #e5544b;
+  --red-dim: rgba(229, 84, 75, 0.12);
+  --blue: #6aa1ff;
+  --blue-dim: rgba(106, 161, 255, 0.12);
+  --cream: #f2e9d5;
+  --cream-ink: #29231a;
+  --on-accent: #0a0a0c;
+  --modal-backdrop: rgba(5, 5, 7, 0.82);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #efe4c9;
+  --surface: #fff9ec;
+  --surface-2: #f7edda;
+  --surface-3: #ead8b5;
+  --border: #d7c291;
+  --border-soft: #e7d7b1;
+  --text: #2c2419;
+  --text-2: #766750;
+  --text-3: #a39170;
+  --amber: #b8522d;
+  --amber-dim: rgba(184, 82, 45, 0.12);
+  --green: #2f7b4e;
+  --green-dim: rgba(47, 123, 78, 0.12);
+  --red: #b84a3b;
+  --red-dim: rgba(184, 74, 59, 0.11);
+  --blue: #3f6f8f;
+  --blue-dim: rgba(63, 111, 143, 0.12);
+  --cream: #fff1c8;
+  --cream-ink: #2b251b;
+  --on-accent: #fff9ec;
+  --modal-backdrop: rgba(52, 38, 22, 0.42);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-accent: var(--amber);
+  --color-accent-dim: var(--amber-dim);
+  --color-success: var(--green);
+  --color-success-dim: var(--green-dim);
+  --color-danger: var(--red);
+  --color-danger-dim: var(--red-dim);
+  --color-info: var(--blue);
+  --color-info-dim: var(--blue-dim);
+  --color-cream: var(--cream);
+  --color-cream-ink: var(--cream-ink);
+  --color-on-accent: var(--on-accent);
+  --color-backdrop: var(--modal-backdrop);
+
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-screenplay: "Courier Prime", "Courier New", monospace;
+
+  --radius-card: 12px;
+  --radius-control: 8px;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}

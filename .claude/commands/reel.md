@@ -9,6 +9,7 @@ Treat the following as a full OpenMontage production/work request and handle it 
 
 Follow `AGENT_GUIDE.md`:
 
+0. If the request is "Continue Studio project <id>" (or the project has `projects/<id>/studio/intake.json`), follow **Projects Created in Studio**: the intake is the brief, so do not re-ask what it answers and skip onboarding. Uploaded footage and reference links are listed in `studio/inputs.json` (files under `inputs/`).
 1. If the request is vague or exploratory, read `skills/meta/onboarding.md` first.
 2. If it references an existing video/URL as inspiration or source footage, read `skills/meta/video-reference-analyst.md` (reference-driven) or use `source_media_review` (footage-led) as appropriate.
 3. Otherwise, follow **Rule Zero**: identify the matching pipeline in `pipeline_defs/`, read its manifest, run preflight/tool discovery, then execute stage by stage — reading each stage director skill in `skills/pipelines/<pipeline>/` and any Layer 3 skill in `.agents/skills/` before calling tools.

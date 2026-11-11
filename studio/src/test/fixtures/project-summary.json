@@ -1,0 +1,53 @@
+{
+  "project_id": "backlot-demo-run",
+  "title": "The Last Lighthouse",
+  "series": null,
+  "pipeline_type": "cinematic",
+  "has_pipeline_state": true,
+  "poster": "assets/images/sc1.png",
+  "live": false,
+  "last_activity": 1794297921.1668756,
+  "active_stage": null,
+  "awaiting_human": false,
+  "stage_states": [
+    {
+      "name": "research",
+      "status": "completed"
+    },
+    {
+      "name": "proposal",
+      "status": "completed"
+    },
+    {
+      "name": "script",
+      "status": "completed"
+    },
+    {
+      "name": "scene_plan",
+      "status": "completed"
+    },
+    {
+      "name": "assets",
+      "status": "completed"
+    },
+    {
+      "name": "edit",
+      "status": "pending"
+    },
+    {
+      "name": "compose",
+      "status": "pending"
+    },
+    {
+      "name": "publish",
+      "status": "pending"
+    }
+  ],
+  "completed_count": 5,
+  "render_count": 0,
+  "scene_count": 4,
+  "stalled": false,
+  "failed": false,
+  "latest_render": null,
+  "cost_usd": 0.2
+}

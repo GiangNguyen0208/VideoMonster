@@ -166,6 +166,23 @@ When `human_approval_default: true`:
    stage — it runs only after the assets gate is approved. Rendering a full
    draft inside the assets stage jumps the gate the user is meant to hold.
 
+7. **Studio review decisions.** When the project was created in Studio (it has
+   `projects/<id>/studio/intake.json`) or the user reviews in Studio, the
+   user may answer the gate in the browser instead of in chat:
+   - After presenting the summary (sub-step 2), start
+     `python -m backlot await-decision <project-id> <stage>` as a
+     **background** command, then END YOUR TURN as usual. Tell the user they
+     can review in Studio or reply in chat.
+   - **A matching Studio decision is the user's reply.** When the command
+     prints a decision (exit 0), apply it exactly as in sub-step 4:
+     `approve` → `status="completed", human_approved=True`; `revise` → redo the
+     stage with `notes` as the feedback; `abort` → stop. Then follow
+     "Projects Created in Studio" in `AGENT_GUIDE.md` to log and consume it.
+   - Exit 2 means no decision arrived before the timeout: nothing happened;
+     wait for the user. A chat reply still counts and wins if it comes first.
+   - Sub-steps 3 and 5 are unchanged: one decision approves one gate, and
+     the turn still ends at every gate.
+
 ### Step 6: Determine Next Stage
 
 After checkpoint is written and approved (if needed):

@@ -1,0 +1,851 @@
+{
+  "project_id": "backlot-demo-run",
+  "title": "The Last Lighthouse",
+  "pipeline": {
+    "pipeline_type": "cinematic",
+    "stages": [
+      {
+        "name": "research",
+        "gated": false,
+        "produces": ["research_brief"]
+      },
+      {
+        "name": "proposal",
+        "gated": true,
+        "produces": ["proposal_packet", "decision_log"]
+      },
+      {
+        "name": "script",
+        "gated": true,
+        "produces": ["script"]
+      },
+      {
+        "name": "scene_plan",
+        "gated": true,
+        "produces": ["scene_plan"]
+      },
+      {
+        "name": "assets",
+        "gated": true,
+        "produces": ["asset_manifest"]
+      },
+      {
+        "name": "edit",
+        "gated": false,
+        "produces": ["edit_decisions"]
+      },
+      {
+        "name": "compose",
+        "gated": false,
+        "produces": ["render_report", "final_review"]
+      },
+      {
+        "name": "publish",
+        "gated": true,
+        "produces": ["publish_log"]
+      }
+    ],
+    "known": true
+  },
+  "style_playbook": "clean-professional",
+  "series": null,
+  "created_at": "2026-11-10T08:05:11.732113+00:00",
+  "has_marker": true,
+  "has_pipeline_state": true,
+  "stages": [
+    {
+      "name": "research",
+      "gated": false,
+      "produces": ["research_brief"],
+      "status": "completed",
+      "timestamp": "2026-11-10T08:05:12.450367+00:00",
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": false,
+      "partial_progress": null,
+      "versions": 1,
+      "history_entries": [
+        {
+          "status": "completed",
+          "timestamp": "2026-11-10T08:05:12.450367+00:00"
+        }
+      ]
+    },
+    {
+      "name": "proposal",
+      "gated": true,
+      "produces": ["proposal_packet", "decision_log"],
+      "status": "completed",
+      "timestamp": "2026-11-10T08:05:14.001970+00:00",
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": true,
+      "partial_progress": null,
+      "versions": 2,
+      "history_entries": [
+        {
+          "status": "awaiting_human",
+          "timestamp": "2026-11-10T08:05:13.244615+00:00"
+        },
+        {
+          "status": "completed",
+          "timestamp": "2026-11-10T08:05:14.001970+00:00"
+        }
+      ],
+      "gate_skipped": false
+    },
+    {
+      "name": "script",
+      "gated": true,
+      "produces": ["script"],
+      "status": "completed",
+      "timestamp": "2026-11-10T08:05:15.660656+00:00",
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": true,
+      "partial_progress": null,
+      "versions": 2,
+      "history_entries": [
+        {
+          "status": "awaiting_human",
+          "timestamp": "2026-11-10T08:05:14.883737+00:00"
+        },
+        {
+          "status": "completed",
+          "timestamp": "2026-11-10T08:05:15.660656+00:00"
+        }
+      ],
+      "gate_skipped": false
+    },
+    {
+      "name": "scene_plan",
+      "gated": true,
+      "produces": ["scene_plan"],
+      "status": "completed",
+      "timestamp": "2026-11-10T08:05:17.322383+00:00",
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": true,
+      "partial_progress": null,
+      "versions": 2,
+      "history_entries": [
+        {
+          "status": "awaiting_human",
+          "timestamp": "2026-11-10T08:05:16.519682+00:00"
+        },
+        {
+          "status": "completed",
+          "timestamp": "2026-11-10T08:05:17.322383+00:00"
+        }
+      ],
+      "gate_skipped": false
+    },
+    {
+      "name": "assets",
+      "gated": true,
+      "produces": ["asset_manifest"],
+      "status": "completed",
+      "timestamp": "2026-11-10T08:05:21.147676+00:00",
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": true,
+      "partial_progress": null,
+      "versions": 2,
+      "history_entries": [
+        {
+          "status": "awaiting_human",
+          "timestamp": "2026-11-10T08:05:20.330062+00:00"
+        },
+        {
+          "status": "completed",
+          "timestamp": "2026-11-10T08:05:21.147676+00:00"
+        }
+      ],
+      "gate_skipped": false
+    },
+    {
+      "name": "edit",
+      "gated": false,
+      "produces": ["edit_decisions"],
+      "status": "pending",
+      "timestamp": null,
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": null,
+      "partial_progress": null,
+      "versions": 0,
+      "history_entries": []
+    },
+    {
+      "name": "compose",
+      "gated": false,
+      "produces": ["render_report", "final_review"],
+      "status": "pending",
+      "timestamp": null,
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": null,
+      "partial_progress": null,
+      "versions": 0,
+      "history_entries": []
+    },
+    {
+      "name": "publish",
+      "gated": true,
+      "produces": ["publish_log"],
+      "status": "pending",
+      "timestamp": null,
+      "review": null,
+      "cost_snapshot": null,
+      "error": null,
+      "human_approved": null,
+      "partial_progress": null,
+      "versions": 0,
+      "history_entries": []
+    }
+  ],
+  "artifacts": {
+    "proposal_packet": {
+      "version": "1.0",
+      "concept_options": [
+        {
+          "id": "c1",
+          "title": "The Surprising Truth About X",
+          "hook": "You think X is slow.",
+          "narrative_structure": "myth_busting",
+          "visual_approach": "animated diagrams",
+          "target_duration_seconds": 60,
+          "why_this_works": "Strong misconception found in research"
+        },
+        {
+          "id": "c2",
+          "title": "X From Scratch",
+          "hook": "Build X in 5 minutes.",
+          "narrative_structure": "tutorial",
+          "visual_approach": "code walkthrough",
+          "target_duration_seconds": 90,
+          "why_this_works": "High demand in audience questions"
+        },
+        {
+          "id": "c3",
+          "title": "Why X Matters Now",
+          "hook": "X just changed everything.",
+          "narrative_structure": "timeline",
+          "visual_approach": "motion graphics",
+          "target_duration_seconds": 75,
+          "why_this_works": "Recent announcement creates timeliness"
+        }
+      ],
+      "selected_concept": {
+        "concept_id": "c1",
+        "rationale": "Strongest research backing"
+      },
+      "production_plan": {
+        "pipeline": "cinematic",
+        "render_runtime": "remotion",
+        "stages": [
+          {
+            "stage": "script",
+            "tools": [],
+            "approach": "Write from research"
+          },
+          {
+            "stage": "assets",
+            "tools": [
+              {
+                "tool_name": "tts_selector",
+                "role": "narration",
+                "available": true
+              }
+            ],
+            "approach": "Generate assets"
+          }
+        ]
+      },
+      "cost_estimate": {
+        "total_estimated_usd": 0.52,
+        "line_items": [
+          {
+            "tool": "elevenlabs_tts",
+            "operation": "narration",
+            "estimated_usd": 0.18
+          }
+        ],
+        "budget_verdict": "within_budget"
+      },
+      "approval": {
+        "status": "approved"
+      }
+    },
+    "script": {
+      "version": "1.0",
+      "title": "The Last Lighthouse",
+      "total_duration_seconds": 21,
+      "sections": [
+        {
+          "id": "s1",
+          "label": "Opening",
+          "text": "The coast holds its breath.",
+          "start_seconds": 0,
+          "end_seconds": 4
+        },
+        {
+          "id": "s2",
+          "label": "The beam sweeps the water",
+          "text": "Every night, the same promise.",
+          "start_seconds": 4,
+          "end_seconds": 9
+        },
+        {
+          "id": "s3",
+          "label": "A storm builds offshore",
+          "text": "Until the night the light went out.",
+          "start_seconds": 9,
+          "end_seconds": 15
+        },
+        {
+          "id": "s4",
+          "label": "The keeper climbs the stairs",
+          "text": "Someone still has to climb.",
+          "start_seconds": 15,
+          "end_seconds": 21
+        }
+      ]
+    },
+    "scene_plan": {
+      "version": "1.0",
+      "scenes": [
+        {
+          "id": "sc1",
+          "type": "generated",
+          "description": "Opening \u2014 a lighthouse at dusk",
+          "start_seconds": 0,
+          "end_seconds": 4,
+          "script_section_id": "s1",
+          "hero_moment": false,
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "Opening \u2014 a lighthouse at dusk",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "sc2",
+          "type": "generated",
+          "description": "The beam sweeps the water",
+          "start_seconds": 4,
+          "end_seconds": 9,
+          "script_section_id": "s2",
+          "hero_moment": false,
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "The beam sweeps the water",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "sc3",
+          "type": "generated",
+          "description": "A storm builds offshore",
+          "start_seconds": 9,
+          "end_seconds": 15,
+          "script_section_id": "s3",
+          "hero_moment": true,
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "A storm builds offshore",
+              "source": "generate"
+            }
+          ]
+        },
+        {
+          "id": "sc4",
+          "type": "generated",
+          "description": "The keeper climbs the stairs",
+          "start_seconds": 15,
+          "end_seconds": 21,
+          "script_section_id": "s4",
+          "hero_moment": false,
+          "required_assets": [
+            {
+              "type": "image",
+              "description": "The keeper climbs the stairs",
+              "source": "generate"
+            }
+          ]
+        }
+      ]
+    },
+    "asset_manifest": {
+      "version": "1.0",
+      "assets": [
+        {
+          "id": "img_sc1",
+          "type": "image",
+          "path": "assets/images/sc1.png",
+          "scene_id": "sc1",
+          "source_tool": "flux_image",
+          "model": "flux-sim",
+          "cost_usd": 0.05,
+          "prompt": "Opening \u2014 a lighthouse at dusk",
+          "quality_score": 0.88
+        },
+        {
+          "id": "img_sc2",
+          "type": "image",
+          "path": "assets/images/sc2.png",
+          "scene_id": "sc2",
+          "source_tool": "flux_image",
+          "model": "flux-sim",
+          "cost_usd": 0.05,
+          "prompt": "The beam sweeps the water",
+          "quality_score": 0.88
+        },
+        {
+          "id": "img_sc3",
+          "type": "image",
+          "path": "assets/images/sc3.png",
+          "scene_id": "sc3",
+          "source_tool": "flux_image",
+          "model": "flux-sim",
+          "cost_usd": 0.05,
+          "prompt": "A storm builds offshore",
+          "quality_score": 0.88
+        },
+        {
+          "id": "img_sc4",
+          "type": "image",
+          "path": "assets/images/sc4.png",
+          "scene_id": "sc4",
+          "source_tool": "flux_image",
+          "model": "flux-sim",
+          "cost_usd": 0.05,
+          "prompt": "The keeper climbs the stairs",
+          "quality_score": 0.88
+        }
+      ],
+      "total_cost_usd": 0.2
+    },
+    "research_brief": {
+      "version": "1.0",
+      "topic": "The Last Lighthouse",
+      "research_date": "2026-03-27",
+      "landscape": {
+        "existing_content": [
+          {
+            "title": "Existing Video 1",
+            "source": "youtube",
+            "angle": "tutorial",
+            "what_it_covers": "basics"
+          },
+          {
+            "title": "Existing Video 2",
+            "source": "blog",
+            "angle": "deep dive",
+            "what_it_covers": "advanced"
+          },
+          {
+            "title": "Existing Video 3",
+            "source": "youtube",
+            "angle": "comparison",
+            "what_it_covers": "alternatives"
+          }
+        ],
+        "saturated_angles": ["basic tutorial"],
+        "underserved_gaps": ["misconceptions about topic"]
+      },
+      "data_points": [
+        {
+          "claim": "73% of users prefer X",
+          "source_url": "https://example.com/study",
+          "credibility": "primary_source"
+        },
+        {
+          "claim": "Market grew 40% in 2025",
+          "source_url": "https://example.com/report",
+          "credibility": "secondary_source"
+        },
+        {
+          "claim": "Most experts agree on Y",
+          "source_url": "https://example.com/survey",
+          "credibility": "primary_source"
+        }
+      ],
+      "audience_insights": {
+        "common_questions": ["What is X?", "How does X work?", "Why is X important?"],
+        "misconceptions": [
+          {
+            "myth": "X is slow",
+            "reality": "X is fast"
+          }
+        ],
+        "knowledge_level": "Beginner to intermediate"
+      },
+      "angles_discovered": [
+        {
+          "name": "The Surprising Truth",
+          "hook": "You think X is slow. It's not.",
+          "type": "contrarian",
+          "why_now": "New benchmark data",
+          "grounded_in": ["data_point_1"]
+        },
+        {
+          "name": "X From Scratch",
+          "hook": "Build X in 5 minutes.",
+          "type": "evergreen",
+          "why_now": "Audience demand",
+          "grounded_in": ["audience_q1"]
+        },
+        {
+          "name": "Why X Matters Now",
+          "hook": "X just changed everything.",
+          "type": "trending",
+          "why_now": "Recent announcement",
+          "grounded_in": ["trending_1"]
+        }
+      ],
+      "sources": [
+        {
+          "url": "https://example.com/study",
+          "title": "Study on X",
+          "used_for": "data_points"
+        },
+        {
+          "url": "https://example.com/report",
+          "title": "Market Report",
+          "used_for": "data_points"
+        },
+        {
+          "url": "https://example.com/survey",
+          "title": "Expert Survey",
+          "used_for": "data_points"
+        },
+        {
+          "url": "https://example.com/reddit",
+          "title": "Reddit Discussion",
+          "used_for": "audience_insights"
+        },
+        {
+          "url": "https://example.com/blog",
+          "title": "Tech Blog",
+          "used_for": "landscape"
+        }
+      ]
+    }
+  },
+  "storyboard": {
+    "scenes": [
+      {
+        "id": "sc1",
+        "type": "generated",
+        "description": "Opening \u2014 a lighthouse at dusk",
+        "start_seconds": 0,
+        "end_seconds": 4,
+        "duration_seconds": 4,
+        "hero_moment": false,
+        "shot_language": null,
+        "shot_intent": null,
+        "framing": null,
+        "movement": null,
+        "narration": "The coast holds its breath.",
+        "section_label": "Opening",
+        "required_assets": [
+          {
+            "type": "image",
+            "description": "Opening \u2014 a lighthouse at dusk",
+            "source": "generate"
+          }
+        ],
+        "visual": {
+          "id": "img_sc1",
+          "type": "image",
+          "scene_id": "sc1",
+          "path": "assets/images/sc1.png",
+          "exists": true,
+          "renderable": true,
+          "prompt": "Opening \u2014 a lighthouse at dusk",
+          "model": "flux-sim",
+          "source_tool": "flux_image",
+          "provider": null,
+          "cost_usd": 0.05,
+          "quality_score": 0.88,
+          "duration_seconds": null,
+          "resolution": null
+        },
+        "takes": [
+          {
+            "id": "img_sc1",
+            "type": "image",
+            "scene_id": "sc1",
+            "path": "assets/images/sc1.png",
+            "exists": true,
+            "renderable": true,
+            "prompt": "Opening \u2014 a lighthouse at dusk",
+            "model": "flux-sim",
+            "source_tool": "flux_image",
+            "provider": null,
+            "cost_usd": 0.05,
+            "quality_score": 0.88,
+            "duration_seconds": null,
+            "resolution": null
+          }
+        ],
+        "audio": [],
+        "generating": false,
+        "generating_tool": null
+      },
+      {
+        "id": "sc2",
+        "type": "generated",
+        "description": "The beam sweeps the water",
+        "start_seconds": 4,
+        "end_seconds": 9,
+        "duration_seconds": 5,
+        "hero_moment": false,
+        "shot_language": null,
+        "shot_intent": null,
+        "framing": null,
+        "movement": null,
+        "narration": "Every night, the same promise.",
+        "section_label": "The beam sweeps the water",
+        "required_assets": [
+          {
+            "type": "image",
+            "description": "The beam sweeps the water",
+            "source": "generate"
+          }
+        ],
+        "visual": {
+          "id": "img_sc2",
+          "type": "image",
+          "scene_id": "sc2",
+          "path": "assets/images/sc2.png",
+          "exists": true,
+          "renderable": true,
+          "prompt": "The beam sweeps the water",
+          "model": "flux-sim",
+          "source_tool": "flux_image",
+          "provider": null,
+          "cost_usd": 0.05,
+          "quality_score": 0.88,
+          "duration_seconds": null,
+          "resolution": null
+        },
+        "takes": [
+          {
+            "id": "img_sc2",
+            "type": "image",
+            "scene_id": "sc2",
+            "path": "assets/images/sc2.png",
+            "exists": true,
+            "renderable": true,
+            "prompt": "The beam sweeps the water",
+            "model": "flux-sim",
+            "source_tool": "flux_image",
+            "provider": null,
+            "cost_usd": 0.05,
+            "quality_score": 0.88,
+            "duration_seconds": null,
+            "resolution": null
+          }
+        ],
+        "audio": [],
+        "generating": false,
+        "generating_tool": null
+      },
+      {
+        "id": "sc3",
+        "type": "generated",
+        "description": "A storm builds offshore",
+        "start_seconds": 9,
+        "end_seconds": 15,
+        "duration_seconds": 6,
+        "hero_moment": true,
+        "shot_language": null,
+        "shot_intent": null,
+        "framing": null,
+        "movement": null,
+        "narration": "Until the night the light went out.",
+        "section_label": "A storm builds offshore",
+        "required_assets": [
+          {
+            "type": "image",
+            "description": "A storm builds offshore",
+            "source": "generate"
+          }
+        ],
+        "visual": {
+          "id": "img_sc3",
+          "type": "image",
+          "scene_id": "sc3",
+          "path": "assets/images/sc3.png",
+          "exists": true,
+          "renderable": true,
+          "prompt": "A storm builds offshore",
+          "model": "flux-sim",
+          "source_tool": "flux_image",
+          "provider": null,
+          "cost_usd": 0.05,
+          "quality_score": 0.88,
+          "duration_seconds": null,
+          "resolution": null
+        },
+        "takes": [
+          {
+            "id": "img_sc3",
+            "type": "image",
+            "scene_id": "sc3",
+            "path": "assets/images/sc3.png",
+            "exists": true,
+            "renderable": true,
+            "prompt": "A storm builds offshore",
+            "model": "flux-sim",
+            "source_tool": "flux_image",
+            "provider": null,
+            "cost_usd": 0.05,
+            "quality_score": 0.88,
+            "duration_seconds": null,
+            "resolution": null
+          }
+        ],
+        "audio": [],
+        "generating": false,
+        "generating_tool": null
+      },
+      {
+        "id": "sc4",
+        "type": "generated",
+        "description": "The keeper climbs the stairs",
+        "start_seconds": 15,
+        "end_seconds": 21,
+        "duration_seconds": 6,
+        "hero_moment": false,
+        "shot_language": null,
+        "shot_intent": null,
+        "framing": null,
+        "movement": null,
+        "narration": "Someone still has to climb.",
+        "section_label": "The keeper climbs the stairs",
+        "required_assets": [
+          {
+            "type": "image",
+            "description": "The keeper climbs the stairs",
+            "source": "generate"
+          }
+        ],
+        "visual": {
+          "id": "img_sc4",
+          "type": "image",
+          "scene_id": "sc4",
+          "path": "assets/images/sc4.png",
+          "exists": true,
+          "renderable": true,
+          "prompt": "The keeper climbs the stairs",
+          "model": "flux-sim",
+          "source_tool": "flux_image",
+          "provider": null,
+          "cost_usd": 0.05,
+          "quality_score": 0.88,
+          "duration_seconds": null,
+          "resolution": null
+        },
+        "takes": [
+          {
+            "id": "img_sc4",
+            "type": "image",
+            "scene_id": "sc4",
+            "path": "assets/images/sc4.png",
+            "exists": true,
+            "renderable": true,
+            "prompt": "The keeper climbs the stairs",
+            "model": "flux-sim",
+            "source_tool": "flux_image",
+            "provider": null,
+            "cost_usd": 0.05,
+            "quality_score": 0.88,
+            "duration_seconds": null,
+            "resolution": null
+          }
+        ],
+        "audio": [],
+        "generating": false,
+        "generating_tool": null
+      }
+    ],
+    "total_duration_seconds": 21,
+    "style_playbook": null
+  },
+  "media": {
+    "renders": [],
+    "snapshots": [],
+    "music": []
+  },
+  "events": [
+    {
+      "ts": "2026-11-10T08:05:18.597210+00:00",
+      "tool": "flux_image",
+      "event": "start",
+      "scene_id": "sc2"
+    },
+    {
+      "ts": "2026-11-10T08:05:19.054409+00:00",
+      "tool": "flux_image",
+      "event": "finish",
+      "scene_id": "sc2",
+      "success": true,
+      "cost_usd": 0.05,
+      "duration_s": 0.44999999999999996,
+      "output_path": "assets/images/sc2.png"
+    },
+    {
+      "ts": "2026-11-10T08:05:19.110080+00:00",
+      "tool": "flux_image",
+      "event": "start",
+      "scene_id": "sc3"
+    },
+    {
+      "ts": "2026-11-10T08:05:19.569184+00:00",
+      "tool": "flux_image",
+      "event": "finish",
+      "scene_id": "sc3",
+      "success": true,
+      "cost_usd": 0.05,
+      "duration_s": 0.44999999999999996,
+      "output_path": "assets/images/sc3.png"
+    },
+    {
+      "ts": "2026-11-10T08:05:19.624405+00:00",
+      "tool": "flux_image",
+      "event": "start",
+      "scene_id": "sc4"
+    },
+    {
+      "ts": "2026-11-10T08:05:20.083576+00:00",
+      "tool": "flux_image",
+      "event": "finish",
+      "scene_id": "sc4",
+      "success": true,
+      "cost_usd": 0.05,
+      "duration_s": 0.44999999999999996,
+      "output_path": "assets/images/sc4.png"
+    }
+  ],
+  "cost": {
+    "total_spent_usd": 0.2
+  },
+  "last_activity": 1794297921.1668756,
+  "live": false,
+  "poster": "assets/images/sc1.png"
+}
