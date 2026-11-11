@@ -620,3 +620,7 @@ stateDiagram-v2
   open --> started: first checkpoint written
   started --> started: add files and links (remove answers 409 already_started)
 ```
+
+## Update after Phase D (2026-11-11)
+
+The flows above are unchanged. Screens now follow the "Cinematic Darkroom" design: Home leads with a "waiting for you" card (Approve and Request changes open the project's review, where the decision is still made), Library gains stat cards and review-now cards, Setup and Settings use section cards. Component locations are in `03-architecture.md` §6.

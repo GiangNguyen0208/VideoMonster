@@ -1,10 +1,19 @@
 import { useState } from "react";
-import { Badge, Button } from "@/components/ui";
+import {
+  Badge,
+  Button,
+  ButtonAnchor,
+  Card,
+  ComingSoon,
+  CopyButton,
+  ListBox,
+} from "@/components/ui";
 import { useT } from "@/i18n";
-import { exportUrl, useResults, type RenderFile, type ResultRender } from "@/lib/api";
-import { cn } from "@/lib/cn";
-import { fmtBytes, fmtDuration, mediaURL, thumbURL } from "@/lib/format";
-import { downloadURL } from "./links";
+import { useResults } from "@/hooks/api";
+import { downloadURL, exportUrl, mediaURL, thumbURL } from "@/services";
+import type { RenderFile, ResultRender } from "@/types/api";
+import { cn } from "@/utils/cn";
+import { fmtBytes, fmtDuration, fmtFacts, fmtResolution } from "@/utils/format";
 
 /**
  * The finished video: player, every render variant with its facts and a
@@ -39,13 +48,13 @@ export function ResultPanel({ projectId, renders }: { projectId: string; renders
         <h2 id="result-h" className="text-lg font-semibold">
           {t.project.result.heading}
         </h2>
-        <a
+        <ButtonAnchor
+          variant="primary"
           href={downloadURL(projectId, current.path)}
           download={current.name}
-          className="inline-flex h-10 items-center rounded-control bg-accent px-4 text-sm font-medium text-on-accent hover:brightness-110"
         >
           {L.download}
-        </a>
+        </ButtonAnchor>
       </div>
       <video
         key={current.path}
@@ -53,13 +62,10 @@ export function ResultPanel({ projectId, renders }: { projectId: string; renders
         preload="metadata"
         src={mediaURL(projectId, current.path)}
         poster={thumbURL(projectId, current.path, 960)}
-        className="aspect-video w-full rounded-card border border-border bg-black"
+        className="aspect-video w-full rounded-card border border-border bg-black shadow-elev-md"
       />
 
-      <ul
-        aria-label={L.variants}
-        className="divide-y divide-border-soft rounded-card border border-border"
-      >
+      <ListBox aria-label={L.variants}>
         {items.map((r) => (
           <li key={r.path} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-2.5">
             <button
@@ -85,7 +91,14 @@ export function ResultPanel({ projectId, renders }: { projectId: string; renders
             </a>
           </li>
         ))}
-      </ul>
+      </ListBox>
+
+      <ComingSoon>
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm">{L.share}</Button>
+          <Button size="sm">{L.clonePrompt}</Button>
+        </div>
+      </ComingSoon>
 
       {results && <PublishBox projectId={projectId} data={results} />}
     </section>
@@ -93,14 +106,12 @@ export function ResultPanel({ projectId, renders }: { projectId: string; renders
 }
 
 function facts(r: ResultRender): string {
-  return [
-    r.resolution?.replace("x", "×"),
+  return fmtFacts([
+    fmtResolution(r.resolution),
     r.duration_s ? fmtDuration(r.duration_s) : null,
     r.fps ? `${r.fps} fps` : null,
     r.size ? fmtBytes(r.size) : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  ]);
 }
 
 function PublishBox({
@@ -125,7 +136,7 @@ function PublishBox({
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <div className="space-y-3 rounded-card border border-border bg-surface p-4">
+      <Card padding="sm" className="space-y-3">
         <h3 className="font-medium">{L.publishHeading}</h3>
         {p.source === "project" && <p className="text-xs text-text-3">{L.noPublishText}</p>}
         <dl className="space-y-3">
@@ -139,8 +150,8 @@ function PublishBox({
             </div>
           ))}
         </dl>
-      </div>
-      <div className="space-y-2 rounded-card border border-border bg-surface p-4">
+      </Card>
+      <Card padding="sm" className="space-y-2">
         <h3 className="font-medium">{L.exportHeading}</h3>
         {data.export ? (
           <>
@@ -150,41 +161,14 @@ function PublishBox({
                 : L.exportFile(fmtBytes(data.export.size))}
               {data.export.platform && <> · {data.export.platform}</>}
             </p>
-            <a
-              href={exportUrl(projectId)}
-              download={data.export.name}
-              className="inline-flex h-10 items-center rounded-control border border-border bg-surface-2 px-4 text-sm font-medium hover:bg-surface-3"
-            >
+            <ButtonAnchor href={exportUrl(projectId)} download={data.export.name}>
               {L.downloadExport}
-            </a>
+            </ButtonAnchor>
           </>
         ) : (
           <p className="text-sm text-text-2">{L.askToExport}</p>
         )}
-      </div>
+      </Card>
     </div>
-  );
-}
-
-function CopyButton({ text, label }: { text: string; label: string }) {
-  const t = useT();
-  const [copied, setCopied] = useState(false);
-  return (
-    <Button
-      size="sm"
-      variant="ghost"
-      aria-label={label}
-      onClick={() =>
-        void navigator.clipboard
-          ?.writeText(text)
-          .then(() => {
-            setCopied(true);
-            window.setTimeout(() => setCopied(false), 2000);
-          })
-          .catch(() => setCopied(false))
-      }
-    >
-      {copied ? t.common.copied : t.common.copy}
-    </Button>
   );
 }

@@ -1,7 +1,7 @@
 import { Badge, Card } from "@/components/ui";
 import { byCapabilityPriority, capabilityLabel, videoTypeLabel } from "@/content/labels";
 import { msg, useT } from "@/i18n";
-import type { KeyStatus, UnlockOffer } from "@/lib/api";
+import type { KeyStatus, UnlockOffer } from "@/types/api";
 import { KeyForm } from "./KeyForm";
 
 const MAX_TITLE_CAPS = 2;

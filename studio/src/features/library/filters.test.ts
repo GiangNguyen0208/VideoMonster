@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ProjectSummary } from "@/lib/api";
+import type { ProjectSummary } from "@/types/api";
 import { filterProjects, groupBySeries, statusFilterOf } from "./filters";
 
 const p = (over: Partial<ProjectSummary>): ProjectSummary => ({

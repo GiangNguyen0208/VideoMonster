@@ -9,27 +9,44 @@
 
 :root {
   color-scheme: dark;
+  /* Surfaces: "Cinematic Darkroom" scale (Phase D.4.3). The raw names shared
+     with backlot/ui/board.css (--bg, --surface, --surface-2/3, --border*,
+     --text*, --amber*, --green*, --red*, --blue*, --cream*) are kept. */
   --bg: #0a0a0c;
-  --surface: #101013;
+  --surface: #131315;
   --surface-2: #16161a;
   --surface-3: #1c1c21;
+  --surface-dim: #0e0e10;
+  --surface-bright: #1c1b1f;
+  --surface-lowest: #0a0a0c;
+  --surface-low: #121215;
+  --surface-high: #1c1c21;
+  --surface-highest: #24242a;
   --border: #232329;
-  --border-soft: #1a1a1f;
+  --border-soft: #1a1a20;
+  --border-subtle: rgba(255, 255, 255, 0.07);
   --text: #ececef;
   --text-2: #a0a0a9;
-  --text-3: #5f5f68;
+  --text-3: #62626e;
   --amber: #f0a83c;
-  --amber-dim: rgba(240, 168, 60, 0.14);
+  --amber-hover: #f5b754;
+  --amber-active: #de962a;
+  --amber-dim: rgba(240, 168, 60, 0.15);
+  --amber-glow: rgba(240, 168, 60, 0.25);
   --green: #4fc283;
-  --green-dim: rgba(79, 194, 131, 0.12);
+  --green-dim: rgba(79, 194, 131, 0.15);
   --red: #e5544b;
-  --red-dim: rgba(229, 84, 75, 0.12);
+  --red-dim: rgba(229, 84, 75, 0.15);
   --blue: #6aa1ff;
-  --blue-dim: rgba(106, 161, 255, 0.12);
+  --blue-dim: rgba(106, 161, 255, 0.15);
   --cream: #f2e9d5;
   --cream-ink: #29231a;
-  --on-accent: #0a0a0c;
+  --on-accent: #0e0e10;
   --modal-backdrop: rgba(5, 5, 7, 0.82);
+  --elev-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --elev-md: 0 4px 12px 0 rgba(0, 0, 0, 0.45);
+  --elev-lg: 0 10px 24px -3px rgba(0, 0, 0, 0.55);
+  --elev-glow: 0 0 20px -2px rgba(240, 168, 60, 0.2);
 }
 
 :root[data-theme="light"] {
@@ -38,13 +55,23 @@
   --surface: #fff9ec;
   --surface-2: #f7edda;
   --surface-3: #ead8b5;
+  --surface-dim: #f3e8d0;
+  --surface-bright: #fffdf8;
+  --surface-lowest: #fffcf4;
+  --surface-low: #fbf3e3;
+  --surface-high: #f0e2c6;
+  --surface-highest: #ead8b5;
   --border: #d7c291;
   --border-soft: #e7d7b1;
+  --border-subtle: rgba(44, 36, 25, 0.08);
   --text: #2c2419;
   --text-2: #766750;
-  --text-3: #a39170;
+  --text-3: #8f7d5d;
   --amber: #b8522d;
+  --amber-hover: #a4471f;
+  --amber-active: #8f3d1b;
   --amber-dim: rgba(184, 82, 45, 0.12);
+  --amber-glow: rgba(184, 82, 45, 0.2);
   --green: #2f7b4e;
   --green-dim: rgba(47, 123, 78, 0.12);
   --red: #b84a3b;
@@ -55,6 +82,10 @@
   --cream-ink: #2b251b;
   --on-accent: #fff9ec;
   --modal-backdrop: rgba(52, 38, 22, 0.42);
+  --elev-sm: 0 1px 2px 0 rgba(72, 52, 22, 0.1);
+  --elev-md: 0 4px 12px 0 rgba(72, 52, 22, 0.12);
+  --elev-lg: 0 10px 24px -3px rgba(72, 52, 22, 0.16);
+  --elev-glow: 0 0 20px -2px rgba(184, 82, 45, 0.18);
 }
 
 @theme inline {
@@ -62,13 +93,24 @@
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
   --color-surface-3: var(--surface-3);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-lowest: var(--surface-lowest);
+  --color-surface-low: var(--surface-low);
+  --color-surface-high: var(--surface-high);
+  --color-surface-highest: var(--surface-highest);
   --color-border: var(--border);
   --color-border-soft: var(--border-soft);
+  --color-border-subtle: var(--border-subtle);
   --color-text: var(--text);
   --color-text-2: var(--text-2);
   --color-text-3: var(--text-3);
   --color-accent: var(--amber);
   --color-accent-dim: var(--amber-dim);
+  --color-accent-hover: var(--amber-hover);
+  --color-accent-active: var(--amber-active);
+  --color-warning: var(--amber);
+  --color-warning-dim: var(--amber-dim);
   --color-success: var(--green);
   --color-success-dim: var(--green-dim);
   --color-danger: var(--red);
@@ -86,6 +128,11 @@
 
   --radius-card: 12px;
   --radius-control: 8px;
+
+  --shadow-elev-sm: var(--elev-sm);
+  --shadow-elev-md: var(--elev-md);
+  --shadow-elev-lg: var(--elev-lg);
+  --shadow-glow: var(--elev-glow);
 }
 
 html,

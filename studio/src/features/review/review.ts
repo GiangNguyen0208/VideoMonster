@@ -3,7 +3,7 @@
  * decision belongs to it, and what the proposal picker starts from.
  */
 import { asArray, asRecord, asText } from "@/features/project/adapters";
-import type { BoardState, ProposalPicks, Stage, StudioDecision } from "@/lib/api";
+import type { BoardState, ProposalPicks, Stage, StudioDecision } from "@/types/api";
 
 export type RuntimeId = "remotion" | "hyperframes" | "ffmpeg";
 export type MusicSource = NonNullable<ProposalPicks["music_source"]>;
@@ -75,8 +75,15 @@ export interface ProposalDefaults {
   musicTrack: string | null;
 }
 
-const RUNTIMES: RuntimeId[] = ["remotion", "hyperframes", "ffmpeg"];
-const MUSIC: MusicSource[] = ["user_library", "ai_generated", "bring_your_own", "none"];
+/** Rendering engines a proposal can pick, in display order. */
+export const RUNTIMES: RuntimeId[] = ["remotion", "hyperframes", "ffmpeg"];
+/** Music sources a proposal can pick, in display order. */
+export const MUSIC_SOURCES: MusicSource[] = [
+  "user_library",
+  "ai_generated",
+  "bring_your_own",
+  "none",
+];
 
 export function proposalDefaults(packet: unknown): ProposalDefaults | null {
   const p = asRecord(packet);
@@ -107,7 +114,7 @@ export function proposalDefaults(packet: unknown): ProposalDefaults | null {
     budget: num(approval?.approved_budget_usd) ?? num(cost?.budget_cap_usd) ?? estimate,
     runtime: RUNTIMES.includes(runtime as RuntimeId) ? (runtime as RuntimeId) : null,
     mode: mode === "templated" || mode === "atelier" ? mode : null,
-    music: MUSIC.includes(music as MusicSource) ? (music as MusicSource) : null,
+    music: MUSIC_SOURCES.includes(music as MusicSource) ? (music as MusicSource) : null,
     musicTrack: asText(musicSource?.track) ?? asText(musicSource?.track_name),
   };
 }

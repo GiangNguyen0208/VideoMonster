@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenMontage Studio - Tạo Video Mới</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#2a2a2c",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "surface-3": "#1c1c21",
+            "on-error": "#690005",
+            "border-soft": "#1a1a1f",
+            "on-secondary-container": "#b7b4b8",
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "on-primary-fixed": "#2a1800",
+            "inverse-on-surface": "#313032",
+            "error": "#ffb4ab",
+            "primary-container": "#f0a83c",
+            "text-secondary": "#a0a0a9",
+            "surface-variant": "#353437",
+            "primary-fixed": "#ffddb5",
+            "surface-bright": "#39393b",
+            "surface-2": "#16161a",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "on-primary": "#452b00",
+            "background": "#131315",
+            "secondary-fixed": "#e4e1e6",
+            "secondary-container": "#47464a",
+            "on-secondary": "#303033",
+            "on-secondary-fixed-variant": "#47464a",
+            "on-primary-fixed-variant": "#633f00",
+            "on-tertiary-fixed-variant": "#00522f",
+            "on-tertiary": "#00391f",
+            "on-error-container": "#ffdad6",
+            "tertiary-fixed": "#87f9b5",
+            "on-surface-variant": "#d6c4b0",
+            "surface": "#131315",
+            "on-surface": "#e5e1e4",
+            "text-primary": "#ececef",
+            "surface-tint": "#ffb956",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "status-info": "#6aa1ff",
+            "error-container": "#93000a",
+            "inverse-primary": "#835400",
+            "text-muted": "#5f5f68",
+            "border-base": "#232329",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "primary-fixed-dim": "#ffb956",
+            "screenplay-ink": "#29231a",
+            "surface-container-lowest": "#0e0e10",
+            "on-tertiary-container": "#00532f",
+            "on-background": "#e5e1e4",
+            "surface-1": "#101013",
+            "on-primary-container": "#644000",
+            "surface-dim": "#131315",
+            "outline-variant": "#514535",
+            "surface-container": "#201f21",
+            "status-danger": "#e5544b",
+            "tertiary": "#76e8a5",
+            "screenplay-parchment": "#f2e9d5",
+            "tertiary-fixed-dim": "#6adc9b",
+            "surface-container-highest": "#353437",
+            "secondary": "#c8c5ca",
+            "primary": "#ffc881",
+            "on-secondary-fixed": "#1b1b1e",
+            "surface-container-low": "#1c1b1d",
+            "outline": "#9e8e7c",
+            "status-success": "#4fc283",
+            "tertiary-container": "#59cb8b",
+            "on-tertiary-fixed": "#002110",
+            "secondary-fixed-dim": "#c8c5ca",
+            "inverse-surface": "#e5e1e4"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-desktop": "2rem",
+            "space-xl": "2rem",
+            "margin": "1rem",
+            "space-md": "1rem",
+            "margin-tablet": "1.5rem",
+            "space-lg": "1.5rem",
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "gutter-desktop": "1.5rem",
+            "gutter": "1rem",
+            "space-2xl": "2.5rem"
+          },
+          "fontFamily": {
+            "badge-label": ["Inter"],
+            "body-base": ["Inter"],
+            "headline-section": ["Inter"],
+            "code-mono": ["JetBrains Mono"],
+            "caption-meta": ["Inter"],
+            "screenplay-body": ["Courier Prime"],
+            "title-card": ["Inter"],
+            "display-hero": ["Inter"],
+            "display-hero-mobile": ["Inter"],
+            "body-medium": ["Inter"],
+            "screenplay-heading": ["Courier Prime"]
+          },
+          "fontSize": {
+            "badge-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500"}],
+            "body-base": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400"}],
+            "headline-section": ["20px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600"}],
+            "code-mono": ["13px", {"lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400"}],
+            "caption-meta": ["12px", {"lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400"}],
+            "screenplay-body": ["14px", {"lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400"}],
+            "title-card": ["16px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "display-hero": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600"}],
+            "display-hero-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-medium": ["14px", {"lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500"}],
+            "screenplay-heading": ["18px", {"lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      height: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #232329;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-text-primary min-h-screen antialiased flex flex-col font-body-base pb-32">
+<!-- Shared TopNavBar Anchor -->
+<header class="docked full-width top-0 sticky z-50 bg-surface/90 backdrop-blur-md border-b border-border-base flat no shadows">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Brand & Status -->
+<div class="flex items-center gap-6">
+<a class="flex items-center gap-2.5 font-title-card text-title-card font-bold tracking-tight text-text-primary hover:text-text-primary active:scale-[0.98] transition-transform duration-100" href="#">
+<span class="w-6 h-6 rounded bg-primary-container flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">movie_filter</span>
+</span>
+<span>OpenMontage Studio</span>
+</a>
+<div class="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-3 border border-border-base text-caption-meta font-caption-meta text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+<span>Agent Live (Autonomous v2.4)</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-7">
+<a class="text-text-secondary font-body-base text-body-base hover:text-text-primary pb-1 transition-colors duration-150" href="#">Home</a>
+<a class="text-primary border-b-2 border-primary font-body-medium text-body-medium pb-1" href="#">New Video</a>
+<a class="text-text-secondary font-body-base text-body-base hover:text-text-primary pb-1 transition-colors duration-150" href="#">Library</a>
+<a class="text-text-secondary font-body-base text-body-base hover:text-text-primary pb-1 transition-colors duration-150" href="#">Setup</a>
+<a class="text-text-secondary font-body-base text-body-base hover:text-text-primary pb-1 transition-colors duration-150" href="#">Settings</a>
+</nav>
+<!-- Trailing Controls -->
+<div class="flex items-center gap-3">
+<!-- Budget indicator pill -->
+<div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded bg-surface-2 border border-border-base font-code-mono text-code-mono text-text-secondary">
+<span class="text-text-muted">$</span>
+<span class="text-text-primary font-medium">0.35</span>
+<span class="text-text-muted">/ $2.00</span>
+</div>
+<a class="hidden xl:flex items-center gap-1 px-2.5 py-1 text-badge-label font-badge-label text-text-secondary hover:text-text-primary transition-colors" href="#">
+<span>Classic board</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</a>
+<div class="h-4 w-px bg-border-base hidden sm:block"></div>
+<button class="px-2.5 py-1 text-badge-label font-badge-label rounded bg-surface-2 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150 active:scale-[0.98]" type="button">
+          EN/VI
+        </button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+</button>
+<button class="w-8 h-8 rounded flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-container relative transition-colors duration-150 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</button>
+<button class="w-8 h-8 rounded-full bg-surface-3 border border-border-base flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Container -->
+<main class="max-w-6xl w-full mx-auto px-6 pt-10 flex-1 flex flex-col gap-9">
+<!-- Stepper & Wizard Header -->
+<section class="space-y-6">
+<!-- 4-Step Ribbon -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 bg-surface-1 p-2 rounded-xl border border-border-base">
+<!-- Step 1 (Active) -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface-2 border border-primary-container/40">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-fixed font-code-mono text-badge-label font-bold flex items-center justify-center ring-4 ring-primary-container/20">
+            1
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption-meta font-caption-meta text-primary uppercase tracking-wider font-semibold">Bước 1</span>
+<span class="text-body-medium font-body-medium text-text-primary truncate">Chọn mục tiêu</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg opacity-60">
+<div class="w-6 h-6 rounded-full bg-surface-3 border border-border-base text-text-muted font-code-mono text-badge-label font-bold flex items-center justify-center">
+            2
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption-meta font-caption-meta text-text-muted uppercase tracking-wider">Bước 2</span>
+<span class="text-body-medium font-body-medium text-text-secondary truncate">Kịch bản &amp; Nội dung</span>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg opacity-40">
+<div class="w-6 h-6 rounded-full bg-surface-3 border border-border-base text-text-muted font-code-mono text-badge-label font-bold flex items-center justify-center">
+            3
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption-meta font-caption-meta text-text-muted uppercase tracking-wider">Bước 3</span>
+<span class="text-body-medium font-body-medium text-text-secondary truncate">Phong cách &amp; Âm thanh</span>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex items-center gap-3 px-3 py-2.5 rounded-lg opacity-40">
+<div class="w-6 h-6 rounded-full bg-surface-3 border border-border-base text-text-muted font-code-mono text-badge-label font-bold flex items-center justify-center">
+            4
+          </div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption-meta font-caption-meta text-text-muted uppercase tracking-wider">Bước 4</span>
+<span class="text-body-medium font-body-medium text-text-secondary truncate">Kiểm tra &amp; Tạo video</span>
+</div>
+</div>
+</div>
+<!-- Title & Guidance -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-2">
+<div class="space-y-1.5">
+<div class="flex items-center gap-2 text-primary font-badge-label text-badge-label">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Bước 1/4: Khởi tạo ý tưởng</span>
+</div>
+<h1 class="text-display-hero font-display-hero text-text-primary tracking-tight">
+            Bạn muốn sáng tạo loại video nào hôm nay?
+          </h1>
+<p class="text-body-base font-body-base text-text-secondary max-w-2xl">
+            Chọn khuôn mẫu gần nhất với tầm nhìn của bạn. Autonomous AI Agent sẽ lập trình kịch bản, âm thanh và tiến trình dựng phù hợp.
+          </p>
+</div>
+<!-- Quick counter badge -->
+<div class="flex items-center gap-2 self-start md:self-end px-3 py-1.5 rounded-lg bg-surface-1 border border-border-base text-caption-meta font-caption-meta text-text-secondary">
+<span class="material-symbols-outlined text-[16px] text-primary">auto_awesome</span>
+<span>12 định dạng sẵn có</span>
+</div>
+</div>
+</section>
+<!-- Quick Filters / Segmented Navigation -->
+<section class="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll">
+<button class="px-3.5 py-1.5 rounded-lg bg-primary-container text-on-primary-fixed font-body-medium text-body-medium font-semibold whitespace-nowrap shadow-sm transition-transform active:scale-[0.98]">
+        Tất cả (12)
+      </button>
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-1 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base whitespace-nowrap transition-colors">
+        Hoạt hình &amp; Đồ họa (3)
+      </button>
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-1 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base whitespace-nowrap transition-colors">
+        Kể chuyện &amp; Nhân vật (3)
+      </button>
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-1 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base whitespace-nowrap transition-colors">
+        Dùng video có sẵn (3)
+      </button>
+<button class="px-3.5 py-1.5 rounded-lg bg-surface-1 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base whitespace-nowrap transition-colors">
+        Công nghệ &amp; Demo (3)
+      </button>
+</section>
+<!-- Bento Grid of Visual Goal Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Card 1: Explain a topic (Locked - Needs Setup) -->
+<div class="group relative rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-border-soft">
+<img class="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity" data-alt="A minimalist architectural diagram workspace with cinematic dark mood, glowing schematic nodes and isometric blueprints floating over a matte charcoal desk under soft warm key light, cinematic photography, rich shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYmUBbfssIqqnE608lMum93x7jNfxQmfoRBfof1P4krCmFw122xpQ4ELsj5yxXJZSSBHy4k_4etA4m4SQ5mLwo1aSmpROn6205oYXez4uVFNyqT-qMUvbriHUtqLhEecsUDlCu4OYu-vOkGAIbqXNkg-92zuaIhRQWMGuBUAt1MlWfjkcn96h7YnD-k6glDtsSs8TCs2D66vyvWyTy1iOqb7RoO0UeQ9DL7Yhf2Lk"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-surface-1/40 to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-primary">
+<span class="material-symbols-outlined text-[14px]">lightbulb</span>
+<span>Khuyên dùng</span>
+</div>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-status-danger-dim text-status-danger border border-status-danger/30 text-caption-meta font-caption-meta font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+<span>Cần API</span>
+</div>
+</div>
+<!-- Card Header & Copy -->
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-card text-title-card text-text-primary font-semibold">Giải thích chủ đề (Explain a topic)</h3>
+</div>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed">
+              Tự động tạo kịch bản, hình minh họa hoạt họa và giọng đọc giải thích sâu sắc theo cấu trúc câu hỏi.
+            </p>
+</div>
+<!-- Metadata chips -->
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-code-mono">60s - 3 phút</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">YouTube / TikTok</span>
+</div>
+</div>
+<!-- Lock Action Button -->
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between">
+<span class="text-caption-meta font-caption-meta text-text-muted">Cần khóa Nano/Flux API</span>
+<a class="inline-flex items-center gap-1 text-caption-meta font-body-medium text-primary hover:underline" href="#">
+<span>Mở khóa trong Setup</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- Card 2: Animated Motion Video (SELECTED STATE) -->
+<div class="group relative rounded-xl bg-surface-1 border-2 border-primary-container p-5 flex flex-col justify-between shadow-lg shadow-primary-container/5 ring-1 ring-primary-container/20">
+<!-- Selected Badge Overlay -->
+<div class="absolute -top-3 right-5 px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-fixed text-caption-meta font-body-medium font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Đang chọn</span>
+</div>
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-primary-container/30">
+<img class="w-full h-full object-cover" data-alt="Futuristic kinetic typography composition in high-contrast matte dark film bay, vivid amber and cyan vector geometry floating in 3D perspective, crisp laser trails and stylized modern motion graphics, 8k render." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiWQWS1ZJ6A71jNLaEkou7ch96Lxnlp00Q32WZaVtyXP2R9etHnpeNkoU1izkeBwDy3APzBNnzt4evL2ZJ79jzOCfOAEea5R4H11sgFV6-pA-GA0Qt2bVVGuNKD_j19K1fkFe_n6j_aHkxEtgPcZA7WZEV4A5UqVBnqYdPhgu09w8Jksl9LTg5N-pHiZmQkQaLoe9LgR2wCNgf7Rxo9NyFrlIVOXSCyNMz53IwOPA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-transparent to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-status-success">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>Sẵn sàng dùng ngay</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-surface-container-high/90 text-text-primary text-caption-meta font-code-mono">
+              Remotion Engine
+            </div>
+</div>
+<!-- Header & Content -->
+<div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold flex items-center gap-2">
+<span>Video hoạt hình chuyển động</span>
+</h3>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed mt-1">
+              Đồ họa chuyển động 2D ấn tượng phong cách anime/tech reel với nhịp điệu cuốn hút, render thuần code.
+            </p>
+</div>
+<!-- Metadata chips -->
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-status-success-dim text-status-success text-caption-meta font-code-mono">Miễn phí trên máy</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary text-caption-meta font-code-mono">15s - 60s</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">9:16 Shorts / 16:9</span>
+</div>
+</div>
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between text-caption-meta font-caption-meta">
+<span class="text-text-secondary font-medium">Được AI Agent hỗ trợ hoàn toàn</span>
+<span class="text-primary font-code-mono">0.00$ API</span>
+</div>
+</div>
+<!-- Card 3: Teaser & Trailer phim ngắn -->
+<div class="group relative rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-border-soft">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Moody cinematic movie trailer still, deep cinematic shadows, dramatic atmospheric fog illuminated by amber backlight, letterbox composition with subtle grain and tactile film texture, 35mm film aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0ztGCAL1XhxamcsrDK8gQGLt7LARAI-MbJkZbvM6LWd37pVBkifhSMn0dUI8-V94GtrMZ6Pw4qeE_RJbwO3XRz1Ts6uwpc6gsUzLpewHfVXqFTGm8C5okWoIichDbKiBE3eWAWzlySSUODTEZMl6XRqMBvNW9twkZpF-VYl4XqQOsCpdE6r24aQ6amay-hu6et1OR1SDO0b0wwNonPcjbPzHknp7owUSxC7MwCr0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-transparent to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-status-success">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>Sẵn sàng dùng</span>
+</div>
+<div class="absolute top-2.5 right-2.5 px-2 py-0.5 rounded bg-surface-2 text-caption-meta font-code-mono text-text-secondary">
+              Âm thanh vòm FX
+            </div>
+</div>
+<div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold">Teaser &amp; Trailer phim ngắn</h3>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed mt-1">
+              Dựng mở màn kịch tính với âm thanh dồn dập, chuyển cảnh điện ảnh giật gân, nhịp điệu Hollywood.
+            </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-code-mono">30s - 90s</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">Cinematic 2.39:1</span>
+</div>
+</div>
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between text-caption-meta font-caption-meta">
+<span class="text-text-muted">Âm thanh điện ảnh tích hợp</span>
+<button class="text-text-secondary hover:text-text-primary font-medium" type="button">Chọn mục này</button>
+</div>
+</div>
+<!-- Card 4: Kể chuyện nhân vật hoạt hình -->
+<div class="group relative rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-border-soft">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Stylized claymation 3D animated character puppet sitting under a soft desk lamp, cinematic lighting, warm whimsical tones, deep charcoal studio backdrop, tactile felt and vinyl textures, charming character design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtKskE48flD5CdbfbZ4ucWKqWwaJGJq-JrkriQUNv12Ec35UOZyG9uIyi9LIEenNZDSD6VNIP9P15LnKrAlJnt1-drBspa4hK9dpd3ZpSJvfis9WiGuVIyUErJWHt2iGlkQU2Ui9LNazxcixJCDMJMrsfOtY75rhNBshNTpdsscYFR8BCcT7smZbhEPb19UNNiQSlWzYNR3s7BKGPNLL_o3_Ke9YZJmKzJ5YPa6W0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-transparent to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-status-info">
+<span>Works now · Beta</span>
+</div>
+</div>
+<div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold">Kể chuyện nhân vật hoạt hình</h3>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed mt-1">
+              Tạo nhân vật ảo có biểu cảm, dẫn dắt câu chuyện cổ tích, bài học cuộc sống hoặc câu chuyện thương hiệu.
+            </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-code-mono">Auto Rig 2D</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">Nhân vật biểu cảm</span>
+</div>
+</div>
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between text-caption-meta font-caption-meta">
+<span class="text-text-muted">Kèm kịch bản phân vai</span>
+<button class="text-text-secondary hover:text-text-primary font-medium" type="button">Chọn mục này</button>
+</div>
+</div>
+<!-- Card 5: Demo ứng dụng & Dòng lệnh (App & CLI Demo) -->
+<div class="group relative rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-border-soft">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Elegant glowing terminal code interface on a high-resolution dark monitor screen, neon amber and emerald syntax highlights, sharp macro perspective, subtle scanlines and blurred reflection in dark developer bay." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7-ZJHXT7_-pSKdBDIyspKPkGjViiGwteszsBnKb5ZKqbGhb6JnA_BBbh6ewknCUtbXeBvxpjGMa03lCDkUMMnhhSP5DiSQcx4dg_4jE_eNpIXoVmWkN09kvjwy1Kvy754DpBMROtXtp_hVZXNgetj5Cj4-2KhJRVvWDZ6QX-wrzzr3i-NGYrevYF7AMihhdX_AzNMgSMDcnpQYgPx4CspERLLsVjn5ar3kiKNmaY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-transparent to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-status-success">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span>Sẵn sàng dùng ngay</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-surface-3/90 text-text-primary text-caption-meta font-code-mono">
+              CLI / Web Cast
+            </div>
+</div>
+<div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold">Demo ứng dụng &amp; Dòng lệnh</h3>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed mt-1">
+              Trình diễn tính năng code, giao diện web hoặc terminal theo nhịp gõ phím chân thực, zoom tiêu điểm tự động.
+            </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-code-mono">Mã nguồn sạch</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">Cursor / VSCode Effect</span>
+</div>
+</div>
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between text-caption-meta font-caption-meta">
+<span class="text-text-muted">Hoàn hảo cho Developer</span>
+<button class="text-text-secondary hover:text-text-primary font-medium" type="button">Chọn mục này</button>
+</div>
+</div>
+<!-- Card 6: Lồng tiếng & Phụ đề đa ngôn ngữ (Translate & Dub) -->
+<div class="group relative rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-4">
+<!-- Artwork Thumbnail -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden bg-surface-2 border border-border-soft">
+<img class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="Multilingual holographic soundwaves and glowing audio frequency spectrum visualized over dark ambient studio space, cinematic purple and warm amber reflections, clean audio production aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx5K24vWFY_-DBe2Y7-42m_mWzU3yC9IXoQKW-OUH26Huljd2wtmoNiF8kiz9gCI1bo8rJ1hnzZeOnujG4uzIf2XacCEnf10E3yI69kdDsOPwp8yrWlYbLSC_QgwtmcPAvdFUib7nqk5BzcjnYkE8VOS24Y9CLowwXstVnkdiengzE5vS32TuOTcpHSFWZVKsGhTA6JZjH893ntTjdldpisoXC0CT_xsfMfyNKOhI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1 via-transparent to-transparent"></div>
+<div class="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-3/90 backdrop-blur border border-border-base text-caption-meta font-caption-meta text-text-secondary">
+<span>Beta · Dùng file của bạn</span>
+</div>
+<div class="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded bg-surface-3/90 text-text-primary text-caption-meta font-code-mono">
+              Whisper + ElevenLabs
+            </div>
+</div>
+<div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold">Lồng tiếng &amp; Phụ đề đa ngôn ngữ</h3>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed mt-1">
+              Tự động dịch kịch bản, chèn giọng đọc bản ngữ sống động và đồng bộ phụ đề mượt mà chuẩn phát âm.
+            </p>
+</div>
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-code-mono">32 ngôn ngữ</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted text-caption-meta font-caption-meta">Lip-sync tự nhiên</span>
+</div>
+</div>
+<div class="pt-5 mt-4 border-t border-border-base/60 flex items-center justify-between text-caption-meta font-caption-meta">
+<span class="text-text-muted">Giữ nguyên tông giọng</span>
+<button class="text-text-secondary hover:text-text-primary font-medium" type="button">Chọn mục này</button>
+</div>
+</div>
+</section>
+<!-- Bottom Prominent Card: "Make something like this" -->
+<section class="rounded-xl bg-surface-1 border border-dashed border-primary-container/40 p-6 relative overflow-hidden">
+<!-- Glow ambient accent behind -->
+<div class="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-primary-container/5 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+<div class="max-w-xl space-y-2">
+<div class="flex items-center gap-2 text-primary font-badge-label text-badge-label">
+<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+<span class="font-semibold uppercase tracking-wider">Lấy cảm hứng từ video mẫu</span>
+</div>
+<h2 class="text-headline-section font-headline-section text-text-primary">
+            Hoặc dán link video bạn yêu thích để AI học hỏi phong cách
+          </h2>
+<p class="text-caption-meta font-caption-meta text-text-secondary leading-relaxed">
+            Dán liên kết YouTube, TikTok hoặc Reel. Trợ lý AI sẽ trích xuất nhịp điệu cắt dựng, ánh sáng và nhịp kịch bản để tái hiện phiên bản độc bản cho bạn — hoàn toàn không sao chép nguyên mẫu.
+          </p>
+</div>
+<!-- Interactive URL Input Bar -->
+<div class="w-full md:w-96 flex flex-col gap-2">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-text-muted text-[18px]">link</span>
+<input class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-surface-2 border border-border-base text-body-base font-body-base text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" placeholder="https://youtube.com/watch?v=... hoặc TikTok" type="text"/>
+</div>
+<button class="h-10 px-4 rounded-lg bg-surface-3 border border-border-base text-text-primary font-body-medium text-body-medium hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">psychology</span>
+<span>Phân tích &amp; Tiếp tục</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Screenplay Manuscript Preview Touchpoint -->
+<section class="rounded-xl bg-surface-1 border border-border-base p-6">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">description</span>
+<h3 class="font-title-card text-title-card text-text-primary">Xem trước cấu trúc phân đoạn (Kịch bản tự động)</h3>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-code-mono text-caption-meta">
+          Mẫu tiêu chuẩn Screenplay Draft
+        </span>
+</div>
+<!-- Tactile Screenplay Card -->
+<div class="rounded-lg bg-screenplay-parchment p-6 text-screenplay-ink shadow-sm border border-[#e0d6c0]">
+<div class="flex justify-between items-center border-b border-screenplay-ink/10 pb-3 mb-4 font-screenplay-heading text-caption-meta text-screenplay-ink/70">
+<span>SCENE 01 / INT. DIGITAL WORKSPACE - NIGHT</span>
+<span class="font-code-mono">TIME: 00:00 - 00:15</span>
+</div>
+<p class="font-screenplay-body text-screenplay-body leading-relaxed mb-3">
+          Màn hình tối dần. Một chùm sáng hổ phách quét ngang qua tiêu đề chính. Âm thanh bộ gõ cơ học nhịp điệu 120BPM vang lên dứt khoát.
+        </p>
+<div class="text-center my-3">
+<span class="font-screenplay-heading font-bold text-caption-meta tracking-wider">NGƯỜI DẪN CHUYỆN (V.O.)</span>
+</div>
+<p class="font-screenplay-body text-screenplay-body leading-relaxed max-w-xl mx-auto text-center italic">
+          "Ý tưởng của bạn không cần hàng tuần để thành hình. Mọi khung hình chuyển động đều bắt đầu ngay lúc này."
+        </p>
+</div>
+</section>
+</main>
+<!-- Bottom Floating / Sticky Action Bar -->
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-surface/95 backdrop-blur-md border-t border-border-base py-3.5 px-6 shadow-2xl">
+<div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+<!-- Selection Summary & Cost pill -->
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container shrink-0"></div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="text-caption-meta font-caption-meta text-text-muted">Đang chọn:</span>
+<span class="text-body-medium font-body-medium text-text-primary font-semibold truncate">Video hoạt hình chuyển động (Animated Motion Video)</span>
+</div>
+<span class="text-caption-meta font-caption-meta text-status-success">
+            Dự kiến chi phí: Miễn phí (Chạy Remotion Engine trên máy)
+          </span>
+</div>
+</div>
+<!-- Action Button Group -->
+<div class="flex items-center gap-3 w-full sm:w-auto justify-end">
+<button class="h-10 px-5 rounded-lg bg-surface-2 border border-border-base text-text-secondary hover:text-text-primary hover:bg-surface-container font-body-medium text-body-medium transition-colors active:scale-[0.98]" type="button">
+          Hủy bỏ
+        </button>
+<button class="h-10 px-6 rounded-lg bg-primary-container text-on-primary-fixed font-body-medium text-body-medium font-semibold hover:bg-[#ffb956] transition-colors flex items-center gap-2 shadow-lg shadow-primary-container/20 active:scale-[0.98]" type="button">
+<span>Tiếp tục: Viết kịch bản &amp; Nội dung</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

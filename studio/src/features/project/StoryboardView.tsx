@@ -1,8 +1,9 @@
 import { Badge, EmptyState } from "@/components/ui";
 import { titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
-import type { MediaItem, Scene, Storyboard } from "@/lib/api";
-import { fmtDuration, isAudio, isVideo, mediaURL, thumbURL } from "@/lib/format";
+import type { MediaItem, Scene, Storyboard } from "@/types/api";
+import { fmtDuration, isAudio, isVideo } from "@/utils/format";
+import { mediaURL, thumbURL } from "@/services";
 
 /** Scene × narration × assets filmstrip (same join the classic board shows). */
 export function StoryboardView({

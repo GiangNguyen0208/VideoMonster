@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { UnlockOffer } from "@/lib/api";
+import type { UnlockOffer } from "@/types/api";
 import { UnlockCard } from "./UnlockCard";
 
 const offer: UnlockOffer = {

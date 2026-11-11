@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from "react";
 import { msg } from "@/i18n";
-import { cn } from "@/lib/cn";
+import { cn } from "@/utils/cn";
 
 interface DialogProps {
   open: boolean;
@@ -32,7 +32,7 @@ export function Dialog({ open, onClose, title, children, footer, side = false }:
       }}
       aria-label={typeof title === "string" ? title : undefined}
       className={cn(
-        "border border-border bg-surface p-0 text-text backdrop:bg-backdrop",
+        "border border-border bg-surface p-0 text-text shadow-elev-lg backdrop:bg-backdrop backdrop:backdrop-blur-sm",
         side
           ? "m-0 ml-auto h-dvh max-h-dvh w-full max-w-md rounded-none"
           : "m-auto w-full max-w-lg rounded-card",

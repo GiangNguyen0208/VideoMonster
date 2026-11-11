@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { setLocale } from "@/i18n";
-import type { BoardState, ProjectCost, ProjectSummary, Results, SettingsView } from "@/lib/api";
+import type { BoardState, ProjectCost, ProjectSummary, Results, SettingsView } from "@/types/api";
 import boardFixture from "@/test/fixtures/board-state.json";
 import summaryFixture from "@/test/fixtures/project-summary.json";
 import { mockFetch } from "@/test/fakes";
@@ -194,9 +194,8 @@ describe("Results", () => {
   it("downloads the latest video straight from Home", async () => {
     serve();
     renderRoute("/");
-    const results = await screen.findByRole("region", { name: "Recent results" });
     expect(
-      within(results).getByRole("link", { name: "Download The Last Lighthouse" }),
+      await screen.findByRole("link", { name: "Download The Last Lighthouse" }),
     ).toHaveAttribute("href", `/media/${PID}/renders/final.mp4?download=1`);
   });
 });
@@ -225,9 +224,9 @@ describe("Cost panel", () => {
     setLocale("vi");
     serve();
     renderRoute("/library");
-    expect(
-      await screen.findByText(/Đã chi tháng này: 12,50\sUS\$ cho 3 video/),
-    ).toBeInTheDocument();
+    const stat = (await screen.findByText("Đã chi tháng này")).parentElement!;
+    expect(stat).toHaveTextContent(/12,50\sUS\$/);
+    expect(stat).toHaveTextContent("cho 3 video");
   });
 });
 

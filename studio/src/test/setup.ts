@@ -1,10 +1,13 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterEach, beforeEach, vi } from "vitest";
 import { __testing as uploadQueue } from "@/features/uploads/uploadStore";
 import { resetLocale } from "@/i18n";
-import { resetSession } from "@/lib/api";
+import { resetSession } from "@/services";
 import { FakeEventSource } from "./fakes";
+
+// Pages load lazily; `findBy*` needs more than the 1 s default when the suite runs in parallel.
+configure({ asyncUtilTimeout: 5000 });
 
 // jsdom has <dialog> but not its modal API.
 if (typeof HTMLDialogElement !== "undefined" && !HTMLDialogElement.prototype.showModal) {

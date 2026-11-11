@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenMontage Studio - Trung tâm Thiết lập &amp; Năng lực Hệ thống</title>
+<!-- Google Fonts: Inter & Courier Prime & JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary": "#00391f",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "surface-container": "#201f21",
+            "surface-2": "#16161a",
+            "inverse-on-surface": "#313032",
+            "surface-1": "#101013",
+            "on-secondary-fixed-variant": "#47464a",
+            "background": "#131315",
+            "text-muted": "#5f5f68",
+            "secondary-fixed-dim": "#c8c5ca",
+            "surface-container-highest": "#353437",
+            "on-background": "#e5e1e4",
+            "surface-variant": "#353437",
+            "on-tertiary-fixed-variant": "#00522f",
+            "tertiary-container": "#59cb8b",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "on-secondary-container": "#b7b4b8",
+            "on-tertiary-container": "#00532f",
+            "primary-container": "#f0a83c",
+            "on-primary-fixed-variant": "#633f00",
+            "primary-fixed": "#ffddb5",
+            "secondary-fixed": "#e4e1e6",
+            "inverse-surface": "#e5e1e4",
+            "surface-bright": "#39393b",
+            "on-surface": "#e5e1e4",
+            "status-success": "#4fc283",
+            "text-secondary": "#a0a0a9",
+            "error": "#ffb4ab",
+            "on-tertiary-fixed": "#002110",
+            "surface-container-high": "#2a2a2c",
+            "secondary-container": "#47464a",
+            "on-primary-container": "#644000",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "on-primary-fixed": "#2a1800",
+            "surface-dim": "#131315",
+            "inverse-primary": "#835400",
+            "primary-fixed-dim": "#ffb956",
+            "tertiary": "#76e8a5",
+            "status-info": "#6aa1ff",
+            "border-base": "#232329",
+            "surface-container-lowest": "#0e0e10",
+            "secondary": "#c8c5ca",
+            "text-primary": "#ececef",
+            "primary": "#ffc881",
+            "outline": "#9e8e7c",
+            "on-primary": "#452b00",
+            "surface": "#131315",
+            "on-error-container": "#ffdad6",
+            "status-danger": "#e5544b",
+            "tertiary-fixed": "#87f9b5",
+            "outline-variant": "#514535",
+            "surface-tint": "#ffb956",
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "on-error": "#690005",
+            "screenplay-ink": "#29231a",
+            "on-surface-variant": "#d6c4b0",
+            "tertiary-fixed-dim": "#6adc9b",
+            "border-soft": "#1a1a1f",
+            "screenplay-parchment": "#f2e9d5",
+            "surface-3": "#1c1c21",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "surface-container-low": "#1c1b1d",
+            "on-secondary-fixed": "#1b1b1e",
+            "on-secondary": "#303033",
+            "error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-xl": "2rem",
+            "gutter-desktop": "1.5rem",
+            "gutter": "1rem",
+            "space-2xl": "2.5rem",
+            "margin-desktop": "2rem",
+            "space-sm": "0.5rem",
+            "margin-tablet": "1.5rem",
+            "space-lg": "1.5rem",
+            "margin": "1rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "display-hero": ["Inter"],
+            "headline-section": ["Inter"],
+            "badge-label": ["Inter"],
+            "title-card": ["Inter"],
+            "screenplay-heading": ["Courier Prime"],
+            "body-base": ["Inter"],
+            "body-medium": ["Inter"],
+            "code-mono": ["JetBrains Mono"],
+            "screenplay-body": ["Courier Prime"],
+            "caption-meta": ["Inter"],
+            "display-hero-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "display-hero": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "headline-section": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "badge-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "title-card": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "screenplay-heading": ["18px", { "lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "body-base": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-medium": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500" }],
+            "code-mono": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "screenplay-body": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "caption-meta": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "display-hero-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #101013;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232329;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #353437;
+    }
+  </style>
+</head>
+<body class="bg-surface-container-lowest text-text-primary antialiased min-h-screen selection:bg-primary-container selection:text-surface-1">
+<!-- Top Navigation Bar (Shared Component Execution) -->
+<header class="docked full-width top-0 sticky z-50 bg-surface/90 dark:bg-surface/90 backdrop-blur-md border-b border-border-base dark:border-border-base flat no shadows">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Brand & Navigation Cluster -->
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2 font-title-card text-title-card font-bold tracking-tight text-text-primary dark:text-text-primary hover:opacity-90 transition-opacity" href="#">
+<div class="w-6 h-6 rounded bg-primary-container flex items-center justify-center text-surface-container-lowest font-black text-xs">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">movie_filter</span>
+</div>
+<span>OpenMontage <span class="text-primary font-normal">Studio</span></span>
+</a>
+<!-- Desktop Navigation Items (Setup is Active) -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Home</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">New Video</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Library</a>
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary font-body-medium text-body-medium pb-1" href="#">Setup</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Settings</a>
+</nav>
+</div>
+<!-- Quick Metrics & Trailing Actions -->
+<div class="flex items-center gap-4">
+<!-- Live System Telemetry Chips -->
+<div class="hidden lg:flex items-center gap-2 pr-2 border-r border-border-base">
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-2 border border-border-base font-caption-meta text-caption-meta text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+<span>Remotion 4.0</span>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-2 border border-border-base font-caption-meta text-caption-meta text-text-secondary">
+<span class="text-text-muted">Chi tiêu:</span>
+<span class="text-primary font-medium">$0.35</span>
+<span class="text-text-muted">/ $2.00</span>
+</div>
+<a class="flex items-center gap-1 px-2 py-1 text-text-secondary hover:text-text-primary font-caption-meta text-caption-meta transition-colors" href="#">
+<span>Classic board</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</a>
+</div>
+<!-- Trailing Secondary (EN/VI) -->
+<button class="px-2 py-1 rounded text-text-secondary hover:text-text-primary font-body-base text-body-base hover:bg-surface-container transition-colors duration-150 active:scale-[0.98]">
+          EN/VI
+        </button>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-1 text-text-secondary">
+<button class="w-8 h-8 rounded flex items-center justify-center hover:text-text-primary hover:bg-surface-container transition-colors duration-150" title="Dark Mode">
+<span class="material-symbols-outlined text-[20px]" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:text-text-primary hover:bg-surface-container relative transition-colors duration-150" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+</button>
+<button class="w-8 h-8 rounded flex items-center justify-center hover:text-text-primary hover:bg-surface-container transition-colors duration-150" title="Account">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+<!-- Trailing Primary Action (New Video) -->
+<button class="hidden sm:inline-flex items-center gap-1.5 h-9 px-3.5 rounded-lg bg-primary-container text-on-primary-fixed font-body-medium text-body-medium font-semibold hover:brightness-105 active:scale-[0.98] transition-all duration-150 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+<span>New Video</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Container -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+<!-- Page Header & Global Probe Controls -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
+<div>
+<div class="flex items-center gap-2 mb-1.5">
+<h1 class="font-display-hero text-display-hero text-text-primary">
+            Trung tâm Thiết lập &amp; Năng lực Hệ thống
+          </h1>
+<span class="px-2 py-0.5 rounded bg-surface-2 border border-border-base font-caption-meta text-caption-meta text-text-secondary">
+            v2.4.1
+          </span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary max-w-3xl">
+          Kiểm tra phần cứng, động cơ render cục bộ và cấu hình API Keys để mở khóa toàn bộ tiềm năng AI sáng tạo video.
+        </p>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center gap-3 shrink-0">
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-2">
+<button class="h-10 px-3.5 rounded-lg bg-surface-2 border border-border-base text-text-primary font-body-medium text-body-medium hover:bg-surface-3 transition-colors flex items-center gap-1.5 active:scale-[0.98]" id="btn-probe-json">
+<span class="material-symbols-outlined text-[18px] text-text-secondary">code_blocks</span>
+<span>Chẩn đoán (Probe JSON)</span>
+</button>
+<button class="h-10 px-4 rounded-lg bg-primary-container text-on-primary-fixed font-body-medium text-body-medium font-semibold hover:brightness-105 transition-all flex items-center gap-1.5 active:scale-[0.98]" id="btn-check-again">
+<span class="material-symbols-outlined text-[18px]" id="refresh-icon">refresh</span>
+<span>Kiểm tra lại toàn bộ</span>
+</button>
+</div>
+<span class="font-caption-meta text-caption-meta text-text-muted mt-1">
+            Vừa kiểm tra 2 phút trước (PID: 88412)
+          </span>
+</div>
+</div>
+</div>
+<!-- System Tier Status Banner (Cinematic Amber Halo) -->
+<div class="rounded-xl p-5 bg-surface-1 border border-primary-container/30 bg-accent-dim/20 relative overflow-hidden">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5 relative z-10">
+<div class="space-y-2">
+<div class="flex items-center gap-2.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container/20 border border-primary-container/40 text-primary font-badge-label text-badge-label font-semibold tracking-wide">
+              TIER: ZERO-KEY (TIẾT KIỆM TỐI ĐA)
+            </span>
+<span class="inline-flex items-center gap-1 font-caption-meta text-caption-meta text-status-success">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+              Sẵn sàng sản xuất ngoại tuyến
+            </span>
+</div>
+<h2 class="font-headline-section text-headline-section text-text-primary">
+            Bạn đang sử dụng các công cụ Miễn phí &amp; Cục bộ 100% trên máy!
+          </h2>
+<p class="font-body-base text-body-base text-text-secondary max-w-3xl">
+            Giọng đọc Piper TTS, Render Remotion CPU, cắt ghép FFmpeg và phụ đề tự động đều chạy trực tiếp trên máy của bạn mà không tốn 1 xu chi phí API đám mây.
+          </p>
+</div>
+<!-- Hardware Specs Card (Tactile Pill) -->
+<div class="bg-surface-2 border border-border-base rounded-lg p-3.5 shrink-0 min-w-[320px]">
+<div class="flex items-center justify-between font-caption-meta text-caption-meta text-text-secondary pb-2 mb-2 border-b border-border-base">
+<span class="flex items-center gap-1.5 font-medium text-text-primary">
+<span class="material-symbols-outlined text-[16px] text-primary">memory</span>
+              Apple M3 Pro (12 Cores)
+            </span>
+<span class="text-status-success font-code-mono">18 GB RAM</span>
+</div>
+<div class="grid grid-cols-2 gap-2 font-caption-meta text-caption-meta text-text-muted">
+<div class="flex items-center gap-1">
+<span class="text-text-secondary">FFmpeg:</span>
+<span class="text-text-primary font-code-mono">v6.1.1</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="text-text-secondary">Node:</span>
+<span class="text-text-primary font-code-mono">v20.10.0</span>
+</div>
+<div class="col-span-2 flex items-center gap-1.5 text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-status-info"></span>
+<span>Metal GPU Hardware Acceleration: <strong class="text-text-primary">Active</strong></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Things to Know & System Notices (Code Block Alerts) -->
+<div class="space-y-2.5">
+<div class="flex items-start gap-3 p-3.5 rounded-lg bg-surface-1 border border-border-base font-code-mono text-code-mono text-text-secondary">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">terminal</span>
+<div class="flex-1 space-y-1">
+<div class="text-text-primary font-medium flex items-center gap-2">
+<span>diagram_gen: Mermaid CLI (mmdc) chưa được cài đặt</span>
+<span class="px-1.5 py-0.2 rounded bg-surface-3 text-[11px] text-text-muted font-normal">Optional</span>
+</div>
+<div class="text-text-muted">
+            Cần để render sơ đồ tư duy dạng đồ họa tự động. Để cài đặt: 
+            <code class="px-1.5 py-0.5 rounded bg-surface-2 text-primary font-code-mono">npm install -g @mermaid-js/mermaid-cli</code>. Các tính năng video cốt lõi khác vẫn hoạt động hoàn hảo.
+          </div>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3.5 rounded-lg bg-surface-1 border border-border-base font-code-mono text-code-mono text-text-secondary">
+<span class="material-symbols-outlined text-[18px] text-status-info shrink-0 mt-0.5">info</span>
+<div class="flex-1">
+<span class="text-text-primary font-medium">Khuyến nghị GPU ComfyUI:</span>
+<span class="text-text-muted">
+            Các workflow WAN 2.2 14B FP8 yêu cầu tối thiểu 16GB VRAM. Đối với môi trường máy trạm cá nhân, hệ thống tự động ưu tiên Remotion SVG &amp; Kinetic Typography mượt mà không chiếm dụng VRAM.
+          </span>
+</div>
+</div>
+</div>
+<!-- Section 1: Năng lực sẵn sàng hoạt động ngay (Works Now) -->
+<section class="space-y-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-base pb-3">
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary flex items-center gap-2">
+<span>Năng lực sẵn sàng hoạt động ngay</span>
+<span class="px-2 py-0.5 rounded-full bg-status-success-dim text-status-success font-badge-label text-badge-label">
+              9/9 Cục bộ
+            </span>
+</h2>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+            Động cơ render chạy trực tiếp: <span class="text-status-success font-medium">FFmpeg ✓</span> · <span class="text-status-success font-medium">Remotion ✓</span> · <span class="text-status-success font-medium">HyperFrames ✓</span>
+</p>
+</div>
+<span class="font-caption-meta text-caption-meta text-text-muted">
+          Chi phí sản xuất: <strong class="text-text-primary">$0.00 / phút</strong>
+</span>
+</div>
+<!-- 9 Bento Grid Capability Tiles -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+<!-- Tile 1 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Thu âm &amp; Giọng đọc AI</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Piper TTS local — 19 giọng đọc tiếng Việt &amp; tiếng Anh chất lượng cao, độ trễ 120ms không tốn phí.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">piper-v1.2.0</span>
+<span>vi_VN-vivos-medium</span>
+</div>
+</div>
+<!-- Tile 2 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Biên tập &amp; Render video</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Remotion 4.0 &amp; FFmpeg — Xuất video độ phân giải 1080p 60fps mượt mà trên CPU với bộ nhớ đệm đa luồng.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">remotion-bundler</span>
+<span>Parallel workers: 8</span>
+</div>
+</div>
+<!-- Tile 3 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Phụ đề hoạt họa động</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Animated Captions — Nhận diện giọng nói Whisper cục bộ, đồng bộ từng từ (word-level timestamps).
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">whisper.cpp</span>
+<span>Model: ggml-base</span>
+</div>
+</div>
+<!-- Tile 4 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Thiết kế &amp; Phối nhạc nền</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Audio Ducking tự động — Tự hạ âm lượng khi có giọng nói; tích hợp thư viện 120+ bản quyền nhạc Pixabay.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">ffmpeg-sidechain</span>
+<span>120 tracks built-in</span>
+</div>
+</div>
+<!-- Tile 5 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Đồ họa chữ động</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Kinetic Typography — 100% mã TypeScript TSX native, hỗ trợ spring physics, motion blur và bố cục lưới responsive.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">react-spring</span>
+<span>60fps rasterizer</span>
+</div>
+</div>
+<!-- Tile 6 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Ghi hình &amp; Terminal CLI</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Screen Recording &amp; Pygments — Trực quan hóa dòng lệnh CLI và cú pháp code syntax highlighting tự động.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">shiki-highlighter</span>
+<span>AVFoundation capture</span>
+</div>
+</div>
+<!-- Tile 7 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Hiệu ứng 3D &amp; Không gian</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Three.js &amp; Canvas — Tương thích mô hình GLTF 3D dựng sẵn, hiệu ứng hạt camera và đổ bóng WebGL thời gian thực.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">three@0.160</span>
+<span>Headless GL enabled</span>
+</div>
+</div>
+<!-- Tile 8 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Trích xuất &amp; Đóng gói MP4</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Fast Export H.264/HEVC — Bộ lọc nén h264_videotoolbox tối ưu dung lượng cho YouTube Shorts &amp; TikTok.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">h264_videotoolbox</span>
+<span>CRF 21</span>
+</div>
+</div>
+<!-- Tile 9 -->
+<div class="p-4 rounded-lg bg-surface-1 border border-border-base hover:border-border-soft transition-colors space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-title-card text-title-card text-text-primary font-semibold">Phân tích video mẫu</span>
+<span class="w-5 h-5 rounded-full bg-status-success-dim flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-sm">
+            Video Probe — Trích xuất FPS, bitrate, color space Rec.709 và cắt keyframe chuẩn xác không cần giải mã lại.
+          </p>
+<div class="pt-1 flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="px-1.5 py-0.5 rounded bg-surface-2 font-code-mono text-[11px]">ffprobe-json</span>
+<span>Zero-copy slicing</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Trạng thái các thể loại Video trên máy bạn (Video Types Status) -->
+<section class="space-y-4">
+<div class="flex items-center justify-between border-b border-border-base pb-3">
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary">
+            Trạng thái các thể loại Video trên máy bạn
+          </h2>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+            Khả năng dựng các định dạng video dựa trên tài nguyên và khóa API hiện có.
+          </p>
+</div>
+</div>
+<div class="rounded-xl border border-border-base bg-surface-1 divide-y divide-border-base overflow-hidden">
+<!-- Row 1: Long video to shorts -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">content_cut</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary flex items-center gap-2">
+<span>Trích đoạn ngắn từ video dài (Long video → Shorts)</span>
+<span class="font-caption-meta text-caption-meta text-text-muted">beta</span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Tự nhận diện câu nói cao trào, căn giữa khuôn mặt 9:16 và dập phụ đề tự động.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="px-2.5 py-1 rounded bg-status-success-dim text-status-success font-badge-label text-badge-label font-medium">
+              Sẵn sàng 100%
+            </span>
+</div>
+</div>
+<!-- Row 2: Animated Video -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">animation</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary">
+                Video hoạt hình chuyển động (Animated video)
+              </div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Dựng kinetic vector và typographic layouts mượt mà.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="font-caption-meta text-caption-meta text-text-muted">Tốt hơn nếu có AI Images, AI Music</span>
+<span class="px-2.5 py-1 rounded bg-status-info-dim text-status-info font-badge-label text-badge-label font-medium">
+              Hoạt động tốt
+            </span>
+</div>
+</div>
+<!-- Row 3: Explain a topic (Locked -> Requires Unlock) -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface-2/20 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">school</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary flex items-center gap-2">
+<span>Giải thích chủ đề (Explain a topic)</span>
+<span class="w-2 h-2 rounded-full bg-status-danger animate-pulse"></span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Cần AI sinh ảnh trực quan cho từng luận điểm trong kịch bản giải thích khoa học / lịch sử.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="font-caption-meta text-caption-meta text-status-danger">Thiếu API tạo ảnh AI (FAL hoặc Midjourney)</span>
+<span class="px-2.5 py-1 rounded bg-status-danger-dim text-status-danger font-badge-label text-badge-label font-medium">
+              Cần mở khóa
+            </span>
+<a class="text-xs text-primary underline underline-offset-4 hover:text-text-primary transition-colors font-medium" href="#section-unlock">
+              Mở khóa ngay ↗
+            </a>
+</div>
+</div>
+<!-- Row 4: AI Presenter -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">person_play</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary">
+                Video người thuyết trình AI (AI presenter)
+              </div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Mô hình avatar 2D/3D cục bộ kết hợp nhép môi audio lip-sync.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="font-caption-meta text-caption-meta text-text-muted">Cải thiện rõ rệt nếu cấu hình HeyGen / Kling</span>
+<span class="px-2.5 py-1 rounded bg-status-info-dim text-status-info font-badge-label text-badge-label font-medium">
+              Hoạt động tốt
+            </span>
+</div>
+</div>
+<!-- Row 5: Trailer or Teaser -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">theaters</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary">
+                Trailer hoặc Teaser điện ảnh
+              </div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Dựng nhịp điệu nhanh, hiệu ứng giật khung hình và chèn glitch âm thanh.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="font-caption-meta text-caption-meta text-text-muted">Hỗ trợ tốt hơn với AI Sound Design</span>
+<span class="px-2.5 py-1 rounded bg-status-info-dim text-status-info font-badge-label text-badge-label font-medium">
+              Hoạt động tốt
+            </span>
+</div>
+</div>
+<!-- Row 6: App or Terminal Demo -->
+<div class="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-surface-2/40 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-lg bg-surface-2 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined text-[18px]">laptop_mac</span>
+</span>
+<div>
+<div class="font-body-medium text-body-medium text-text-primary">
+                Đoạn demo ứng dụng &amp; Terminal (App / Terminal demo)
+              </div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+                Trình diễn thao tác code, zoom camera vào vùng code và gõ phím giả lập chân thực.
+              </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<span class="px-2.5 py-1 rounded bg-status-success-dim text-status-success font-badge-label text-badge-label font-medium">
+              Sẵn sàng 100%
+            </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Mở khóa thêm tính năng chỉ với 1 API Key (Unlock Cards) -->
+<section class="space-y-4 pt-2" id="section-unlock">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-base pb-3">
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary flex items-center gap-2">
+<span>Mở khóa thêm tính năng chỉ với 1 API Key</span>
+<span class="px-2 py-0.5 rounded bg-accent-dim text-primary font-badge-label text-badge-label font-medium">
+              Khuyến nghị
+            </span>
+</h2>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+            Điền khóa API để studio tự động gọi các mô hình sáng tạo hình ảnh, chuyển động video và lồng tiếng cao cấp.
+          </p>
+</div>
+<div class="flex items-center gap-2 font-caption-meta text-caption-meta text-text-muted">
+<span class="material-symbols-outlined text-[16px] text-status-success">lock</span>
+<span>Mã hóa AES-256 lưu trực tiếp trong <code class="text-text-primary font-code-mono">.env</code> cục bộ</span>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<!-- Card 1: FAL.ai -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-primary/50 transition-all duration-200">
+<div class="space-y-3">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-card text-title-card text-text-primary font-bold">Tạo ảnh &amp; Video AI điện ảnh</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-primary/10 text-primary border border-primary/20">FAL.ai Key</span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-muted">
+                Truy cập Flux Pro, Wan 2.1, SDXL, MiniMax và Kling thông qua 1 cổng API duy nhất.
+              </p>
+</div>
+<!-- Badges Unlocked -->
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-status-success-dim text-status-success font-badge-label text-badge-label">
+                Mở khóa: Giải thích chủ đề
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-badge-label text-badge-label border border-border-base">
+                Tốt hơn: Animated video
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-badge-label text-badge-label border border-border-base">
+                Cảnh phim 4K
+              </span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-xs pt-1">
+              Điền FAL_KEY để studio tự sinh ảnh bối cảnh và hoạt hình chất lượng điện ảnh.
+            </p>
+<a class="inline-flex items-center gap-1 font-caption-meta text-caption-meta text-primary hover:underline" href="https://fal.ai/dashboard/keys" rel="noreferrer" target="_blank">
+<span>Lấy khóa API tại fal.ai</span>
+<span class="material-symbols-outlined text-[13px]">open_in_new</span>
+</a>
+</div>
+<!-- Input Block -->
+<div class="mt-5 pt-4 border-t border-border-base space-y-2">
+<label class="block font-caption-meta text-caption-meta text-text-secondary uppercase tracking-wider font-semibold">
+              FAL_KEY
+            </label>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<input class="w-full h-10 px-3 bg-surface-2 border border-border-base rounded-lg text-text-primary font-code-mono text-code-mono focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" placeholder="fal_key_••••••••••••••••" type="password" value=""/>
+<button class="absolute right-2.5 top-2.5 text-text-muted hover:text-text-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="h-10 px-3.5 rounded-lg bg-primary-container text-on-primary-fixed font-body-medium text-body-medium font-semibold hover:brightness-105 active:scale-[0.98] transition-all shrink-0">
+                Lưu &amp; Thử
+              </button>
+</div>
+<div class="flex items-center justify-between text-[11px] text-text-muted">
+<span>Chưa được thiết lập</span>
+<span>Chỉ lưu trong .env</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Kling AI -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-border-soft transition-all duration-200">
+<div class="space-y-3">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-card text-title-card text-text-primary font-bold">Kling AI Video Generator</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-surface-2 text-text-secondary border border-border-base">Kling Key</span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-muted">
+                Mô hình tạo chuyển động video vật lý thực tế, biểu cảm gương mặt tự nhiên và camera tracking.
+              </p>
+</div>
+<!-- Badges Unlocked -->
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-badge-label text-badge-label border border-border-base">
+                Tốt hơn: AI presenter
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-badge-label text-badge-label border border-border-base">
+                Chuyển động chân thực
+              </span>
+<span class="px-2 py-0.5 rounded bg-status-info-dim text-status-info font-badge-label text-badge-label">
+                Multi-camera motion
+              </span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-xs pt-1">
+              Điền KLING_API_KEY để cho phép agent trực tiếp khởi tạo render shot phim phức tạp.
+            </p>
+<a class="inline-flex items-center gap-1 font-caption-meta text-caption-meta text-primary hover:underline" href="https://klingai.com" rel="noreferrer" target="_blank">
+<span>Lấy khóa tại klingai.com</span>
+<span class="material-symbols-outlined text-[13px]">open_in_new</span>
+</a>
+</div>
+<!-- Input Block -->
+<div class="mt-5 pt-4 border-t border-border-base space-y-2">
+<label class="block font-caption-meta text-caption-meta text-text-secondary uppercase tracking-wider font-semibold">
+              KLING_API_KEY
+            </label>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<input class="w-full h-10 px-3 bg-surface-2 border border-border-base rounded-lg text-text-primary font-code-mono text-code-mono focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" placeholder="kling_sec_••••••••••••" type="password"/>
+<button class="absolute right-2.5 top-2.5 text-text-muted hover:text-text-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</button>
+</div>
+<button class="h-10 px-3.5 rounded-lg bg-surface-2 border border-border-base text-text-primary font-body-medium text-body-medium hover:bg-surface-3 active:scale-[0.98] transition-colors shrink-0">
+                Lưu &amp; Thử
+              </button>
+</div>
+<div class="flex items-center justify-between text-[11px] text-text-muted">
+<span>Chưa được thiết lập</span>
+<span>Chỉ lưu trong .env</span>
+</div>
+</div>
+</div>
+<!-- Card 3: ElevenLabs (Already configured state) -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-5 flex flex-col justify-between hover:border-status-success/40 transition-all duration-200">
+<div class="space-y-3">
+<div>
+<div class="flex items-center justify-between mb-1">
+<h3 class="font-title-card text-title-card text-text-primary font-bold">Giọng đọc siêu cảm xúc</h3>
+<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-status-success-dim text-status-success border border-status-success/20">Đã kích hoạt</span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-muted">
+                Đọc kịch bản điện ảnh với 40+ ngôn ngữ, cảm xúc tự nhiên 99% và nhân bản giọng nói theo mẫu.
+              </p>
+</div>
+<!-- Badges Unlocked -->
+<div class="flex flex-wrap gap-1.5 pt-1">
+<span class="px-2 py-0.5 rounded bg-status-success-dim text-status-success font-badge-label text-badge-label">
+                ✓ Sẵn sàng: Voice Clone
+              </span>
+<span class="px-2 py-0.5 rounded bg-status-success-dim text-status-success font-badge-label text-badge-label">
+                ✓ Đa cảm xúc điện ảnh
+              </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-badge-label text-badge-label border border-border-base">
+                Tiếng Việt đa vùng miền
+              </span>
+</div>
+<p class="font-body-base text-body-base text-text-secondary text-xs pt-1">
+              Đã kết nối với tài khoản Creator Tier: Còn lại <strong class="text-text-primary">82,450 ký tự</strong> trong tháng.
+            </p>
+<a class="inline-flex items-center gap-1 font-caption-meta text-caption-meta text-text-muted hover:text-text-primary hover:underline" href="https://elevenlabs.io" rel="noreferrer" target="_blank">
+<span>Quản lý hạn mức trên ElevenLabs</span>
+<span class="material-symbols-outlined text-[13px]">open_in_new</span>
+</a>
+</div>
+<!-- Input Block (Active state) -->
+<div class="mt-5 pt-4 border-t border-border-base space-y-2">
+<div class="flex items-center justify-between">
+<label class="block font-caption-meta text-caption-meta text-text-secondary uppercase tracking-wider font-semibold">
+                ELEVENLABS_API_KEY
+              </label>
+<span class="text-[11px] text-status-success font-code-mono flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+                ••••89f2 (Hoạt động)
+              </span>
+</div>
+<div class="flex gap-2">
+<div class="relative flex-1">
+<input class="w-full h-10 px-3 bg-surface-2 border border-status-success/30 rounded-lg text-text-primary font-code-mono text-code-mono focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors" readonly="" type="password" value="sk_live_eleven_9943284920489f2"/>
+<span class="absolute right-2.5 top-2.5 text-status-success">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</span>
+</div>
+<button class="h-10 px-3.5 rounded-lg bg-surface-2 border border-border-base text-text-secondary hover:text-text-primary font-body-medium text-body-medium hover:bg-surface-3 active:scale-[0.98] transition-colors shrink-0">
+                Cập nhật
+              </button>
+</div>
+<div class="flex items-center justify-between text-[11px] text-text-muted">
+<span>Đã xác minh lúc 14:20 hôm nay</span>
+<span class="text-status-success">Latency 280ms</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bottom Accordion Drawers -->
+<section class="space-y-3 pt-2">
+<!-- Drawer 1: 21 Providers -->
+<div class="rounded-xl border border-border-base bg-surface-1 overflow-hidden transition-all duration-150" id="drawer-providers">
+<button class="w-full p-4 flex items-center justify-between text-left hover:bg-surface-2/40 transition-colors" id="toggle-providers">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-secondary text-[20px] transition-transform duration-200" id="arrow-providers">arrow_right</span>
+<span class="font-title-card text-title-card text-text-primary font-semibold">
+              Tất cả nhà cung cấp AI được hỗ trợ (21 Providers)
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-caption-meta text-caption-meta">
+              OpenAI, Anthropic, Replicate, Gemini, Runway, Suno...
+            </span>
+</div>
+<span class="font-caption-meta text-caption-meta text-text-muted">Nhấn để xem chi tiết</span>
+</button>
+<div class="hidden p-5 border-t border-border-base bg-surface-container-lowest/50 space-y-4" id="content-providers">
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
+<!-- Provider chips -->
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">OpenAI (GPT-4o)</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success" title="Configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Anthropic (Claude 3.7)</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success" title="Configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Google Gemini 2.0</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted" title="Not configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Replicate HQ</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted" title="Not configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Runway Gen-3</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted" title="Not configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Suno v4 Music</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success" title="Configured"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Udio Audio</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Midjourney API</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">ElevenLabs Pro</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Deepgram Nova-2</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Groq LPU Fast</span>
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+</div>
+<div class="p-2 rounded bg-surface-2 border border-border-base flex items-center justify-between">
+<span class="font-body-base text-body-base text-xs font-medium">Cohere Command</span>
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-2 text-xs text-text-secondary border-t border-border-base">
+<span class="flex items-center gap-3">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-status-success"></span> Đã kết nối (5)</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-text-muted"></span> Chưa cấu hình (16)</span>
+</span>
+<a class="text-primary hover:underline" href="#">Mở bảng mã bí mật .env tổng thể ↗</a>
+</div>
+</div>
+</div>
+<!-- Drawer 2: Hardware & Acceleration -->
+<div class="rounded-xl border border-border-base bg-surface-1 overflow-hidden transition-all duration-150" id="drawer-hardware">
+<button class="w-full p-4 flex items-center justify-between text-left hover:bg-surface-2/40 transition-colors" id="toggle-hardware">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-text-secondary text-[20px] transition-transform duration-200" id="arrow-hardware">arrow_right</span>
+<span class="font-title-card text-title-card text-text-primary font-semibold">
+              Cấu hình phần cứng cục bộ &amp; Runtimes (Hardware &amp; Acceleration)
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-caption-meta text-caption-meta">
+              FFmpeg paths, Node.js binaries, Local ComfyUI Socket
+            </span>
+</div>
+<span class="font-caption-meta text-caption-meta text-text-muted">Nhấn để xem chi tiết</span>
+</button>
+<div class="hidden p-5 border-t border-border-base bg-surface-container-lowest/50 space-y-3 font-code-mono text-xs" id="content-hardware">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+<div class="p-3 rounded bg-surface-2 border border-border-base space-y-1">
+<div class="text-text-muted text-[11px]">FFMPEG_BINARY_PATH</div>
+<div class="text-text-primary truncate">/opt/homebrew/bin/ffmpeg</div>
+</div>
+<div class="p-3 rounded bg-surface-2 border border-border-base space-y-1">
+<div class="text-text-muted text-[11px]">FFPROBE_BINARY_PATH</div>
+<div class="text-text-primary truncate">/opt/homebrew/bin/ffprobe</div>
+</div>
+<div class="p-3 rounded bg-surface-2 border border-border-base space-y-1">
+<div class="text-text-muted text-[11px]">PIPER_VOICE_MODEL_DIR</div>
+<div class="text-text-primary truncate">~/.openmontage/models/piper/vi_VN</div>
+</div>
+<div class="p-3 rounded bg-surface-2 border border-border-base space-y-1">
+<div class="text-text-muted text-[11px]">COMFYUI_LOCAL_SOCKET</div>
+<div class="text-text-primary truncate">http://127.0.0.1:8188 (Not detected)</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CLI Kickoff Diagnostic Panel -->
+<div class="p-4 rounded-xl bg-surface-1 border border-border-base flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">terminal</span>
+<span class="font-body-medium text-body-medium text-text-primary font-semibold">Chạy lệnh kiểm tra qua Terminal</span>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-secondary">
+          Bạn thích dùng CLI hơn? Sử dụng lệnh sau để kiểm tra toàn diện cấu hình máy và xuất file JSON chẩn đoán:
+        </p>
+</div>
+<div class="flex items-center gap-2">
+<code class="px-3 py-2 rounded-lg bg-surface-2 border border-border-base font-code-mono text-code-mono text-primary select-all">
+          backlot setup --json
+        </code>
+<button class="h-9 px-3 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border-base text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1 font-body-base text-xs" id="btn-copy-cli">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+<span id="copy-text">Sao chép</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Sticky Footer Bar -->
+<footer class="mt-12 border-t border-border-base bg-surface-1/90 backdrop-blur-md sticky bottom-0 z-40">
+<div class="max-w-7xl mx-auto px-6 h-12 flex flex-col sm:flex-row items-center justify-between gap-2 font-caption-meta text-caption-meta text-text-secondary">
+<div class="flex items-center gap-2 truncate">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+<span>OpenMontage Studio v2.4.1</span>
+<span class="text-text-muted">•</span>
+<span class="font-code-mono text-text-muted">Tệp cấu hình: ~/.openmontage/.env</span>
+<span class="text-text-muted">•</span>
+<span>Quyền truy cập: Chỉ đọc trên máy cá nhân</span>
+</div>
+<div class="flex items-center gap-4 shrink-0">
+<span class="text-text-muted">Bộ nhớ đệm: 1.2 GB / 50 GB</span>
+<a class="text-primary hover:underline" href="#">Tài liệu API Keys ↗</a>
+</div>
+</div>
+</footer>
+<!-- Subtle Probe JSON Dialog (Modal) -->
+<div class="fixed inset-0 z-50 hidden flex items-center justify-center bg-scrim-backdrop backdrop-blur-sm p-4" id="modal-probe">
+<div class="bg-surface-1 border border-border-base rounded-xl max-w-2xl w-full max-h-[870px] flex flex-col overflow-hidden shadow-2xl">
+<div class="p-4 border-b border-border-base flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">data_object</span>
+<h3 class="font-title-card text-title-card text-text-primary font-bold">Chẩn đoán hệ thống (Probe JSON Result)</h3>
+</div>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-2" id="close-modal">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="p-4 overflow-y-auto font-code-mono text-xs text-text-secondary bg-surface-container-lowest">
+<pre class="text-primary/90">{
+  "status": "HEALTHY_LOCAL_READY",
+  "checked_at": "2025-05-18T10:14:02.128Z",
+  "tier": "zero_key",
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpus": 12,
+    "model": "Apple M3 Pro",
+    "total_memory_gb": 18.0,
+    "free_memory_gb": 7.42
+  },
+  "engines": {
+    "ffmpeg": { "installed": true, "version": "6.1.1", "hardware_accel": "videotoolbox" },
+    "remotion": { "version": "4.0.128", "concurrency": 8 },
+    "piper_tts": { "installed": true, "voices_count": 19, "latency_ms": 118 },
+    "whisper": { "engine": "whisper.cpp", "model": "ggml-base.bin", "ready": true }
+  },
+  "api_keys": {
+    "fal_ai": false,
+    "kling": false,
+    "elevenlabs": true,
+    "openai": true,
+    "anthropic": true
+  }
+}</pre>
+</div>
+<div class="p-4 border-t border-border-base bg-surface-2 flex items-center justify-between">
+<span class="text-xs text-text-muted">Định dạng tiêu chuẩn tương thích OpenMontage CLI</span>
+<button class="h-8 px-3 rounded bg-surface-3 hover:bg-surface-container border border-border-base text-text-primary text-xs font-medium flex items-center gap-1.5" id="copy-json">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span>Sao chép JSON</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro-interactions Script -->
+<script>
+    // Refresh button animation
+    const checkAgainBtn = document.getElementById('btn-check-again');
+    const refreshIcon = document.getElementById('refresh-icon');
+
+    if (checkAgainBtn && refreshIcon) {
+      checkAgainBtn.addEventListener('click', () => {
+        refreshIcon.classList.add('animate-spin');
+        checkAgainBtn.disabled = true;
+        setTimeout(() => {
+          refreshIcon.classList.remove('animate-spin');
+          checkAgainBtn.disabled = false;
+        }, 1200);
+      });
+    }
+
+    // CLI Copy trigger
+    const copyBtn = document.getElementById('btn-copy-cli');
+    const copyText = document.getElementById('copy-text');
+    if (copyBtn && copyText) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText('backlot setup --json');
+        copyText.textContent = 'Đã chép!';
+        setTimeout(() => {
+          copyText.textContent = 'Sao chép';
+        }, 2000);
+      });
+    }
+
+    // Modal Probe triggers
+    const probeBtn = document.getElementById('btn-probe-json');
+    const modalProbe = document.getElementById('modal-probe');
+    const closeModal = document.getElementById('close-modal');
+    const copyJson = document.getElementById('copy-json');
+
+    if (probeBtn && modalProbe && closeModal) {
+      probeBtn.addEventListener('click', () => modalProbe.classList.remove('hidden'));
+      closeModal.addEventListener('click', () => modalProbe.classList.add('hidden'));
+      modalProbe.addEventListener('click', (e) => {
+        if (e.target === modalProbe) modalProbe.classList.add('hidden');
+      });
+    }
+
+    if (copyJson) {
+      copyJson.addEventListener('click', () => {
+        const jsonText = document.querySelector('#modal-probe pre').textContent;
+        navigator.clipboard.writeText(jsonText);
+        copyJson.querySelector('span:last-child').textContent = 'Đã chép JSON!';
+        setTimeout(() => {
+          copyJson.querySelector('span:last-child').textContent = 'Sao chép JSON';
+        }, 2000);
+      });
+    }
+
+    // Accordions
+    const setupAccordion = (toggleId, contentId, arrowId) => {
+      const toggle = document.getElementById(toggleId);
+      const content = document.getElementById(contentId);
+      const arrow = document.getElementById(arrowId);
+      if (toggle && content && arrow) {
+        toggle.addEventListener('click', () => {
+          const isHidden = content.classList.contains('hidden');
+          if (isHidden) {
+            content.classList.remove('hidden');
+            arrow.classList.add('rotate-90');
+          } else {
+            content.classList.add('hidden');
+            arrow.classList.remove('rotate-90');
+          }
+        });
+      }
+    };
+
+    setupAccordion('toggle-providers', 'content-providers', 'arrow-providers');
+    setupAccordion('toggle-hardware', 'content-hardware', 'arrow-hardware');
+  </script>
+</body></html>

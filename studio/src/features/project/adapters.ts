@@ -5,7 +5,8 @@
 import type { Tone } from "@/components/ui";
 import { stageLabel, titleCase } from "@/content/labels";
 import { msg } from "@/i18n";
-import type { BoardState, Decision, ProjectSummary, StageState, ToolEvent } from "@/lib/api";
+import type { BoardState, Decision, ProjectSummary, StageState, ToolEvent } from "@/types/api";
+import { fmtMoney } from "@/utils/format";
 
 export type StatusKind = "waiting" | "failed" | "stalled" | "working" | "done" | "paused" | "empty";
 
@@ -186,7 +187,7 @@ export function activityLines(events: ToolEvent[], limit = 50): ActivityLine[] {
         return { ts: e.ts, text: t.failed(tool, where, e.error ?? ""), tone: "danger" };
       }
       if (e.event === "finish") {
-        const cost = e.cost_usd ? ` · $${e.cost_usd.toFixed(2)}` : "";
+        const cost = e.cost_usd ? ` · ${fmtMoney(e.cost_usd)}` : "";
         return { ts: e.ts, text: t.finished(tool, where, cost), tone: "success" };
       }
       return { ts: e.ts, text: t.other(tool, e.event ?? t.event, where), tone: "neutral" };

@@ -1,7 +1,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { Job, SetupView } from "@/lib/api";
+import type { Job, SetupView } from "@/types/api";
 import { mockFetch } from "@/test/fakes";
 import { renderRoute } from "@/test/render";
 

@@ -18,13 +18,14 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | 6 | [Results & cost](phases/phase-6-results-and-cost.md) | done | 2026-11-11 |
 | 7 | [Hosted readiness](phases/phase-7-hosted-readiness.md) | done | 2026-11-11 |
 | 7.1 | [Review hardening](#phase-71--review-hardening--done) (follow-up to the Phase 7 code review) | done | 2026-11-11 |
+| D | [Design refresh via Stitch](#phase-d--design-refresh-via-google-stitch--done) | done (D.1–D.11; backend placeholders E-1…E-27 open) | 2026-11-11 |
 
 ## Resume here — snapshot 2026-11-11
 
 **Where things stand**
 - **Done:** every planned phase (0–7) and cross-cutting Localization (en + vi). Each phase section below has its checklist, deviations and verification notes.
 - **Also done: Phase 7.1 — Review hardening** (section at the end of this file): fixes from the Phase 7 code review (store path safety, consume race, API robustness, stricter contract scanner).
-- **Next:** nothing is scheduled.
+- **Done: Phase D** (design refresh via Google Stitch, section at the end of this file). Plan: `design/ui-refresh.md`. Open: the backlog E-1…E-27 (placeholders awaiting a backend phase E, start only on request) and nothing is committed yet.
   - The local Studio is complete.
   - Hosted Studio is designed in `hosted/` (`design.md`, `sync-protocol.md`, `threat-model.md`). It needs a maintainer review (checklist in `hosted/threat-model.md` §5) before migration step H1 (`hosted/design.md` §9) starts.
   - Do not start hosted work, or any new phase, unless the user asks. Add a new row to the table above first.
@@ -35,7 +36,7 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 1. **Studio is a companion to the agent CLI.** It writes *intent* files under `projects/<id>/studio/` and media under `projects/<id>/inputs/`. It never writes checkpoints or agent artifacts (`03-architecture.md` §1, §3.4).
 2. **Every UI string exists in both `studio/src/i18n/en.ts` and `vi.ts`.** The parity test enforces it. At least one Vitest test per phase runs in Vietnamese. Engine data (titles, scripts, file names) is shown as-is.
 3. **API errors the UI explains** come back as `{detail, code}`, and the UI translates `code`.
-4. **Each `/api/v1` write needs `X-Studio-Token`.** The client (`lib/api/client.ts`, `sendFile` in `lib/api/uploads.ts`) adds it.
+4. **Each `/api/v1` write needs `X-Studio-Token`.** The client (`services/http.ts`, `sendFile` in `services/uploads.ts`) adds it.
 5. **No direct filesystem access in v1 modules.**
    - Project files go through `ProjectStore` / `ProjectFiles` (`backlot/project_store.py`).
    - Machine files go through `backlot/machine_store.py`.
@@ -58,7 +59,7 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | Review decisions (Phase 4) | `backlot/studio_decisions.py`; agent CLI `await-decision` / `consume-decision` in `backlot/__main__.py` |
 | Uploads, references, music library (Phase 5) | `backlot/studio_uploads.py` |
 | Results and export, cost, settings (Phase 6) | `backlot/studio_results.py`, `backlot/studio_cost.py`, `backlot/studio_settings.py`; `?download=1` on `/media` in `backlot/server.py` |
-| Frontend API hooks | `studio/src/lib/api/` (`client`, `queries`, `setup`, `catalog`, `decisions`, `uploads`, `results`, `useSSE`) |
+| Frontend API layer | `studio/src/services/` (HTTP + `endpoints.ts`), `studio/src/hooks/api/` (React Query hooks, `queryKeys.ts`, `useSSE`), `studio/src/types/api/` (wire types) — since D.5.1 |
 | Pages | `studio/src/routes/` (`home`, `library`, `project`, `setup`, `settings`, `new/` wizard) |
 | Features | `studio/src/features/{library,project,setup,demos,review,uploads,music,result,cost,settings}` |
 | Formatting (locale-aware money, sizes, times) | `studio/src/lib/format.ts` (+ `format.test.ts`) |
@@ -449,4 +450,174 @@ Notes and deviations:
 - **`rename` fallback.** On file systems without hard links (`os.link` raises another `OSError`), `rename` falls back to check-then-`os.replace`; the race remains there only.
 - **`server._safe_project_dir` unchanged.** The legacy read-only board still accepts `_`/`.` ids; only the Studio store refuses them.
 - **Verified on the real server** (`/tmp/pwshot/p71-smoke.sh`, recreate it from this note if missing): `export_path: "."` → `/export` 404 and `results.export` null; `/api/v1/projects/_trash/inputs` → 404; decision record → `await-decision` → `consume-decision` → state `consumed`; retract after consume → 409; consuming twice is idempotent. Test project deleted.
+
+
+---
+
+## Phase D — Design refresh via Google Stitch · done
+
+Requested 2026-11-11: design Studio in Google Stitch, then apply the designs to `studio/`.
+- **Setup and prompts:** [`design/stitch.md`](design/stitch.md).
+- **Approved plan (D.4–D.11):** [`design/ui-refresh.md`](design/ui-refresh.md). Part A is the old-vs-new review per screen. Part B covers architecture, folders, services and hooks, primitives, classes and utils. Part C is the steps below.
+- **Rules:** tick each step only after `make studio-check` is green, with a one-line note (what changed and which tests).
+
+- [x] **D.1 Connect.** Stitch MCP registered (`claude mcp list` shows `stitch` connected; key only in `~/.claude.json`).
+- [x] **D.2 Seed** *(done by the user)*. The user created the Stitch project `5417492826832667065`.
+- [x] **D.3 Refine** *(user)*. 13 screens designed, plus the specs in `docs/update-ui-friendly/`. Reviewed 2026-11-11 (`design/ui-refresh.md` Part A).
+
+**D.4 Reference and foundation**
+- [x] D.4.1 Stitch references saved to `design/stitch/` (13 JPEG at 1280 px + HTML, 4.9 MB); screen-id map in `stitch.md` §2.4; backlog E-1…E-27 listed below.
+- [x] D.4.2 Added deps `lucide-react` ^1.72, `tailwind-merge` ^3.7 and `class-variance-authority` ^0.7. `cn` now merges conflicting classes, and knows the custom `rounded-card/control`, `shadow-glow` and `font-screenplay` scales (`lib/cn.test.ts`). `components/icons.ts` is the single icon import point. The npm audit shows 10 moderate issues, all from existing eslint/minimatch dev deps; none from the new packages.
+- [x] D.4.3 `index.css` tokens: dark surface `#131315`; new `surface-{dim,bright,lowest,low,high,highest}`, `border-subtle`, `accent-hover/active`, `warning(-dim)`, `shadow-elev-{sm,md,lg}`, `shadow-glow`. Light-theme equivalents added; light `--text-3` darkened to `#8f7d5d` (contrast 2.9 → 3.8). All old names kept; `board.css` untouched. `studio-check` green (99 tests).
+
+**D.5 Code organisation (no visual change)**
+- [x] D.5.1 Split `lib/api` into three layers:
+  - `services/`: pure HTTP. `http.ts` has `api`, `ApiError`, session, and shared `parseBody`/`toApiError`, which `sendFile` now reuses. `endpoints.ts` holds every URL, including `mediaURL`, `thumbURL` and `downloadURL`. There is one file per domain.
+  - `hooks/api/`: React Query hooks per domain, all keys in `queryKeys.ts`, and `useSSE`. New: `useRecheck` (split out of `useSetup`) and `useSession`.
+  - `types/api/`: wire types per domain. `StepState` now lives here, so the UI depends on the types and no longer the other way round.
+  - `lib/api` is a re-export shim, and `lib/format` / `result/links` re-export the URL builders.
+  - Deviations: no `services/sse.ts`, since `useSSE` stays a hook. The intake service functions exist, but no hooks until a screen uses them.
+  - `studio-check` green (99 tests).
+- [x] D.5.2 New `utils/` folder:
+  - `cn` and `format` moved here.
+  - New helpers: `fmtResolution`, `fmtFacts`, `fmtLength` (moved from `media.ts`); `routes.ts` (`projectPath`, `newVideoPath`, `classicBoardPath`); `errors.ts` (`errorText` with optional code→text map, and `fieldErrors` moved from `features/settings`); `clipboard.ts` (`copyText`, `useCopied`).
+  - Replaced the duplicate sites:
+    - 4 inline project links;
+    - 4 "ApiError → text" blocks;
+    - 3 resolution formats;
+    - the hand-built `$` in `adapters.ts`, now `fmtMoney`;
+    - 2 clipboard timers;
+    - the second `RUNTIME_LABELS`;
+    - the duplicate music list (`MUSIC_SOURCES`/`RUNTIMES` exported from `review.ts`, next to their types).
+  - Deviation: the 1-decimal "s" in `ReferenceInsights` stays, since it is a different format from `fmtLength`.
+  - `utils/utils.test.ts` added. `studio-check` green (105 tests).
+- [x] D.5.3 `features/uploads/uploadQueue.ts`:
+  - `UploadQueue` class (state, per-target pump, cancel, dismiss, reset) with an injected `Sender`.
+  - `uploadStore.ts` is now a thin facade: a singleton bound to `sendFile`, the same function exports, and `useUploadsSync(target)`. The hook replaces the duplicate refresh-then-dismiss effects in `InputsPanel` and `MusicPicker`.
+  - `uploadQueue.test.ts` covers ordering, URLs, the error code and cancel.
+  - `studio-check` green (107 tests).
+- [x] D.5.4 Wizard moved to `features/wizard/`:
+  - `WizardPage` renders only. `useWizard.ts` holds the form, the URL step, goal switching and create. The step components moved to `steps/`; `fields.tsx`, `wizard.ts` and the tests moved with them.
+  - `routes/new.tsx` is a thin page.
+  - `ServerDown` moved to `components/layout/`.
+  - Pages are `React.lazy` (`app/pages.tsx`), with `Suspense` around the `Outlet` so the shell paints at once. The main chunk dropped from 681 kB to 435 kB and the size warning is gone.
+  - 6 tests now await lazily loaded page content (`findBy`).
+  - `studio-check` green (107 tests, lint clean).
+- [x] D.5.5 Every `@/lib/api` import rewritten to `@/hooks/api`, `@/services` or `@/types/api` (46 files, scripted).
+  - Removed: the shim, the URL re-exports in `utils/format` and `result/links.ts`, and the unused `PagePlaceholder.tsx`.
+  - Docs updated: `03-architecture.md` §6 layout and the STATUS code map / rule 4.
+  - `studio-check` green (107 tests).
+  - Real-server smoke (`/tmp/pwshot/d5-smoke.mjs`): all 7 routes render with no page errors. The only 404 is the expected `/kickoff` for a non-Studio project.
+
+**D.6 Primitives and shell**
+- [x] D.6.1 Existing primitives restyled; API compatible, so no caller changed:
+  - `Button`: cva in `buttonVariants.ts`; `sm/md/lg`; `loading`, `leftIcon`, `rightIcon`; `forwardRef`. New `ButtonLink` (router) and `ButtonAnchor` (`<a>`) share the look.
+  - `Badge`: `size`, `dot`, `pulse`, passes through native props.
+  - `Banner`: amber gradient + glow for `accent`; `icon`; `className`.
+  - `Card`: variants `default/interactive/active/dashed` and `padding`; `CardHeader`, `CardTitle`, `CardDescription`, `CardFooter`.
+  - `Tabs`: optional count `badge`.
+  - `ChipGroup`, `EmptyState` (`icon`) and `Dialog` (shadow, backdrop blur) restyled.
+  - Deviation: no `CardContent`, since a plain `div` does the job.
+  - `studio-check` green (107 tests); home screenshot checked.
+- [x] D.6.2 New primitives in `components/ui`:
+  - **Forms:** `Field` + `ErrorText`; `Input`, `Textarea`, `Select` and `MoneyInput` (`controlClass`); `SelectableCard` + `SegmentedControl` (aria-pressed, `selectableClass`).
+  - **Progress:** `ProgressBar` (role=progressbar); `ProgressSteps` (8-node timeline, state also as sr-only text); `Stepper` (wizard, aria-current=step).
+  - **Layout:** `Section` (aria-labelledby); `ListBox`, `InfoBox`, `Collapsible`, `StatCard`, `KeyValueList`, `Screenplay` (cream, Courier Prime); `Breadcrumb`.
+  - **Actions:** `CopyButton` + `CodeBox`.
+  - **Placeholders:** `ComingSoon` (inert, aria-disabled, "Coming soon"/"Sắp có").
+  - `components/layout/PageHeader` and `StickyActionBar`.
+  - New i18n keys `app.breadcrumb` and `common.comingSoon` (en + vi).
+  - Deviation: the timeline primitive is named `ProgressSteps`, because `features/project/StepTimeline` already exists.
+  - `primitives.test.tsx` has 7 tests, one in `vi`. `studio-check` green (114 tests).
+- [x] D.6.3 Duplicated markup replaced by primitives (no layout change):
+  - 9 error paragraphs → `ErrorText`;
+  - the wizard `Field`/`inputClass` and the settings `Labeled` → shared `Field` + `controlClass` (12 inline control class strings gone);
+  - `Advanced` → `Collapsible`;
+  - Kickoff `CommandBox` → `CodeBox`; the result-panel copy button → `CopyButton`;
+  - 3 links styled by hand → `ButtonAnchor`/`ButtonLink`;
+  - 2 progress bars → `ProgressBar`.
+  - Deliberately left for the screen phases D.7–D.10, which restructure that markup anyway: `Section`, `PageHeader`, `ListBox` and `InfoBox`. The cost bar stays custom (it is a stacked spent/reserved bar).
+  - `studio-check` green (114 tests).
+- [x] D.6.4 One header for every screen (`components/layout/Header.tsx`):
+  - amber clapper logo and nav with an amber active state;
+  - `ConnectionPill` ("Connected"/"Server offline", from `useSession`; xl+);
+  - `SpendPill` (month spend from `useMonthSpend`; 2xl+; no invented monthly cap);
+  - Classic board, language, an icon theme toggle (same accessible name), and `NotifyToggle` (bell asks for notification permission);
+  - the account menu as `ComingSoon` (E-1);
+  - the `+ New video` CTA, named "Create a new video" so it differs from the nav link.
+  - `Footer`: version from the session, a local-files note, keyboard shortcuts as `ComingSoon` (E-2).
+  - `AppShell` is now just header, Suspense outlet and footer; width `max-w-7xl`.
+  - 12 new strings in en and vi; 2 new tests (one in `vi`).
+  - Checked at 1440 and 1024 px in dark/light and en/vi. `studio-check` green (116 tests).
+  - Deviation: the plan's "Live" pill shows the honest server connection; Studio cannot know whether the agent is live.
+
+**D.7 Wizard**
+- [x] D.7.1 Goal step:
+  - category chips with counts (`category` added to every goal in `content/goals.ts`, `GOAL_CATEGORIES`);
+  - cards with gradient art and the goal icon, state badge (works now / limited / locked), beta tag, duration and platform·aspect chips, lock reason + "Unlock in Setup", "Choose this"/"Selected";
+  - dashed "Make something like this" card;
+  - "Script structure preview" as `ComingSoon` (E-5) with skeleton lines only.
+  - Behaviour unchanged: clicking a goal still advances. New i18n keys en + vi. `studio-check` green (116).
+- [x] D.7.2 Footage step:
+  - two columns. Left: mode `SelectableCard`s, a "Your footage" `Section` with a file-count/size badge, a restyled `DropZone` (upload icon tile) and `FileRow`s (media icon, mono facts, trash icon) in a `ListBox`, plus a CLI `InfoBox`.
+  - Right: Style reference with Analyse (E-8) and Director's notes (E-7) as `ComingSoon`, plus the privacy note.
+  - Deviation: no A-roll/B-roll tags (E-6); the rows show real facts only.
+  - en + vi strings. `studio-check` green.
+- [x] D.7.3 Brief step:
+  - a "Chosen goal" bar (icon, title, preset length, "Change goal" link to `/new`);
+  - numbered field cards (topic + example chips, mode, audience, platform, length, tone) and the Advanced `Collapsible`;
+  - right column: AI script assistant (E-9) and live draft (E-10) as `ComingSoon`.
+  - Platform, length and tone stay `ChipGroup`s, so names and tests are unchanged. en + vi. `studio-check` green.
+- [x] D.7.4 Look step:
+  - two columns: numbered cards for style (palette swatches, `selectableClass`), music (`MusicPicker` plus a `ComingSoon` balance/AI-music block, E-12/E-13) and budget (free-tier note or cap, plus a safety `InfoBox`); Advanced unchanged;
+  - right: director's screen preview as `ComingSoon` (E-11) and a live Style recipe `KeyValueList` built from the form values;
+  - `NumberedCard` shared with the brief step. en + vi. `studio-check` green.
+- [x] D.7.5 Review step: summary rows kept (same "Change" links); right column has a Cost estimate card (free local tools or the cap), Review policy card and an agent-kickoff `InfoBox`. No fake kickoff command (E-5 preview omitted). en + vi. `studio-check` green; visual check done.
+- [x] D.7.6 Stepper + sticky action bar (verified on all steps). The frame is already in place since D.7.1: `Stepper` cards (done/now/next), `PageHeader` eyebrow "New video · Step n of N", and a sticky Back · Save draft (`ComingSoon`) · "Next up" · Next bar. Final check after D.7.5.
+
+**D.8 Project page**
+- [x] D.8.1 Project frame: `Breadcrumb`, `PageHeader` (live pill, style, spend, updated), banner, the 8-node `ProgressSteps` timeline (state also as visible text; the list keeps its "Steps" name), and a main + side column layout (kickoff/review/result/tabs left; inputs and cost right). Deviation: no section table; the status-driven sections stay conditional JSX.
+  - Test stability: `testTimeout` 15 s and `asyncUtilTimeout` 5 s, because lazy pages made `findBy` flaky under parallel load (this also explains the earlier "known flake"). Three consecutive full gates green (116).
+- [x] D.8.2 Kickoff: active-variant card, terminal icon, a pulsing "Listening for your agent" pill (honest: the page does update by SSE), agent tabs restyled (still `role=tab`). The open-folder button is not built (E-14).
+- [x] D.8.3 Running: `RunningPanel` shows the real agent log (`ActivityView`) in a card, plus the render monitor with Pause / CLI live / Cancel as `ComingSoon` (E-15, E-16). No fake frame/FPS/RAM numbers; no invented `watch-render` command.
+- [x] D.8.4 Review/Sent: behaviour unchanged. The Sent card uses the active card and the shared `CodeBox` with a copy button. Self-review card, Approve / Request changes / Stop and tabs keep their names. Per-scene edit/add/re-pace (E-17) not built. Checked in light theme.
+- [x] D.8.5 Done: `ResultPanel` on `Card`/`ListBox`/`ButtonAnchor`/`CopyButton`; Share and Clone prompt as `ComingSoon` (E-18, E-19). Player, renders, publish text, export bundle and the cost panel in the side column are unchanged. Checked in dark.
+- [x] D.8.6 Artifact views: `ScriptView` now uses `Screenplay`; `Tabs` has the amber underline from D.6.1. Storyboard/Concept/Decisions/Activity keep their markup (already on tokens). `studio-check` green (116).
+
+**D.9:** [x] D.9.1 Home (WaitingHero, status-chip grid, shortcut cards; voice preview ComingSoon E-3; project id shown in place of E-4) · [x] D.9.2 Library (stat cards, review-now cards, toolbar with counts; E-20/21/22 ComingSoon, E-24 rendered time "—")
+
+**D.10:** [x] D.10.1 Setup (tier hero, capability cards, InfoBox warnings, Collapsible; diagnostics E-25 ComingSoon; CLI card E-26 not built) · [x] D.10.2 Settings (radio cards, MoneyInput, sticky save bar with Discard; restore defaults E-27 ComingSoon)
+
+**D.11:** [x] Verify and close. `make studio-check` green (116 tests, build 486 kB main chunk). Real-server Playwright shots of Home, Library, Setup and Settings in dark and light (en) saved to `design/after/`; the wizard and project states were checked in D.7/D.8. Deviations: Vietnamese is covered by the parity test and `vi` tests, not by screenshots; keyboard and contrast were checked through role/name tests and the token review, not an axe run. `pytest tests/backlot tests/contracts`: 1793 passed, 10 skipped, 1 flaky (`test_pipelines_merge_lock_state_once_checked` failed once in the full run and passes alone; backend untouched, so unrelated to Phase D).
+
+**Backlog for Phase E (placeholders shown as "Coming soon"; backend data needed):**
+- **Shell:** E-1 account/avatar menu · E-2 keyboard shortcuts
+- **Home:** E-3 voice preview · E-4 workflow id
+- **Wizard:**
+  - E-5 screenplay structure preview before the script exists
+  - E-6 A-roll/B-roll tagging
+  - E-7 director's log
+  - E-8 reference "analyse" in Studio
+  - E-9 AI script assistant and live draft
+  - E-10 AI topic suggestions
+  - E-11 live 9:16 preview
+  - E-12 voice/music balance
+  - E-13 AI-generated music
+- **Project:**
+  - E-14 open project folder
+  - E-15 render monitor (frame/FPS/RAM/ETA)
+  - E-16 pause/cancel the agent, CLI live
+  - E-17 per-scene listen/edit, add scene, AI re-pace
+  - E-18 share
+  - E-19 clone prompt
+- **Library:**
+  - E-20 export cost report
+  - E-21 clean temp files
+  - E-22 list view
+  - E-23 card menu
+  - E-24 total rendered minutes
+- **Setup:** E-25 diagnostics JSON · E-26 setup CLI JSON command
+- **Settings:** E-27 restore factory defaults
+
+**Resume note:** Phase D complete (D.1–D.11). Next: review the diff and commit when the user asks; Phase E (backend for the E-n placeholders) only on request.
 

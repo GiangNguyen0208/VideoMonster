@@ -1,150 +1,62 @@
 /**
- * Uploads that outlive the page that started them: the wizard queues the
- * footage, navigates to the new project, and the project page shows the same
- * progress. One file at a time per target (a project id or the music library).
+ * The app's single upload queue and the hooks around it. The queue itself is
+ * `UploadQueue` (uploadQueue.ts); this module binds it to the real sender and
+ * to React Query so finished files show up in their lists.
  */
-import { useSyncExternalStore } from "react";
-import { ApiError, musicUploadUrl, sendFile, uploadUrl, type UploadKind } from "@/lib/api";
+import { useQueryClient, type QueryKey } from "@tanstack/react-query";
+import { useEffect, useSyncExternalStore } from "react";
+import { queryKeys } from "@/hooks/api/queryKeys";
+import { sendFile } from "@/services/uploads";
+import type { UploadKind } from "@/types/api";
+import { MUSIC_TARGET, UploadQueue, type Sender, type UploadItem } from "./uploadQueue";
 
-export const MUSIC_TARGET = "__music__";
+export { isActive, MUSIC_TARGET, type UploadItem, type UploadState } from "./uploadQueue";
 
-export type UploadState = "queued" | "uploading" | "done" | "error";
-
-export interface UploadItem {
-  id: string;
-  target: string;
-  name: string;
-  size: number;
-  loaded: number;
-  state: UploadState;
-  /** Server error code (`too_large`, `unsupported_type`, …) or `network`. */
-  error: string | null;
-}
-
-type Sender = (
-  url: string,
-  file: Blob,
-  onProgress: (loaded: number) => void,
-  signal: AbortSignal,
-) => Promise<unknown>;
-
-let items: UploadItem[] = [];
-const files = new Map<string, File>();
-const aborts = new Map<string, AbortController>();
-const kinds = new Map<string, UploadKind>();
-const listeners = new Set<() => void>();
-const running = new Set<string>();
-let sender: Sender = sendFile;
-let seq = 0;
-
-function emit() {
-  for (const l of listeners) l();
-}
-
-function patch(id: string, change: Partial<UploadItem>) {
-  items = items.map((it) => (it.id === id ? { ...it, ...change } : it));
-  emit();
-}
-
-function urlFor(item: UploadItem): string {
-  return item.target === MUSIC_TARGET
-    ? musicUploadUrl(item.name)
-    : uploadUrl(item.target, item.name, kinds.get(item.id) ?? "footage");
-}
-
-async function pump(target: string) {
-  if (running.has(target)) return;
-  running.add(target);
-  try {
-    for (;;) {
-      const next = items.find((it) => it.target === target && it.state === "queued");
-      if (!next) break;
-      const file = files.get(next.id)!;
-      const abort = new AbortController();
-      aborts.set(next.id, abort);
-      patch(next.id, { state: "uploading", loaded: 0 });
-      try {
-        await sender(urlFor(next), file, (loaded) => patch(next.id, { loaded }), abort.signal);
-        patch(next.id, { state: "done", loaded: next.size });
-      } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") {
-          items = items.filter((it) => it.id !== next.id);
-          emit();
-        } else {
-          patch(next.id, {
-            state: "error",
-            error: err instanceof ApiError ? (err.code ?? `http_${err.status}`) : "network",
-          });
-        }
-      } finally {
-        aborts.delete(next.id);
-        files.delete(next.id);
-      }
-    }
-  } finally {
-    running.delete(target);
-  }
-}
+export const uploadQueue = new UploadQueue(sendFile);
 
 export function enqueueUploads(target: string, list: File[], kind: UploadKind = "footage") {
-  for (const file of list) {
-    const id = `u${++seq}`;
-    files.set(id, file);
-    kinds.set(id, kind);
-    items = [
-      ...items,
-      { id, target, name: file.name, size: file.size, loaded: 0, state: "queued", error: null },
-    ];
-  }
-  emit();
-  void pump(target);
+  uploadQueue.enqueue(target, list, kind);
 }
 
 /** Cancel a queued or running upload (the server drops the partial file). */
 export function cancelUpload(id: string) {
-  const abort = aborts.get(id);
-  if (abort) {
-    abort.abort();
-    return;
-  }
-  files.delete(id);
-  items = items.filter((it) => it.id !== id);
-  emit();
+  uploadQueue.cancel(id);
 }
 
 export function dismissUpload(id: string) {
-  items = items.filter((it) => it.id !== id);
-  emit();
-}
-
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+  uploadQueue.dismiss(id);
 }
 
 /** Live upload list for one target. */
 export function useUploads(target: string): UploadItem[] {
-  const all = useSyncExternalStore(subscribe, () => items);
+  const all = useSyncExternalStore(uploadQueue.subscribe, uploadQueue.getSnapshot);
   return all.filter((it) => it.target === target);
 }
 
-export function isActive(item: UploadItem) {
-  return item.state === "queued" || item.state === "uploading";
+/**
+ * A finished upload is in its server list now: refresh that list, then drop
+ * the progress rows it replaces. Returns the target's live uploads.
+ */
+export function useUploadsSync(target: string): UploadItem[] {
+  const queryClient = useQueryClient();
+  const uploads = useUploads(target);
+  const doneCount = uploads.filter((u) => u.state === "done").length;
+  useEffect(() => {
+    if (doneCount === 0) return;
+    const key: QueryKey = target === MUSIC_TARGET ? queryKeys.music : queryKeys.inputs(target);
+    void queryClient.invalidateQueries({ queryKey: key }).then(() => {
+      for (const u of uploads) if (u.state === "done") uploadQueue.dismiss(u.id);
+    });
+  }, [doneCount, target, queryClient, uploads]);
+  return uploads;
 }
 
 /** Tests swap the network sender; `reset` clears every queue. */
 export const __testing = {
   setSender(fn: Sender) {
-    sender = fn;
+    uploadQueue.setSender(fn);
   },
   reset() {
-    for (const a of aborts.values()) a.abort();
-    items = [];
-    files.clear();
-    aborts.clear();
-    kinds.clear();
-    running.clear();
-    sender = sendFile;
-    emit();
+    uploadQueue.reset(sendFile);
   },
 };

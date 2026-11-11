@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Button, Card } from "@/components/ui";
+import { Terminal } from "@/components/icons";
+import { Badge, Card, CodeBox } from "@/components/ui";
 import { useT } from "@/i18n";
-import type { Kickoff, KickoffAgent } from "@/lib/api";
-import { cn } from "@/lib/cn";
+import type { Kickoff, KickoffAgent } from "@/types/api";
+import { cn } from "@/utils/cn";
 
 /**
  * "Start your agent" — shown on a Studio-created project until the agent
@@ -17,10 +18,18 @@ export function KickoffPanel({ kickoff }: { kickoff: Kickoff }) {
   if (!agent) return null;
 
   return (
-    <Card className="space-y-5">
-      <div>
-        <h2 className="text-lg font-semibold">{L.startTitle}</h2>
-        <p className="mt-1 text-sm text-text-2">{L.startBody}</p>
+    <Card variant="active" className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="flex items-center gap-2 text-lg font-semibold">
+            <Terminal className="size-5 text-accent" aria-hidden />
+            {L.startTitle}
+          </h2>
+          <p className="mt-1 text-sm text-text-2">{L.startBody}</p>
+        </div>
+        <Badge tone="accent" dot pulse>
+          {L.listening}
+        </Badge>
       </div>
       <div role="tablist" aria-label={L.agentTabs} className="flex flex-wrap gap-2">
         {kickoff.agents.map((a) => (
@@ -31,10 +40,10 @@ export function KickoffPanel({ kickoff }: { kickoff: Kickoff }) {
             aria-selected={a.id === agent.id}
             onClick={() => setAgentId(a.id)}
             className={cn(
-              "rounded-full border px-3 py-1 text-sm",
+              "rounded-control border px-3 py-1.5 text-sm font-medium transition",
               a.id === agent.id
                 ? "border-accent bg-accent-dim text-accent"
-                : "border-border text-text-2 hover:text-text",
+                : "border-border bg-surface-high text-text-2 hover:text-text",
             )}
           >
             {a.label}
@@ -52,26 +61,9 @@ export function KickoffPanel({ kickoff }: { kickoff: Kickoff }) {
 
 function CommandBox({ agent }: { agent: KickoffAgent }) {
   const t = useT();
-  const [copied, setCopied] = useState(false);
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(agent.command);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    } catch {
-      setCopied(false);
-    }
-  };
   return (
     <div className="space-y-1.5">
-      <div className="flex items-stretch gap-2">
-        <code className="min-w-0 flex-1 overflow-x-auto rounded-control border border-border bg-surface-2 px-3 py-2 font-mono text-sm whitespace-nowrap select-all">
-          {agent.command}
-        </code>
-        <Button onClick={() => void copy()} aria-label={t.project.kickoff.copyCommand(agent.label)}>
-          {copied ? t.common.copied : t.common.copy}
-        </Button>
-      </div>
+      <CodeBox code={agent.command} copyLabel={t.project.kickoff.copyCommand(agent.label)} />
       <p className="text-xs text-text-3">{t.project.kickoff.notes[agent.id] ?? agent.note}</p>
     </div>
   );

@@ -1,6 +1,20 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Badge, Banner, EmptyState, Spinner, Tabs, type TabItem } from "@/components/ui";
+import { Activity } from "@/components/icons";
+import { PageHeader } from "@/components/layout/PageHeader";
+import {
+  Badge,
+  Banner,
+  Breadcrumb,
+  Button,
+  ButtonAnchor,
+  Card,
+  ComingSoon,
+  EmptyState,
+  Spinner,
+  Tabs,
+  type TabItem,
+} from "@/components/ui";
 import { stageLabel, titleCase, videoTypeLabel } from "@/content/labels";
 import { ActivityView } from "@/features/project/ActivityView";
 import { boardStatus } from "@/features/project/adapters";
@@ -17,9 +31,12 @@ import { NotifyButton, ReviewPanel } from "@/features/review/ReviewPanel";
 import { InputsPanel } from "@/features/uploads/InputsPanel";
 import { isActive, useUploads } from "@/features/uploads/uploadStore";
 import { useT, type Messages } from "@/i18n";
-import { ApiError, useKickoff, useProject, type BoardState } from "@/lib/api";
-import { fmtAgo, fmtMoney } from "@/lib/format";
-import { ServerDown } from "./ServerDown";
+import { useKickoff, useProject } from "@/hooks/api";
+import { ApiError } from "@/services";
+import type { BoardState } from "@/types/api";
+import { fmtAgo, fmtMoney } from "@/utils/format";
+import { classicBoardPath } from "@/utils/routes";
+import { ServerDown } from "@/components/layout/ServerDown";
 
 /** Which tab shows a stage's output — used to open the tab under review. */
 const STAGE_TAB: Record<string, string> = {
@@ -74,18 +91,23 @@ function ProjectView({ state }: { state: BoardState }) {
   const lastEvent = state.events.at(-1);
 
   return (
-    <article className="space-y-8">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-text-3">
-            <Link to="/library" className="hover:text-text">
-              {t.app.nav.library}
-            </Link>{" "}
-            / {videoTypeLabel(state.pipeline.pipeline_type)}
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">{state.title}</h1>
-          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-text-2">
-            {state.live && <Badge tone="success">{t.common.live}</Badge>}
+    <article className="space-y-6">
+      <Breadcrumb
+        items={[
+          { label: t.app.nav.library, to: "/library" },
+          { label: videoTypeLabel(state.pipeline.pipeline_type) },
+          { label: state.title },
+        ]}
+      />
+      <PageHeader
+        title={state.title}
+        description={
+          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            {state.live && (
+              <Badge tone="success" dot pulse>
+                {t.common.live}
+              </Badge>
+            )}
             {state.style_playbook && (
               <span>{t.project.style(titleCase(state.style_playbook))}</span>
             )}
@@ -96,15 +118,14 @@ function ProjectView({ state }: { state: BoardState }) {
             {state.last_activity ? (
               <span>{t.project.updated(fmtAgo(state.last_activity))}</span>
             ) : null}
-          </p>
-        </div>
-        <a
-          href={`/p/${encodeURIComponent(state.project_id)}`}
-          className="text-sm text-text-2 underline hover:text-text"
-        >
-          {t.app.openClassicBoard}
-        </a>
-      </header>
+          </span>
+        }
+        actions={
+          <ButtonAnchor variant="ghost" size="sm" href={classicBoardPath(state.project_id)}>
+            {t.app.openClassicBoard}
+          </ButtonAnchor>
+        }
+      />
 
       <Banner
         tone={status.tone}
@@ -123,27 +144,61 @@ function ProjectView({ state }: { state: BoardState }) {
 
       {awaitingAgent && uploading && <Banner tone="accent" title={t.uploads.stillUploading} />}
 
-      {awaitingAgent && kickoff && <KickoffPanel kickoff={kickoff} />}
-
-      <InputsPanel projectId={state.project_id} studioProject={Boolean(kickoff)} />
-
-      {status.kind === "waiting" && <ReviewPanel state={state} />}
-
       {state.has_pipeline_state && (
-        <section aria-labelledby="steps-h" className="space-y-3">
-          <h2 id="steps-h" className="text-lg font-semibold">
-            {t.project.stepsHeading}
-          </h2>
-          <StepTimeline stages={state.stages} />
-        </section>
+        <Card padding="sm" className="overflow-visible">
+          <section aria-labelledby="steps-h">
+            <h2 id="steps-h" className="sr-only">
+              {t.project.stepsHeading}
+            </h2>
+            <StepTimeline stages={state.stages} />
+          </section>
+        </Card>
       )}
 
-      <ResultPanel projectId={state.project_id} renders={state.media.renders} />
-
-      <CostPanel projectId={state.project_id} />
-
-      {tabs.length > 0 && <Tabs items={tabs} value={active} onChange={setTab} />}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-6">
+          {awaitingAgent && kickoff && <KickoffPanel kickoff={kickoff} />}
+          {status.kind === "working" && <RunningPanel state={state} />}
+          {status.kind === "waiting" && <ReviewPanel state={state} />}
+          <ResultPanel projectId={state.project_id} renders={state.media.renders} />
+          {tabs.length > 0 && <Tabs items={tabs} value={active} onChange={setTab} />}
+        </div>
+        <aside className="min-w-0 space-y-6">
+          <InputsPanel projectId={state.project_id} studioProject={Boolean(kickoff)} />
+          <CostPanel projectId={state.project_id} />
+        </aside>
+      </div>
     </article>
+  );
+}
+
+/** While the agent works: the live log, plus the render monitor the design shows (not built yet). */
+function RunningPanel({ state }: { state: BoardState }) {
+  const t = useT();
+  const L = t.project.running;
+  return (
+    <div className="space-y-4">
+      <Card className="space-y-3">
+        <h2 className="flex items-center gap-2 font-semibold">
+          <Activity className="size-4 text-info" aria-hidden />
+          {L.logTitle}
+        </h2>
+        <ActivityView events={state.events} />
+      </Card>
+      <ComingSoon>
+        <Card className="space-y-3">
+          <h2 className="font-semibold">{L.monitor}</h2>
+          <div aria-hidden className="aspect-video rounded-control bg-surface-lowest" />
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm">{L.pause}</Button>
+            <Button size="sm">{L.cliLive}</Button>
+            <Button size="sm" variant="danger">
+              {L.cancel}
+            </Button>
+          </div>
+        </Card>
+      </ComingSoon>
+    </div>
   );
 }
 

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
 import { useT } from "@/i18n";
-import { musicKey, musicTrackUrl, useMusic, useUploadLimits } from "@/lib/api";
-import { cn } from "@/lib/cn";
-import { fmtBytes, fmtDuration } from "@/lib/format";
+import { useMusic, useUploadLimits } from "@/hooks/api";
+import { v1 } from "@/services";
+import { cn } from "@/utils/cn";
+import { fmtBytes, fmtDuration } from "@/utils/format";
 import { DropZone } from "@/features/uploads/DropZone";
 import { FileRow } from "@/features/uploads/FileRow";
 import { acceptAttr, uploadErrorText } from "@/features/uploads/media";
@@ -13,7 +13,7 @@ import {
   isActive,
   MUSIC_TARGET,
   cancelUpload,
-  useUploads,
+  useUploadsSync,
 } from "@/features/uploads/uploadStore";
 
 /**
@@ -32,20 +32,11 @@ export function MusicPicker({
 }) {
   const t = useT();
   const L = t.music;
-  const queryClient = useQueryClient();
   const tracks = useMusic().data ?? [];
   const limits = useUploadLimits().data;
-  const uploads = useUploads(MUSIC_TARGET);
-  const doneCount = uploads.filter((u) => u.state === "done").length;
+  const uploads = useUploadsSync(MUSIC_TARGET);
   const [playing, setPlaying] = useState<string | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    if (doneCount === 0) return;
-    void queryClient.invalidateQueries({ queryKey: musicKey }).then(() => {
-      for (const u of uploads) if (u.state === "done") dismissUpload(u.id);
-    });
-  }, [doneCount, queryClient, uploads]);
 
   useEffect(() => () => audio.current?.pause(), []);
 
@@ -55,7 +46,7 @@ export function MusicPicker({
       setPlaying(null);
       return;
     }
-    const el = new Audio(musicTrackUrl(name));
+    const el = new Audio(v1.musicTrack(name));
     el.onended = () => setPlaying(null);
     audio.current = el;
     setPlaying(name);

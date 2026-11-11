@@ -32,5 +32,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     css: false,
+    // Long wizard flows run slowly when the suite runs in parallel.
+    testTimeout: 15_000,
   },
 });

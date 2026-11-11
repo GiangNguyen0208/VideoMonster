@@ -1,8 +1,8 @@
 import { EmptyState } from "@/components/ui";
 import { useT } from "@/i18n";
-import type { ToolEvent } from "@/lib/api";
-import { cn } from "@/lib/cn";
-import { fmtClock } from "@/lib/format";
+import type { ToolEvent } from "@/types/api";
+import { cn } from "@/utils/cn";
+import { fmtClock } from "@/utils/format";
 import { activityLines } from "./adapters";
 
 const TONE_DOT = {

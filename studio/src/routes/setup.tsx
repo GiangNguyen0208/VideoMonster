@@ -1,16 +1,30 @@
-import { Badge, Banner, Button, Card, EmptyState, Spinner } from "@/components/ui";
+import {
+  Badge,
+  Banner,
+  Button,
+  Card,
+  Collapsible,
+  ComingSoon,
+  EmptyState,
+  InfoBox,
+  Section,
+  Spinner,
+} from "@/components/ui";
+import { CheckCircle2, RefreshCw, Terminal, TriangleAlert } from "@/components/icons";
 import {
   byCapabilityPriority,
   capabilityLabel,
   GENERIC_PROVIDERS,
   RUNTIME_LABELS,
 } from "@/content/labels";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { ServerDown } from "@/components/layout/ServerDown";
 import { UnlockCard } from "@/features/setup/UnlockCard";
 import { VideoTypeList } from "@/features/setup/VideoTypeList";
 import { useT } from "@/i18n";
-import { useSetup, type SetupView } from "@/lib/api";
-import { fmtAgo } from "@/lib/format";
-import { ServerDown } from "./ServerDown";
+import { useSetup } from "@/hooks/api";
+import type { SetupView } from "@/types/api";
+import { fmtAgo } from "@/utils/format";
 
 export function SetupPage() {
   const t = useT();
@@ -18,18 +32,29 @@ export function SetupPage() {
   const { setup, view, checking, failedJob, recheck } = useSetup();
 
   return (
-    <section className="space-y-8">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{L.title}</h1>
-          <p className="mt-1 text-text-2">{L.intro}</p>
-        </div>
-        {view && (
-          <Button onClick={() => recheck.mutate()} disabled={checking || recheck.isPending}>
-            {checking ? L.checking : L.checkAgain}
-          </Button>
-        )}
-      </header>
+    <div className="space-y-8">
+      <PageHeader
+        title={L.title}
+        description={L.intro}
+        actions={
+          view && (
+            <>
+              <ComingSoon inline>
+                <Button variant="secondary" leftIcon={<Terminal className="size-4" />}>
+                  {L.diagnostics}
+                </Button>
+              </ComingSoon>
+              <Button
+                onClick={() => recheck.mutate()}
+                disabled={checking || recheck.isPending}
+                leftIcon={<RefreshCw className={checking ? "size-4 animate-spin" : "size-4"} />}
+              >
+                {checking ? L.checking : L.checkAgain}
+              </Button>
+            </>
+          )
+        }
+      />
 
       {setup.isError && <ServerDown />}
       {failedJob && (
@@ -49,7 +74,7 @@ export function SetupPage() {
         </EmptyState>
       )}
       {view && <SetupContent view={view} checking={checking} onSaved={() => recheck.mutate()} />}
-    </section>
+    </div>
   );
 }
 
@@ -67,9 +92,9 @@ function SetupContent({
   const tier = L.tiers[view.tier] ?? { label: view.tier_label, explanation: view.tier_explanation };
   return (
     <div className="space-y-10">
-      <Card className="flex flex-wrap items-center gap-4">
+      <Card variant="active" padding="lg" className="flex flex-wrap items-center gap-4">
         <Badge tone="accent">{tier.label}</Badge>
-        <p className="flex-1 text-text">{tier.explanation}</p>
+        <p className="flex-1 text-lg font-medium text-text">{tier.explanation}</p>
         <p className="text-sm text-text-3">
           {checking
             ? L.checkingAgain
@@ -80,67 +105,60 @@ function SetupContent({
       </Card>
 
       {view.warnings.length > 0 && (
-        <section aria-labelledby="warn-h" className="space-y-2">
-          <h2 id="warn-h" className="text-lg font-semibold">
-            {L.thingsToKnow}
-          </h2>
+        <Section title={L.thingsToKnow}>
           <ul className="space-y-2">
             {view.warnings.map((w) => (
-              <li
-                key={w}
-                className="rounded-control border border-accent/40 bg-accent-dim px-3 py-2 font-mono text-xs whitespace-pre-wrap text-text-2"
-              >
-                {w}
+              <li key={w}>
+                <InfoBox icon={<TriangleAlert className="size-4 text-accent" />}>
+                  <span className="font-mono text-xs whitespace-pre-wrap">{w}</span>
+                </InfoBox>
               </li>
             ))}
           </ul>
-        </section>
+        </Section>
       )}
 
-      <section aria-labelledby="works-h" className="space-y-3">
-        <h2 id="works-h" className="text-lg font-semibold">
-          {L.worksNow}
-        </h2>
-        <p className="text-sm text-text-2">
-          {L.engines}{" "}
-          {Object.entries(view.runtimes).map(([name, ok], i) => (
-            <span key={name}>
-              {i > 0 && " · "}
-              <span className={ok ? "text-success" : "text-text-3 line-through"}>
-                {RUNTIME_LABELS[name] ?? name} {ok ? "✓" : "✗"}
+      <Section
+        title={L.worksNow}
+        description={
+          <>
+            {L.engines}{" "}
+            {Object.entries(view.runtimes).map(([name, ok], i) => (
+              <span key={name}>
+                {i > 0 && " · "}
+                <span className={ok ? "text-success" : "text-text-3 line-through"}>
+                  {RUNTIME_LABELS[name] ?? name} {ok ? "✓" : "✗"}
+                </span>
               </span>
-            </span>
-          ))}
-        </p>
-        <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+            ))}
+          </>
+        }
+      >
+        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[...view.works_now]
             .sort((a, b) => byCapabilityPriority(a.capability, b.capability))
             .map((w) => (
-              <li
-                key={w.capability}
-                className="rounded-control border border-border bg-surface px-3 py-2"
-              >
-                <p className="font-medium">{capabilityLabel(w.capability)}</p>
-                <p className="text-xs text-text-3">
-                  {w.providers.filter((p) => !GENERIC_PROVIDERS.has(p)).join(", ") || L.builtIn}
-                </p>
+              <li key={w.capability}>
+                <Card padding="sm" className="flex h-full items-start gap-3">
+                  <CheckCircle2 aria-hidden className="mt-0.5 size-5 shrink-0 text-success" />
+                  <div className="min-w-0">
+                    <p className="font-medium">{capabilityLabel(w.capability)}</p>
+                    <p className="mt-1 font-mono text-xs text-text-3">
+                      {w.providers.filter((p) => !GENERIC_PROVIDERS.has(p)).join(", ") || L.builtIn}
+                    </p>
+                  </div>
+                </Card>
               </li>
             ))}
         </ul>
-      </section>
+      </Section>
 
-      <section aria-labelledby="types-h" className="space-y-3">
-        <h2 id="types-h" className="text-lg font-semibold">
-          {L.videoTypes}
-        </h2>
+      <Section title={L.videoTypes}>
         <VideoTypeList types={view.video_types} offers={view.offers} />
-      </section>
+      </Section>
 
       {view.suggested_offers.length > 0 && (
-        <section aria-labelledby="unlock-h" className="space-y-3">
-          <h2 id="unlock-h" className="text-lg font-semibold">
-            {L.unlockMore}
-          </h2>
+        <Section title={L.unlockMore}>
           <div className="grid gap-4 lg:grid-cols-3">
             {view.suggested_offers.map((offer) => (
               <UnlockCard
@@ -151,15 +169,12 @@ function SetupContent({
               />
             ))}
           </div>
-        </section>
+        </Section>
       )}
 
       {view.offers.length > view.suggested_offers.length && (
-        <details className="group">
-          <summary className="cursor-pointer text-lg font-semibold">
-            {L.allProviders(view.offers.length)}
-          </summary>
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <Collapsible label={L.allProviders(view.offers.length)}>
+          <div className="grid gap-4 lg:grid-cols-3">
             {view.offers.slice(view.suggested_offers.length).map((offer) => (
               <UnlockCard
                 key={offer.env_var}
@@ -169,15 +184,12 @@ function SetupContent({
               />
             ))}
           </div>
-        </details>
+        </Collapsible>
       )}
 
       {view.hardware.length > 0 && (
-        <details>
-          <summary className="cursor-pointer text-lg font-semibold">
-            {L.hardware(view.hardware.length)}
-          </summary>
-          <p className="mt-2 text-sm text-text-2">{L.hardwareBody}</p>
+        <Collapsible label={L.hardware(view.hardware.length)}>
+          <p className="text-sm text-text-2">{L.hardwareBody}</p>
           <ul className="mt-3 space-y-2">
             {view.hardware.map((h) => (
               <li key={h.tool} className="rounded-control border border-border bg-surface p-3">
@@ -191,7 +203,7 @@ function SetupContent({
               </li>
             ))}
           </ul>
-        </details>
+        </Collapsible>
       )}
     </div>
   );

@@ -1,7 +1,7 @@
 /** Pure helpers for picking, checking and describing media files. */
 import { msg } from "@/i18n";
-import type { MediaKind, UploadLimits } from "@/lib/api";
-import { fmtBytes, fmtDuration } from "@/lib/format";
+import type { MediaKind, UploadLimits } from "@/types/api";
+import { fmtBytes, fmtDuration, fmtFacts, fmtResolution } from "@/utils/format";
 
 export const ALL_KINDS: MediaKind[] = ["video", "audio", "image", "subtitle"];
 
@@ -72,16 +72,9 @@ export function describeMedia(f: {
   width?: number | null;
   height?: number | null;
 }): string {
-  return [
+  return fmtFacts([
     fmtBytes(f.size),
     f.duration_s ? fmtDuration(f.duration_s) : null,
-    f.width && f.height ? `${f.width}×${f.height}` : null,
-  ]
-    .filter(Boolean)
-    .join(" · ");
-}
-
-/** "5 min" / "30 s" for a minimum length. */
-export function fmtLength(seconds: number): string {
-  return seconds >= 60 ? `${Math.round(seconds / 60)} min` : `${seconds} s`;
+    fmtResolution(f.width, f.height),
+  ]);
 }

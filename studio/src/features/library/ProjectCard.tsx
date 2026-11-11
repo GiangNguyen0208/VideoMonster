@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
-import { Badge } from "@/components/ui";
+import { Badge, ProgressBar } from "@/components/ui";
 import { videoTypeLabel } from "@/content/labels";
 import { summaryStatus, progress } from "@/features/project/adapters";
 import { useT } from "@/i18n";
-import type { ProjectSummary } from "@/lib/api";
-import { fmtAgo, fmtMoney, thumbURL } from "@/lib/format";
+import type { ProjectSummary } from "@/types/api";
+import { fmtAgo, fmtMoney } from "@/utils/format";
+import { projectPath } from "@/utils/routes";
+import { thumbURL } from "@/services";
 
 export function ProjectCard({ project }: { project: ProjectSummary }) {
   const t = useT();
@@ -14,7 +16,7 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
 
   return (
     <Link
-      to={`/p/${encodeURIComponent(project.project_id)}`}
+      to={projectPath(project.project_id)}
       className="group block overflow-hidden rounded-card border border-border bg-surface transition hover:border-accent/60"
     >
       <div className="relative aspect-video bg-surface-2">
@@ -47,16 +49,7 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
         </div>
         <Badge tone={status.tone}>{status.label}</Badge>
         {project.has_pipeline_state && project.stage_states.length > 0 && (
-          <div
-            role="progressbar"
-            aria-label={t.library.card.stepsCompleted}
-            aria-valuenow={pct}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            className="h-1.5 overflow-hidden rounded-full bg-surface-3"
-          >
-            <div className="h-full bg-success" style={{ width: `${pct}%` }} />
-          </div>
+          <ProgressBar value={pct / 100} label={t.library.card.stepsCompleted} tone="success" />
         )}
         <p className="flex justify-between text-xs text-text-3">
           <span>

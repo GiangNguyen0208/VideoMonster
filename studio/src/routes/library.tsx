@@ -1,19 +1,23 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { EmptyState, Spinner } from "@/components/ui";
-import { videoTypeLabel } from "@/content/labels";
+import { Badge, Button, ComingSoon, EmptyState, Section, Spinner } from "@/components/ui";
+import { Download, FileText } from "@/components/icons";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { ServerDown } from "@/components/layout/ServerDown";
 import { ProjectCard } from "@/features/library/ProjectCard";
+import { LibraryStats } from "@/features/library/LibraryStats";
+import { LibraryToolbar } from "@/features/library/LibraryToolbar";
+import { ReviewNowCards } from "@/features/library/ReviewNowCards";
 import {
   STATUS_FILTERS,
   filterProjects,
   groupBySeries,
+  statusFilterOf,
   type StatusFilter,
 } from "@/features/library/filters";
 import { useT } from "@/i18n";
-import { useMonthSpend, useProjects } from "@/lib/api";
-import { fmtMoney } from "@/lib/format";
-import { cn } from "@/lib/cn";
-import { ServerDown } from "./ServerDown";
+import { useProjects } from "@/hooks/api";
+import type { ProjectSummary } from "@/types/api";
 
 export function LibraryPage() {
   const t = useT();
@@ -37,75 +41,53 @@ export function LibraryPage() {
 
   const all = useMemo(() => projects.data ?? [], [projects.data]);
   const types = useMemo(
-    () => [...new Set(all.map((p) => p.pipeline_type).filter((t) => t && t !== "unknown"))],
+    () => [...new Set(all.map((p) => p.pipeline_type).filter((x) => x && x !== "unknown"))],
     [all],
   );
   const shown = filterProjects(all, { q, status, type });
-  const month = useMonthSpend().data;
+  const counts = Object.fromEntries(
+    STATUS_FILTERS.map((f) => [
+      f,
+      f === "all" ? all.length : all.filter((p) => statusFilterOf(p) === f).length,
+    ]),
+  ) as Record<StatusFilter, number>;
 
   return (
-    <section className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{t.library.title}</h1>
-        <p className="mt-1 text-text-2">{t.library.intro}</p>
-        {month && (
-          <p className="mt-2 text-sm text-text-3">
-            {t.library.monthSpend(fmtMoney(month.spent_usd), month.projects)}
-          </p>
-        )}
-      </header>
+    <div className="space-y-8">
+      <PageHeader
+        title={
+          <span className="flex flex-wrap items-center gap-3">
+            {t.library.title}
+            {all.length > 0 && <Badge>{t.home.projects.count(all.length)}</Badge>}
+          </span>
+        }
+        description={t.library.intro}
+        actions={
+          <ComingSoon inline>
+            <div className="flex gap-2">
+              <Button size="sm" variant="secondary" leftIcon={<FileText className="size-4" />}>
+                {t.library.exportCost}
+              </Button>
+              <Button size="sm" variant="secondary" leftIcon={<Download className="size-4" />}>
+                {t.library.cleanTemp}
+              </Button>
+            </div>
+          </ComingSoon>
+        }
+      />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <input
-          type="search"
-          value={q}
-          onChange={(e) => set("q", e.target.value)}
-          placeholder={t.library.search}
-          aria-label={t.library.search}
-          className="h-10 w-full rounded-control border border-border bg-surface px-3 text-sm placeholder:text-text-3 sm:w-64"
-        />
-        <div role="group" aria-label={t.library.filterByStatus} className="flex flex-wrap gap-1">
-          {STATUS_FILTERS.map((f) => (
-            <button
-              key={f}
-              type="button"
-              aria-pressed={status === f}
-              onClick={() => set("status", f === "all" ? "" : f)}
-              className={cn(
-                "rounded-full border px-3 py-1 text-sm",
-                status === f
-                  ? "border-accent bg-accent-dim text-text"
-                  : "border-border text-text-2 hover:text-text",
-              )}
-            >
-              {t.library.filters[f]}
-            </button>
-          ))}
-        </div>
-        {types.length > 1 && (
-          <select
-            value={type}
-            onChange={(e) => set("type", e.target.value)}
-            aria-label={t.library.filterByType}
-            className="h-10 rounded-control border border-border bg-surface px-2 text-sm"
-          >
-            <option value="">{t.library.allTypes}</option>
-            {types.map((t) => (
-              <option key={t} value={t}>
-                {videoTypeLabel(t)}
-              </option>
-            ))}
-          </select>
-        )}
-        <label className="ml-auto flex items-center gap-2 text-sm text-text-2">
-          <input
-            type="checkbox"
-            checked={bySeries}
-            onChange={(e) => set("view", e.target.checked ? "series" : "")}
-          />
-          {t.library.groupBySeries}
-        </label>
-      </div>
+      <LibraryStats projects={all} />
+      <ReviewNowCards projects={all.filter((p) => statusFilterOf(p) === "waiting")} />
+
+      <LibraryToolbar
+        q={q}
+        status={status}
+        type={type}
+        types={types}
+        bySeries={bySeries}
+        counts={counts}
+        onChange={set}
+      />
 
       {projects.isPending && <Spinner label={t.home.loadingVideos} />}
       {projects.isError && <ServerDown />}
@@ -117,19 +99,22 @@ export function LibraryPage() {
 
       {bySeries ? (
         groupBySeries(shown).map(([series, items]) => (
-          <section key={series ?? "_none"} className="space-y-3">
-            <h2 className="text-lg font-semibold">{series ?? t.library.noSeries}</h2>
+          <Section
+            key={series ?? "_none"}
+            title={series ?? t.library.noSeries}
+            action={<Badge>{t.home.projects.count(items.length)}</Badge>}
+          >
             <Grid items={items} />
-          </section>
+          </Section>
         ))
       ) : (
         <Grid items={shown} />
       )}
-    </section>
+    </div>
   );
 }
 
-function Grid({ items }: { items: ReturnType<typeof filterProjects> }) {
+function Grid({ items }: { items: ProjectSummary[] }) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {items.map((p) => (

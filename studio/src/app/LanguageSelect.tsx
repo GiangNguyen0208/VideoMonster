@@ -1,5 +1,5 @@
 import { LOCALES, setLocale, useLocale, useT, type Locale } from "@/i18n";
-import { cn } from "@/lib/cn";
+import { cn } from "@/utils/cn";
 
 /** Studio language picker; the choice is saved and shared across tabs. */
 export function LanguageSelect({ compact = false }: { compact?: boolean }) {

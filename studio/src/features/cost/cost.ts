@@ -1,4 +1,4 @@
-import type { ProjectCost } from "@/lib/api";
+import type { ProjectCost } from "@/types/api";
 
 /** Bar widths in percent of the budget (or of what was used, without one). */
 export function costBar(cost: ProjectCost) {

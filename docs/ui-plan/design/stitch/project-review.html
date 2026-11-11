@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenMontage Studio - Cổng Kiểm Duyệt Đạo Diễn (Director Review Gate)</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts: Inter, JetBrains Mono, Courier Prime -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration verbatim as mandated -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "outline-variant": "#514535",
+            "tertiary-container": "#59cb8b",
+            "surface-variant": "#353437",
+            "surface-container-lowest": "#0e0e10",
+            "tertiary-fixed": "#87f9b5",
+            "on-error-container": "#ffdad6",
+            "background": "#131315",
+            "surface-bright": "#39393b",
+            "secondary-fixed-dim": "#c8c5ca",
+            "on-surface": "#e5e1e4",
+            "text-primary": "#ececef",
+            "tertiary": "#76e8a5",
+            "surface-2": "#16161a",
+            "status-success": "#4fc283",
+            "on-secondary-container": "#b7b4b8",
+            "on-primary-container": "#644000",
+            "primary-fixed": "#ffddb5",
+            "surface-1": "#101013",
+            "border-soft": "#1a1a1f",
+            "on-secondary-fixed": "#1b1b1e",
+            "screenplay-parchment": "#f2e9d5",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "on-background": "#e5e1e4",
+            "primary-container": "#f0a83c",
+            "on-tertiary-container": "#00532f",
+            "surface": "#131315",
+            "status-danger": "#e5544b",
+            "text-secondary": "#a0a0a9",
+            "on-primary": "#452b00",
+            "surface-container-high": "#2a2a2c",
+            "on-secondary-fixed-variant": "#47464a",
+            "inverse-surface": "#e5e1e4",
+            "on-tertiary-fixed": "#002110",
+            "on-tertiary": "#00391f",
+            "surface-container-low": "#1c1b1d",
+            "primary": "#ffc881",
+            "on-error": "#690005",
+            "screenplay-ink": "#29231a",
+            "error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#00522f",
+            "on-surface-variant": "#d6c4b0",
+            "secondary-container": "#47464a",
+            "secondary": "#c8c5ca",
+            "primary-fixed-dim": "#ffb956",
+            "outline": "#9e8e7c",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "surface-dim": "#131315",
+            "inverse-on-surface": "#313032",
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "surface-container-highest": "#353437",
+            "surface-container": "#201f21",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "status-info": "#6aa1ff",
+            "inverse-primary": "#835400",
+            "on-secondary": "#303033",
+            "on-primary-fixed": "#2a1800",
+            "border-base": "#232329",
+            "secondary-fixed": "#e4e1e6",
+            "text-muted": "#5f5f68",
+            "surface-3": "#1c1c21",
+            "surface-tint": "#ffb956",
+            "tertiary-fixed-dim": "#6adc9b",
+            "on-primary-fixed-variant": "#633f00",
+            "error": "#ffb4ab"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-xs": "0.25rem",
+            "gutter-desktop": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "margin-tablet": "1.5rem",
+            "space-2xl": "2.5rem",
+            "gutter": "1rem",
+            "margin-desktop": "2rem"
+          },
+          "fontFamily": {
+            "caption-meta": ["Inter"],
+            "code-mono": ["JetBrains Mono"],
+            "body-medium": ["Inter"],
+            "headline-section": ["Inter"],
+            "display-hero": ["Inter"],
+            "title-card": ["Inter"],
+            "screenplay-body": ["Courier Prime"],
+            "body-base": ["Inter"],
+            "screenplay-heading": ["Courier Prime"],
+            "display-hero-mobile": ["Inter"],
+            "badge-label": ["Inter"]
+          },
+          "fontSize": {
+            "caption-meta": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "code-mono": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-medium": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-section": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "display-hero": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "title-card": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "screenplay-body": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-base": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "screenplay-heading": ["18px", { "lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "display-hero-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "badge-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #101013;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232329;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #353437;
+    }
+  </style>
+</head>
+<body class="bg-background text-text-primary min-h-screen selection:bg-primary-container selection:text-surface-1 antialiased flex flex-col font-body-base text-body-base">
+<!-- ============================================================ -->
+<!-- 1. TOP BAR / WEB HEADER (SHARED COMPONENT EXECUTION)         -->
+<!-- ============================================================ -->
+<header class="bg-surface/90 dark:bg-surface/90 backdrop-blur-md docked full-width top-0 sticky z-50 flat no shadows border-b border-border-base dark:border-border-base">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Brand & Status Pill -->
+<div class="flex items-center space-x-6">
+<a class="font-title-card text-title-card font-bold tracking-tight text-text-primary dark:text-text-primary flex items-center gap-2" href="#">
+<span class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-surface-1 font-bold text-sm tracking-tighter shadow-sm">
+            OM
+          </span>
+<span>OpenMontage Studio</span>
+</a>
+<!-- Runtime Agent Status Badge in Header -->
+<div class="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-accent-dim border border-primary-container/40 text-primary">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-caption-meta text-caption-meta font-medium tracking-tight">● Đang chờ duyệt (Review Gate Active)</span>
+</div>
+<div class="hidden xl:flex items-center text-text-secondary font-caption-meta text-caption-meta gap-1">
+<span>Hạn mức:</span>
+<span class="text-text-primary font-code-mono text-code-mono">$0.35 / $2.00</span>
+</div>
+</div>
+<!-- Navigation Links from Shared Components JSON -->
+<!-- Mapping: Intent of Review Gate is an active production step of a New Video pipeline -->
+<nav class="hidden md:flex items-center space-x-8">
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 active:scale-[0.98] transition-transform duration-100" href="#">
+          Home
+        </a>
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary font-body-medium text-body-medium pb-1 active:scale-[0.98] transition-transform duration-100" href="#">
+          New Video
+        </a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 active:scale-[0.98] transition-transform duration-100" href="#">
+          Library
+        </a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 active:scale-[0.98] transition-transform duration-100" href="#">
+          Setup
+        </a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150 active:scale-[0.98] transition-transform duration-100" href="#">
+          Settings
+        </a>
+</nav>
+<!-- Trailing Cluster -->
+<div class="flex items-center space-x-3">
+<!-- Classic board deep link -->
+<a class="hidden sm:inline-flex items-center gap-1 font-caption-meta text-caption-meta text-text-secondary hover:text-text-primary transition-colors px-2 py-1 rounded bg-surface-2 border border-border-base" href="#">
+<span>Classic board</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</a>
+<!-- Trailing secondary action EN/VI -->
+<button class="px-2 py-1 text-xs rounded border border-border-base text-text-secondary hover:text-text-primary bg-surface-1 hover:bg-surface-2 font-code-mono transition-colors" type="button">
+          EN/VI
+        </button>
+<!-- Trailing icon actions: dark_mode, notifications, account_circle -->
+<button aria-label="dark mode" class="p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button aria-label="notifications" class="relative p-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container"></span>
+</button>
+<button aria-label="account circle" class="p-1 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150 flex items-center" type="button">
+<span class="material-symbols-outlined text-[26px]">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ============================================================ -->
+<!-- MAIN CONTENT CANVAS                                          -->
+<!-- ============================================================ -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+<!-- 2. BREADCRUMB & PROJECT HEADER -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border-soft pb-5">
+<div class="space-y-1.5">
+<div class="flex items-center gap-2 text-text-secondary font-caption-meta text-caption-meta">
+<span>Dự án</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Video hoạt hình chuyển động</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-text-primary font-medium">The Cyber Odyssey: Tương lai của AI Agent</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-2 text-text-muted font-code-mono text-[11px] border border-border-base">om-proj-8842</span>
+</div>
+<div class="flex flex-wrap items-center gap-3 pt-1">
+<h1 class="font-headline-section text-headline-section text-text-primary tracking-tight">
+            The Cyber Odyssey: Tương lai của AI Agent
+          </h1>
+<!-- Stage badge -->
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-accent-dim border border-primary-container/40 text-primary font-badge-label text-badge-label">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+<span>CỔNG KIỂM DUYỆT (STAGE 03: PHÂN CẢNH &amp; KỊCH BẢN CHI TIẾT)</span>
+</div>
+</div>
+<p class="text-text-secondary font-body-base text-body-base max-w-3xl">
+          Autonomous AI Agent đã hoàn thiện dự thảo phân cảnh kịch bản 30s. Vui lòng kiểm tra và duyệt để tiếp tục Render Remotion hoặc yêu cầu AI chỉnh sửa lại.
+        </p>
+</div>
+<!-- Quick Stepper Mini Indicator -->
+<div class="flex items-center gap-1 bg-surface-1 p-2 rounded-lg border border-border-base self-start md:self-auto">
+<div class="flex items-center gap-1.5 font-code-mono text-[12px] px-2 text-status-success">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>01 Research</span>
+</div>
+<span class="text-text-muted">/</span>
+<div class="flex items-center gap-1.5 font-code-mono text-[12px] px-2 text-status-success">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+<span>02 Concept</span>
+</div>
+<span class="text-text-muted">/</span>
+<div class="flex items-center gap-1.5 font-code-mono text-[12px] px-2.5 py-1 rounded bg-accent-dim text-primary font-medium border border-primary-container/30">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span>03 Scripting</span>
+</div>
+<span class="text-text-muted">/</span>
+<div class="font-code-mono text-[12px] px-2 text-text-muted">
+<span>04 Render (Remotion)</span>
+</div>
+</div>
+</div>
+<!-- 3. NOTIFICATION BANNER (Amber Warmth) -->
+<div class="rounded-lg bg-accent-dim border border-primary-container/40 px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container/20 border border-primary-container/40 flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+</div>
+<div>
+<span class="font-body-medium text-body-medium text-text-primary">
+            Cần phản hồi từ bạn: Duyệt phân cảnh trước khi render Remotion
+          </span>
+<span class="text-text-secondary font-caption-meta text-caption-meta block sm:inline sm:ml-2">
+            • Đang tạm dừng tác vụ chờ ý kiến đạo diễn • Chờ phản hồi từ 5 phút trước
+          </span>
+</div>
+</div>
+<div class="flex items-center gap-2 self-end sm:self-auto">
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-surface-2 border border-border-base hover:bg-surface-3 text-text-primary font-caption-meta text-caption-meta transition-colors" type="button">
+<span class="material-symbols-outlined text-[15px]">toggle_on</span>
+<span>Bật thông báo khi có lượt duyệt mới</span>
+</button>
+</div>
+</div>
+<!-- 4. SPOTLIGHT DECISION PANEL (Focus Checkpoint Card) -->
+<section class="rounded-xl bg-surface-1 border-2 border-primary-container/40 shadow-lg relative overflow-hidden p-5 md:p-6 space-y-5">
+<!-- Glow ambient accent -->
+<div class="absolute -right-20 -top-20 w-64 h-64 rounded-full bg-primary-container/5 blur-3xl pointer-events-none"></div>
+<div class="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+<!-- Left: Agent Self-Review Statement -->
+<div class="space-y-3 flex-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-status-success"></span>
+<h2 class="font-title-card text-title-card text-text-primary tracking-tight">
+              Báo Cáo Tự Đánh Giá Của AI Agent (Stage Health Check)
+            </h2>
+<span class="px-2 py-0.5 rounded-full bg-status-success-dim text-status-success font-code-mono text-[11px] border border-status-success/30">
+              100% READY
+            </span>
+</div>
+<div class="p-3.5 rounded-lg bg-surface-2 border border-border-base text-text-secondary font-body-base text-body-base leading-relaxed">
+<p>
+<strong class="text-text-primary font-medium">Tự đánh giá AI:</strong> 
+              Cấu trúc 3 cảnh (Hook, Demo, Call-To-Action) đạt độ tương thích <span class="text-status-success font-code-mono font-medium">100%</span> với Remotion local engine, nhịp thoại <span class="text-primary font-code-mono font-medium">130 WPM</span>, âm thanh Cyber Pulse đồng bộ nhịp cắt. Đã kiểm tra <strong>0 lỗi cú pháp TSX</strong>, <strong>0 xung đột bản quyền âm nhạc</strong>.
+            </p>
+<div class="mt-2.5 pt-2.5 border-t border-border-soft flex flex-wrap items-center gap-4 text-xs font-code-mono text-text-muted">
+<span>Độ dài video: <strong class="text-text-primary">30.0s (900 frames @ 30fps)</strong></span>
+<span>Chi phí dự kiến giai đoạn: <strong class="text-status-success font-semibold">$0.00 (Chạy miễn phí trên máy)</strong></span>
+<span>Remotion Pipeline: <strong class="text-text-primary">Ready to compile</strong></span>
+</div>
+</div>
+</div>
+<!-- Right: Primary Call to Action Cluster -->
+<div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 lg:w-72 flex-shrink-0 justify-center">
+<!-- Primary Amber Button (Strict adherence to button specs) -->
+<button class="w-full h-11 px-5 rounded-lg bg-primary-container hover:bg-primary text-surface-1 font-body-medium text-body-medium font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Duyệt kịch bản &amp; Tiếp tục Render</span>
+</button>
+<!-- Request Changes Secondary Charcoal Button -->
+<button class="w-full h-10 px-4 rounded-lg bg-surface-2 hover:bg-surface-3 border border-border-base text-text-primary font-body-medium text-body-medium flex items-center justify-center gap-2 transition-colors active:scale-[0.98]" onclick="document.getElementById('quick-feedback-input').focus()" type="button">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+<span>Yêu cầu AI chỉnh sửa lại...</span>
+</button>
+<!-- Stop Project Subtle Danger Button -->
+<button class="w-full py-1.5 px-3 rounded text-status-danger bg-status-danger-dim hover:bg-status-danger/20 border border-status-danger/30 font-caption-meta text-caption-meta flex items-center justify-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+<span>Tạm dừng / Hủy tác vụ dự án</span>
+</button>
+</div>
+</div>
+<!-- Quick Feedback Notes Drawer / Inline Input -->
+<div class="pt-2 border-t border-border-soft flex flex-col md:flex-row items-stretch md:items-center gap-3">
+<div class="flex items-center gap-2 text-xs font-code-mono text-text-secondary flex-shrink-0">
+<span class="material-symbols-outlined text-[16px] text-primary">terminal</span>
+<span>Góp ý nhanh cho Agent CLI:</span>
+</div>
+<div class="flex-1 relative">
+<input class="w-full bg-surface-2 border border-border-base focus:border-primary-container focus:ring-1 focus:ring-primary-container rounded-lg px-3.5 py-2 text-text-primary placeholder:text-text-muted font-body-base text-body-base transition-colors" id="quick-feedback-input" placeholder="Ví dụ: 'Yêu cầu AI viết lại đoạn Hook giật gân hơn', 'Đổi nhạc nền sang Synthwave BPM 120'..." type="text"/>
+</div>
+<button class="px-4 py-2 bg-surface-3 hover:bg-surface-container border border-border-base text-text-primary font-body-medium text-body-medium rounded-lg flex items-center justify-center gap-1.5 flex-shrink-0 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">send</span>
+<span>Gửi nhận xét</span>
+</button>
+</div>
+</section>
+<!-- ============================================================ -->
+<!-- 5. DIRECTOR'S DUAL WORKSPACE (2 COLS)                         -->
+<!-- ============================================================ -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- CỘT TRÁI (COL 7/12): STORYBOARD & SCENE INSPECTOR -->
+<div class="lg:col-span-7 space-y-4">
+<!-- Segmented Tab Header -->
+<div class="bg-surface-1 p-1 rounded-lg border border-border-base flex items-center justify-between">
+<div class="flex items-center gap-1 overflow-x-auto">
+<button class="px-3.5 py-1.5 rounded-md bg-surface-3 text-text-primary font-body-medium text-body-medium flex items-center gap-1.5 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px]">view_timeline</span>
+<span>3 Phân cảnh (Storyboard)</span>
+</button>
+<button class="px-3.5 py-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">article</span>
+<span>Lời thoại &amp; Kịch bản (Screenplay)</span>
+</button>
+<button class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">graphic_eq</span>
+<span>Thiết kế âm thanh</span>
+</button>
+<button class="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface-2 font-body-base text-body-base hidden sm:flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Nhật ký</span>
+</button>
+</div>
+<div class="hidden sm:flex items-center pr-2 text-text-muted font-caption-meta text-caption-meta">
+<span>Tổng: 3 cảnh (30s)</span>
+</div>
+</div>
+<!-- SCENE CARD 01: HOOK (Active/Selected State) -->
+<div class="rounded-xl bg-surface-1 border-2 border-primary-container/40 p-4 transition-all space-y-3 relative group">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-primary-container/15 text-primary font-code-mono text-xs font-semibold">
+                SCENE 01
+              </span>
+<span class="font-code-mono text-xs text-text-muted">00:00 - 00:05 (5.0s)</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-caption-meta text-caption-meta border border-border-base">
+                CÂU MỞ ĐẦU (HOOK)
+              </span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 text-xs text-status-success font-code-mono px-2 py-0.5 rounded bg-status-success-dim">
+<span class="material-symbols-outlined text-[14px]">check</span> Đồng bộ 100%
+              </span>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2" title="Chỉnh sửa cảnh" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Scene Split: Thumbnail Preview + Metadata & VO -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+<!-- Thumbnail Visual -->
+<div class="sm:col-span-4 relative rounded-lg overflow-hidden border border-border-base bg-surface-2 aspect-video sm:aspect-auto sm:h-32">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A vivid cinematic cyberpunk digital realm showcasing radiant neon streaks of cyan and deep amber running along high-tech fiber optic cables. The backdrop is a pristine near-black void reflecting dark modern aesthetic studio lighting. Sharp geometric data cubes float weightlessly in hyper-detailed perspective, creating a high-energy tech visual style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmM6Dn8KeuHVrUfyy6TfXRyHQli-o4jTBq5K0TSA69l0P0iSMqcKSXPZuwpPkIvX4JjEb4yOuytwp8-ni-AP00HxQoTimjGf5jHMQXZr2G2Rj2I2NuAPhOzHMMAMDcy3PAFHve3nvk7UvZnVlOWoOgTFwlwXRKentn7L0I7GsU8usOS-D8RGCgtgsCTIbJLXoorVR1T7BkcvDsm2mJeKCRRD0Af_koml8vmuNyPeA"/>
+<div class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-surface-1/80 backdrop-blur text-[10px] font-code-mono text-text-primary border border-border-base">
+                Kinetic 3D
+              </div>
+<button class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-surface-1/90 text-primary flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+</div>
+<!-- Dialogue & Engine Parameters -->
+<div class="sm:col-span-8 space-y-2 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-xs text-text-muted mb-1">
+<span class="font-medium text-text-secondary">Lời thoại Voice-Over (TTS):</span>
+<span class="font-code-mono text-primary">130 WPM • 11 từ</span>
+</div>
+<div class="p-2.5 rounded bg-surface-2 border border-border-base font-body-base text-body-base text-text-primary italic">
+                  “Vũ trụ dữ liệu số đang bùng nổ. Bạn đã sẵn sàng tự động hóa video với AI?”
+                </div>
+</div>
+<!-- Badges & Tools row -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="flex items-center gap-1.5 text-xs text-text-secondary">
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">Kinetic Typo</span>
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">Bass Drop Sync</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-2 hover:bg-surface-3 border border-border-base text-xs font-body-medium text-text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">volume_up</span>
+<span>Nghe thử cảnh</span>
+</button>
+<button class="text-xs text-primary hover:underline font-body-medium" type="button">
+                    Chỉnh sửa cảnh
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SCENE CARD 02: CORE DEMO -->
+<div class="rounded-xl bg-surface-1 border border-border-base hover:border-border-base/80 p-4 transition-all space-y-3 relative group">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-code-mono text-xs font-semibold">
+                SCENE 02
+              </span>
+<span class="font-code-mono text-xs text-text-muted">00:05 - 00:22 (17.0s)</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-caption-meta text-caption-meta border border-border-base">
+                GIẢI THÍCH LÕI (CORE DEMO)
+              </span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 text-xs text-status-success font-code-mono px-2 py-0.5 rounded bg-status-success-dim">
+<span class="material-symbols-outlined text-[14px]">check</span> Audio Ducking -18dB
+              </span>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2" title="Chỉnh sửa cảnh" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Scene Split: Thumbnail Preview + Metadata & VO -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+<!-- Thumbnail Visual -->
+<div class="sm:col-span-4 relative rounded-lg overflow-hidden border border-border-base bg-surface-2 aspect-video sm:aspect-auto sm:h-32">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A professional code editor interface glowing in the dark, surrounded by illuminated Remotion code snippets and sleek motion design timelines. Matte charcoal slate surfaces contrast with warm golden amber syntax highlighting. Floating terminal screens showcase automated AI scripts executing flawlessly in a cinematic film editing suite setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaZh66FJdtmmojHr9jfS3f4pPFbVtCEQC8F_6lwn0Qo583STtNPr5Arinxej8HCIlcYDnTffVI8Y6zfkMbrY5xs4siyPzgyWBWap-byBWlTklzny9qOnZXGkZRamnMm-bSb3gh3BdAax8Z-q0fPiQAlvKvelo7pma1aUB2VbrOkfAIuVNTi3x07OPzTczPfpO_Qz83v-ePyuoT-uHClot6VQV_mutyhoKXQTegpzs"/>
+<div class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-surface-1/80 backdrop-blur text-[10px] font-code-mono text-text-primary border border-border-base">
+                Motion UI Mockup
+              </div>
+<button class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-surface-1/90 text-text-secondary group-hover:text-primary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+</div>
+<!-- Dialogue & Engine Parameters -->
+<div class="sm:col-span-8 space-y-2 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-xs text-text-muted mb-1">
+<span class="font-medium text-text-secondary">Lời thoại Voice-Over (TTS):</span>
+<span class="font-code-mono text-text-secondary">128 WPM • 38 từ</span>
+</div>
+<div class="p-2.5 rounded bg-surface-2 border border-border-base font-body-base text-body-base text-text-primary italic">
+                  “Với Remotion và OpenMontage, mọi dòng code React đều trở thành hoạt ảnh chuyển động mượt mà. AI tự biên tập phân cảnh, phối âm thanh thông minh và xuất bản video 4K chỉ trong tích tắc.”
+                </div>
+</div>
+<!-- Badges & Tools row -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="flex items-center gap-1.5 text-xs text-text-secondary">
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">Camera Zoom-In</span>
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">TTS Nam Bắc Hào Hứng</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-2 hover:bg-surface-3 border border-border-base text-xs font-body-medium text-text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">volume_up</span>
+<span>Nghe thử cảnh</span>
+</button>
+<button class="text-xs text-text-secondary hover:text-text-primary font-body-medium" type="button">
+                    Chỉnh sửa cảnh
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SCENE CARD 03: CTA -->
+<div class="rounded-xl bg-surface-1 border border-border-base hover:border-border-base/80 p-4 transition-all space-y-3 relative group">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-code-mono text-xs font-semibold">
+                SCENE 03
+              </span>
+<span class="font-code-mono text-xs text-text-muted">00:22 - 00:30 (8.0s)</span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-secondary font-caption-meta text-caption-meta border border-border-base">
+                KÊU GỌI HÀNH ĐỘNG (CTA)
+              </span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="inline-flex items-center gap-1 text-xs text-status-success font-code-mono px-2 py-0.5 rounded bg-status-success-dim">
+<span class="material-symbols-outlined text-[14px]">check</span> Fade out êm dịu
+              </span>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2" title="Chỉnh sửa cảnh" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+<!-- Scene Split: Thumbnail Preview + Metadata & VO -->
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
+<!-- Thumbnail Visual -->
+<div class="sm:col-span-4 relative rounded-lg overflow-hidden border border-border-base bg-surface-2 aspect-video sm:aspect-auto sm:h-32">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="An elegant brand outro frame featuring the OpenMontage Studio emblem surrounded by subtle particle motion and glowing neon geometric rings. Deep matte darkroom background with vibrant warm amber lighting accents. The composition exudes director quality and clean cinematic finish, perfect for an engaging call-to-action motion sequence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEZye6n6G5oWFUz3fUMNPssAmUWgiOqm0jIavpkdmjQAzBxQEHMAtQWS5vIkYKhyqeY-paVwVjzDtPLJTWqwJOHaHng0TOdUWlynuHW64zu-w3-ThJBkw-wNrdWbsMobdAwCenvmtvOLngfF6O_9Go6ZpIh42u3VgSVkLNP_aKSaDEj2Fb9SSQOFRoKITv2M_DChh7df1dBNUIOhjpQeJdDPjZRTYKMOQ4U6XDcrA"/>
+<div class="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-surface-1/80 backdrop-blur text-[10px] font-code-mono text-text-primary border border-border-base">
+                Outro / Logo
+              </div>
+<button class="absolute inset-0 m-auto w-8 h-8 rounded-full bg-surface-1/90 text-text-secondary group-hover:text-primary flex items-center justify-center transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">play_arrow</span>
+</button>
+</div>
+<!-- Dialogue & Engine Parameters -->
+<div class="sm:col-span-8 space-y-2 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between text-xs text-text-muted mb-1">
+<span class="font-medium text-text-secondary">Lời thoại Voice-Over (TTS):</span>
+<span class="font-code-mono text-text-secondary">125 WPM • 16 từ</span>
+</div>
+<div class="p-2.5 rounded bg-surface-2 border border-border-base font-body-base text-body-base text-text-primary italic">
+                  “Bắt đầu sáng tạo ngay hôm nay với OpenMontage Studio. Nhấn Clone repo và tạo video đầu tiên!”
+                </div>
+</div>
+<!-- Badges & Tools row -->
+<div class="flex flex-wrap items-center justify-between gap-2 pt-1">
+<div class="flex items-center gap-1.5 text-xs text-text-secondary">
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">Logo Morphing</span>
+<span class="px-2 py-0.5 rounded bg-surface-3 font-code-mono text-[11px] border border-border-base">BGM Fade 1.2s</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-2 hover:bg-surface-3 border border-border-base text-xs font-body-medium text-text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[14px]">volume_up</span>
+<span>Nghe thử cảnh</span>
+</button>
+<button class="text-xs text-text-secondary hover:text-text-primary font-body-medium" type="button">
+                    Chỉnh sửa cảnh
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Scene / Optimize Toolbar -->
+<div class="flex items-center justify-between pt-2">
+<button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border-base text-text-secondary hover:text-text-primary font-body-medium text-body-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Thêm phân cảnh mới (Add Scene)</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-1 hover:bg-surface-2 border border-border-base text-primary font-body-medium text-body-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">speed</span>
+<span>Yêu cầu AI tối ưu lại nhịp điệu (Pacing)</span>
+</button>
+</div>
+<!-- SCREENPLAY PAPER CARD (Vintage Tactile Screenplay Anchor) -->
+<div class="rounded-xl bg-screenplay-parchment text-screenplay-ink p-5 shadow-md border border-outline/30 space-y-3 font-screenplay-body text-screenplay-body">
+<div class="flex items-center justify-between border-b border-screenplay-ink/20 pb-2">
+<span class="font-screenplay-heading text-screenplay-heading uppercase tracking-wider text-xs">
+              TRÍCH ĐOẠN BẢN THẢO KỊCH BẢN ĐẠO DIỄN (SCENE 01 DRAFT)
+            </span>
+<span class="text-xs opacity-75 font-mono">DRAFT v2.4 • 30 SEC TOTAL</span>
+</div>
+<div class="space-y-2 text-xs leading-relaxed">
+<p class="font-bold text-center">INT. CYBER DATA VOID - NIGHT</p>
+<p>
+              Darkness. A burst of CYAN and AMBER fiber lines ignites the screen. 
+              Kinetic words snap into 3D space with subtle camera shake.
+            </p>
+<div class="text-center max-w-sm mx-auto">
+<p class="font-bold">NARRATOR (V.O.)</p>
+<p class="italic">"Vũ trụ dữ liệu số đang bùng nổ. Bạn đã sẵn sàng tự động hóa video với AI?"</p>
+</div>
+<p class="text-right text-[11px] opacity-75">
+              [CUT TO: TERMINAL CODE EDITOR - 00:05.00]
+            </p>
+</div>
+</div>
+</div>
+<!-- CỘT PHẢI (COL 5/12): DIRECTOR LIVE MONITOR & PRODUCTION SPECS -->
+<div class="lg:col-span-5 space-y-4">
+<!-- Vertical 9:16 Video Monitor Preview Card -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-4 space-y-3">
+<div class="flex items-center justify-between border-b border-border-soft pb-2.5">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-status-danger animate-pulse"></span>
+<span class="font-title-card text-title-card text-text-primary text-sm font-semibold">
+                Director Live Monitor (9:16 Preview)
+              </span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-text-muted font-code-mono text-[11px] border border-border-base">
+              SCENE 01 / 03
+            </span>
+</div>
+<!-- Video Monitor Box (Phone 9:16 Framing Container) -->
+<div class="relative bg-surface-container-lowest rounded-lg overflow-hidden border border-border-base flex items-center justify-center py-4 bg-gradient-to-b from-[#0a0a0c] to-[#121215]">
+<!-- Mobile 9:16 frame inside -->
+<div class="w-56 h-[340px] rounded-lg overflow-hidden relative shadow-2xl border border-border-base bg-[#0e0e11] group">
+<img class="w-full h-full object-cover" data-alt="A vertical 9:16 motion graphics composition showing kinetic typography glowing in amber and cyan over a sleek dark cybernetic wireframe background. Cinematic lens flares accentuate the words 'CYBER ODYSSEY' in a high-tech modern studio environment, designed for short-form video formats with immaculate dark aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdbYqUq1zL48wxtnQkPK9A0Thn_hAjaY6qudUDDKkC0TUiu1sFaMONhAaIiLwaLi1OcnM1loUn8ABwDRrOS8vSZDn5vxQT5nZ6xkuNGMEOyW_IUw-X6lfYcV4swFx0_yWTtWmk46zafelol3UcaeS4szAvfMQM-8KKipLyrZvOWdgxEtDQjN8xYXQAXZjBySilqEzEJNbF4FIUHORllUVmwuxBEoYUoKucBcjYj0g"/>
+<!-- Overlay elements imitating real-time render draft -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-1/90 via-transparent to-surface-1/40 flex flex-col justify-between p-3 pointer-events-none">
+<div class="flex justify-between items-center text-[10px] font-code-mono text-text-secondary">
+<span class="px-1.5 py-0.5 rounded bg-surface-1/80 border border-border-base">1080x1920</span>
+<span class="text-status-success">30.0 FPS</span>
+</div>
+<div class="text-center space-y-1">
+<span class="inline-block px-2 py-0.5 rounded bg-primary-container text-surface-1 font-bold text-[10px] tracking-wide uppercase">
+                    Kinetic Preview
+                  </span>
+<p class="text-xs text-text-primary font-medium drop-shadow-md">
+                    “Vũ trụ dữ liệu số bùng nổ...”
+                  </p>
+</div>
+</div>
+<!-- Center Play / Pause Floating Trigger -->
+<button class="absolute inset-0 m-auto w-12 h-12 rounded-full bg-primary-container/90 text-surface-1 flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+<!-- Video Scrubber & Playback Controls -->
+<div class="space-y-2 pt-1">
+<div class="flex items-center justify-between text-xs font-code-mono text-text-secondary">
+<span>00:02.40</span>
+<div class="flex items-center gap-2">
+<span class="text-primary">Frame: 72/900</span>
+<span>/ 00:30.00</span>
+</div>
+</div>
+<!-- Scrubber Track with Scene markers -->
+<div class="relative w-full h-2 rounded bg-surface-2 overflow-hidden cursor-pointer">
+<!-- Progress fill -->
+<div class="absolute top-0 left-0 h-full w-[16%] bg-primary-container"></div>
+<!-- Scene demarcation lines -->
+<div class="absolute top-0 left-[16.6%] h-full w-0.5 bg-border-base"></div>
+<div class="absolute top-0 left-[73.3%] h-full w-0.5 bg-border-base"></div>
+</div>
+<!-- Transport Control Bar -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1">
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2" type="button">
+<span class="material-symbols-outlined text-[18px]">skip_previous</span>
+</button>
+<button class="p-1.5 rounded-md bg-surface-2 hover:bg-surface-3 text-text-primary" type="button">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+</button>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2" type="button">
+<span class="material-symbols-outlined text-[18px]">skip_next</span>
+</button>
+<button class="p-1 rounded text-text-secondary hover:text-text-primary hover:bg-surface-2 ml-1" type="button">
+<span class="material-symbols-outlined text-[18px]">volume_up</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-code-mono text-text-muted">Cyber Pulse (128 BPM)</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-2 text-text-secondary font-code-mono text-[10px] border border-border-base">
+                  Ducking: ON
+                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Production Specs Recipe Card -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-4 space-y-3">
+<div class="flex items-center justify-between border-b border-border-soft pb-2">
+<span class="font-title-card text-title-card text-text-primary text-sm font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+              Thông Số Kỹ Thuật (Production Recipe)
+            </span>
+<span class="px-2 py-0.5 rounded bg-surface-2 text-status-success font-code-mono text-[11px] border border-border-base">
+              Verified Specs
+            </span>
+</div>
+<div class="space-y-2 text-xs">
+<div class="flex items-center justify-between py-1 border-b border-border-soft">
+<span class="text-text-secondary">Playbook &amp; Engine:</span>
+<span class="font-code-mono text-text-primary">Cyber Neon Motion v2.4 (Remotion 4.0 TSX)</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-border-soft">
+<span class="text-text-secondary">Giọng đọc AI (TTS):</span>
+<span class="font-medium text-text-primary">Nam Miền Bắc • Hào hứng (98% tự nhiên)</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-border-soft">
+<span class="text-text-secondary">Nhạc nền (BGM):</span>
+<span class="font-code-mono text-text-primary">Cyber Pulse (128 BPM, Commercial Free)</span>
+</div>
+<div class="flex items-center justify-between py-1 border-b border-border-soft">
+<span class="text-text-secondary">Tỷ lệ khung hình:</span>
+<span class="font-code-mono text-text-primary">9:16 (1080x1920) Shorts / Reels</span>
+</div>
+<div class="flex items-center justify-between py-1">
+<span class="text-text-secondary">Dự toán chi phí:</span>
+<span class="font-code-mono text-status-success font-semibold">$0.00 Miễn phí (Local CPU Render)</span>
+</div>
+</div>
+</div>
+<!-- CLI Kickoff & Agent Interactivity Panel -->
+<div class="rounded-xl bg-surface-1 border border-border-base p-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">terminal</span>
+<span class="font-title-card text-title-card text-text-primary text-sm font-semibold">
+                Giao Tiếp Lệnh CLI (Backlot CLI)
+              </span>
+</div>
+<span class="text-[11px] text-text-muted font-code-mono">Awaiting user</span>
+</div>
+<p class="text-xs text-text-secondary">
+            Developer có thể can thiệp hoặc phê duyệt trực tiếp từ terminal của máy tính:
+          </p>
+<div class="relative group bg-surface-container-lowest p-2.5 rounded-lg border border-border-base">
+<code class="font-code-mono text-xs text-text-primary block overflow-x-auto pr-8">
+              python -m backlot await-decision om-proj-8842 script
+            </code>
+<button class="absolute right-2 top-2 p-1 rounded bg-surface-2 hover:bg-surface-3 text-text-secondary hover:text-text-primary border border-border-base transition-colors" onclick="navigator.clipboard.writeText('python -m backlot await-decision om-proj-8842 script')" title="Sao chép lệnh" type="button">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+<div class="flex items-center justify-between text-[11px] text-text-muted pt-1">
+<span>Daemon PID: <span class="text-text-secondary font-code-mono">49120</span></span>
+<span>Remotion socket: <span class="text-status-success font-code-mono">connected</span></span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- ============================================================ -->
+<!-- 6. FOOTER (CINEMATIC DARKROOM STANDARDS)                     -->
+<!-- ============================================================ -->
+<footer class="mt-auto border-t border-border-base bg-surface-1 py-4 px-6">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-secondary">
+<div class="flex items-center gap-4">
+<span class="font-medium text-text-primary">OpenMontage Studio v2.4.0</span>
+<span class="text-border-base">•</span>
+<span class="flex items-center gap-1 text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
+          Remotion Local Engine 4.0.12 sẵn sàng
+        </span>
+</div>
+<!-- Keyboard Shortcuts Hints -->
+<div class="hidden md:flex items-center gap-4 text-text-muted font-code-mono">
+<div class="flex items-center gap-1.5">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-2 border border-border-base text-text-primary text-[11px]">Space</kbd>
+<span>Nghe thử kịch bản</span>
+</div>
+<div class="flex items-center gap-1.5">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-2 border border-border-base text-text-primary text-[11px]">Enter</kbd>
+<span>Duyệt nhanh (Approve)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<kbd class="px-1.5 py-0.5 rounded bg-surface-2 border border-border-base text-text-primary text-[11px]">Esc</kbd>
+<span>Tạm dừng</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<a class="hover:text-text-primary transition-colors" href="#">Tài liệu API</a>
+<a class="hover:text-text-primary transition-colors" href="#">Trợ giúp đạo diễn</a>
+<span class="text-text-muted">© 2025 OpenMontage</span>
+</div>
+</div>
+</footer>
+</body></html>

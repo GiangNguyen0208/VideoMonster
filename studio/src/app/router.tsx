@@ -1,12 +1,14 @@
 import { createBrowserRouter, type RouteObject } from "react-router-dom";
-import { HomePage } from "@/routes/home";
-import { LibraryPage } from "@/routes/library";
-import { NewVideoPage } from "@/routes/new";
-import { NotFoundPage } from "@/routes/not-found";
-import { ProjectPage } from "@/routes/project";
-import { SettingsPage } from "@/routes/settings";
-import { SetupPage } from "@/routes/setup";
 import { AppShell } from "./AppShell";
+import {
+  HomePage,
+  LibraryPage,
+  NewVideoPage,
+  NotFoundPage,
+  ProjectPage,
+  SettingsPage,
+  SetupPage,
+} from "./pages";
 
 export const routes: RouteObject[] = [
   {

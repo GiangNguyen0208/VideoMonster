@@ -2,7 +2,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { setLocale } from "@/i18n";
-import type { BoardState, DecisionInput, StudioDecision } from "@/lib/api";
+import type { BoardState, DecisionInput, StudioDecision } from "@/types/api";
 import boardFixture from "@/test/fixtures/board-state.json";
 import { mockFetch } from "@/test/fakes";
 import { renderRoute } from "@/test/render";

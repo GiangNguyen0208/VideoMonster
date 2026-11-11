@@ -1,6 +1,6 @@
 import type { StatusKind } from "@/features/project/adapters";
 import { summaryStatus } from "@/features/project/adapters";
-import type { ProjectSummary } from "@/lib/api";
+import type { ProjectSummary } from "@/types/api";
 
 export type StatusFilter = "all" | "waiting" | "active" | "attention" | "done";
 

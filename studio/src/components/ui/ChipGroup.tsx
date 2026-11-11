@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { cn } from "@/utils/cn";
 
 /** A row of toggle chips. Single-select unless `multiple`. */
 export function ChipGroup<T extends string | number>({
@@ -7,12 +7,15 @@ export function ChipGroup<T extends string | number>({
   value,
   onChange,
   multiple = false,
+  hideLabel = false,
 }: {
   label: string;
   options: { value: T; label: string }[];
   value: T | T[];
   onChange: (next: T | T[]) => void;
   multiple?: boolean;
+  /** Keep the label for screen readers only. */
+  hideLabel?: boolean;
 }) {
   const selected = (v: T) => (Array.isArray(value) ? value.includes(v) : value === v);
   const toggle = (v: T) => {
@@ -22,7 +25,7 @@ export function ChipGroup<T extends string | number>({
   };
   return (
     <fieldset className="space-y-1.5">
-      <legend className="mb-1.5 text-sm font-medium">{label}</legend>
+      <legend className={cn("mb-1.5 text-sm font-medium", hideLabel && "sr-only")}>{label}</legend>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <button
@@ -31,10 +34,10 @@ export function ChipGroup<T extends string | number>({
             aria-pressed={selected(o.value)}
             onClick={() => toggle(o.value)}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-sm transition",
+              "rounded-full border px-3 py-1.5 text-sm transition active:scale-[0.98]",
               selected(o.value)
                 ? "border-accent bg-accent-dim text-accent"
-                : "border-border bg-surface-2 text-text-2 hover:text-text",
+                : "border-border bg-surface-high text-text-2 hover:border-text-3/40 hover:text-text",
             )}
           >
             {o.label}

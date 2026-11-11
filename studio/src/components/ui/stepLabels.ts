@@ -1,8 +1,9 @@
 import { msg } from "@/i18n";
+import type { StepState } from "@/types/api";
 import type { Tone } from "./Badge";
 
 /** Checkpoint statuses (schemas/checkpoints/checkpoint.schema.json) + "pending". */
-export type StepState = "completed" | "in_progress" | "awaiting_human" | "failed" | "pending";
+export type { StepState };
 
 export const STEP_TONES: Record<StepState, Tone> = {
   completed: "success",

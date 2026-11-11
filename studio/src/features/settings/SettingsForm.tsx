@@ -1,15 +1,24 @@
-import { useId, useState, type ReactNode } from "react";
-import { Button, Card, ChipGroup, Spinner } from "@/components/ui";
-import { useT } from "@/i18n";
+import { useState } from "react";
 import {
-  ApiError,
-  useSaveSettings,
-  useSettings,
-  type SettingsView,
-  type StudioSettings,
-} from "@/lib/api";
-import { fmtMoney } from "@/lib/format";
-import { fieldErrors } from "./errors";
+  Button,
+  Card,
+  ComingSoon,
+  ErrorText,
+  Field,
+  InfoBox,
+  MoneyInput,
+  SelectableCard,
+  Select as SelectInput,
+  Spinner,
+} from "@/components/ui";
+import { StickyActionBar } from "@/components/layout/StickyActionBar";
+import { useT } from "@/i18n";
+import { useSaveSettings, useSettings } from "@/hooks/api";
+import { ApiError } from "@/services";
+import type { SettingsView, StudioSettings } from "@/types/api";
+import { fieldErrors } from "@/utils/errors";
+import { Terminal } from "@/components/icons";
+import { fmtMoney, fmtResolution } from "@/utils/format";
 
 /** Spending limits, review policy and output defaults (writes config.yaml). */
 export function SettingsForm() {
@@ -60,16 +69,25 @@ function Form({ view }: { view: SettingsView }) {
           <h2 className="font-semibold">{L.spending.title}</h2>
           <p className="text-sm text-text-2">{L.spending.intro}</p>
         </div>
-        <ChipGroup
-          label={L.spending.mode}
-          value={v.budget.mode}
-          onChange={(mode) => set("budget", { mode: mode as StudioSettings["budget"]["mode"] })}
-          options={(["observe", "warn", "cap"] as const).map((m) => ({
-            value: m,
-            label: t.cost.modes[m]!.title,
-          }))}
-        />
-        <p className="-mt-3 text-xs text-text-3">{t.cost.modes[v.budget.mode]?.body}</p>
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-sm font-medium">{L.spending.mode}</legend>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {(["observe", "warn", "cap"] as const).map((m) => (
+              <SelectableCard
+                key={m}
+                selected={v.budget.mode === m}
+                aria-label={t.cost.modes[m]!.title}
+                aria-describedby={`mode-${m}`}
+                onClick={() => set("budget", { mode: m })}
+              >
+                <span className="font-medium">{t.cost.modes[m]!.title}</span>
+                <span id={`mode-${m}`} className="text-xs text-text-2">
+                  {t.cost.modes[m]!.body}
+                </span>
+              </SelectableCard>
+            ))}
+          </div>
+        </fieldset>
         <MoneyField
           label={L.spending.total}
           hint={L.spending.totalHint}
@@ -102,17 +120,21 @@ function Form({ view }: { view: SettingsView }) {
           <h2 className="font-semibold">{L.defaults.title}</h2>
           <p className="text-sm text-text-2">{L.defaults.intro}</p>
         </div>
-        <ChipGroup
-          label={L.defaults.review}
-          value={v.checkpoint.policy}
-          onChange={(policy) =>
-            set("checkpoint", { policy: policy as StudioSettings["checkpoint"]["policy"] })
-          }
-          options={(["guided", "manual_all", "auto_noncreative"] as const).map((p) => ({
-            value: p,
-            label: L.defaults.policies[p]!,
-          }))}
-        />
+        <fieldset className="space-y-2">
+          <legend className="mb-2 text-sm font-medium">{L.defaults.review}</legend>
+          <div className="space-y-2">
+            {(["guided", "manual_all", "auto_noncreative"] as const).map((p) => (
+              <SelectableCard
+                key={p}
+                selected={v.checkpoint.policy === p}
+                onClick={() => set("checkpoint", { policy: p })}
+                className="py-3"
+              >
+                <span className="font-medium">{L.defaults.policies[p]}</span>
+              </SelectableCard>
+            ))}
+          </div>
+        </fieldset>
         <Select
           label={L.defaults.resolution}
           engineTerm="output.default_resolution"
@@ -121,7 +143,7 @@ function Form({ view }: { view: SettingsView }) {
           onChange={(default_resolution) => set("output", { default_resolution })}
           options={view.choices.resolutions.map((r) => ({
             value: r,
-            label: `${r.replace("x", "×")}${L.defaults.shapes[r] ? ` — ${L.defaults.shapes[r]}` : ""}`,
+            label: `${fmtResolution(r)}${L.defaults.shapes[r] ? ` — ${L.defaults.shapes[r]}` : ""}`,
           }))}
         />
         <Select
@@ -137,63 +159,51 @@ function Form({ view }: { view: SettingsView }) {
         />
       </Card>
 
-      <div className="flex items-center gap-3">
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={save.isPending || !dirty || hasClientErrors}
-        >
-          {save.isPending ? L.saving : L.save}
-        </Button>
-        {saved && !dirty && (
-          <p role="status" className="text-sm text-success">
-            {L.saved}
-          </p>
-        )}
-        {save.isError && bad.size === 0 && (
-          <p role="alert" className="text-sm text-danger">
-            {save.error instanceof ApiError && save.error.status === 403
-              ? L.errors.locked
-              : L.errors.save}
-          </p>
-        )}
-      </div>
+      <InfoBox icon={<Terminal className="size-4" />}>
+        <span className="font-mono text-xs">{L.keyMapping}</span>
+      </InfoBox>
       <p className="text-xs text-text-3">{L.footnote}</p>
-    </form>
-  );
-}
 
-function Labeled({
-  label,
-  hint,
-  error,
-  children,
-}: {
-  label: ReactNode;
-  hint?: ReactNode;
-  error?: string | null;
-  children: (ids: { id: string; describedBy?: string }) => ReactNode;
-}) {
-  const id = useId();
-  const describedBy =
-    [hint && `${id}-h`, error && `${id}-e`].filter(Boolean).join(" ") || undefined;
-  return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium">
-        {label}
-      </label>
-      {children({ id, describedBy })}
-      {hint && (
-        <p id={`${id}-h`} className="text-xs text-text-3">
-          {hint}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-e`} role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
-    </div>
+      <StickyActionBar>
+        <div aria-live="polite" className="text-sm">
+          {saved && !dirty && (
+            <p role="status" className="text-success">
+              {L.saved}
+            </p>
+          )}
+          {save.isError && bad.size === 0 && (
+            <ErrorText>
+              {save.error instanceof ApiError && save.error.status === 403
+                ? L.errors.locked
+                : L.errors.save}
+            </ErrorText>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <ComingSoon inline>
+            <Button variant="ghost">{L.restoreDefaults}</Button>
+          </ComingSoon>
+          <Button
+            variant="secondary"
+            disabled={!dirty || save.isPending}
+            onClick={() => {
+              setV(view.settings);
+              setSaved(false);
+              save.reset();
+            }}
+          >
+            {L.discard}
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={save.isPending || !dirty || hasClientErrors}
+          >
+            {save.isPending ? L.saving : L.save}
+          </Button>
+        </div>
+      </StickyActionBar>
+    </form>
   );
 }
 
@@ -211,9 +221,9 @@ function MoneyField({
   onChange: (n: number) => void;
 }) {
   return (
-    <Labeled label={label} hint={hint} error={error}>
+    <Field label={label} hint={hint} error={error}>
       {({ id, describedBy }) => (
-        <input
+        <MoneyInput
           id={id}
           type="number"
           min={0}
@@ -222,10 +232,9 @@ function MoneyField({
           aria-invalid={Boolean(error)}
           value={Number.isFinite(value) ? value : ""}
           onChange={(e) => onChange(e.target.value === "" ? Number.NaN : e.target.valueAsNumber)}
-          className="h-10 w-40 rounded-control border border-border bg-surface-2 px-3 text-sm aria-invalid:border-danger"
         />
       )}
-    </Labeled>
+    </Field>
   );
 }
 
@@ -245,7 +254,7 @@ function Select({
   onChange: (v: string) => void;
 }) {
   return (
-    <Labeled
+    <Field
       label={
         <span
           title={engineTerm}
@@ -257,20 +266,19 @@ function Select({
       error={error}
     >
       {({ id, describedBy }) => (
-        <select
+        <SelectInput
           id={id}
           aria-describedby={describedBy}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 rounded-control border border-border bg-surface-2 px-3 text-sm"
         >
           {options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
             </option>
           ))}
-        </select>
+        </SelectInput>
       )}
-    </Labeled>
+    </Field>
   );
 }

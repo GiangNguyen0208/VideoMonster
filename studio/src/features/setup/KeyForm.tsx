@@ -1,7 +1,10 @@
 import { useId, useState, type FormEvent } from "react";
-import { Button } from "@/components/ui";
+import { Button, controlClass, ErrorText } from "@/components/ui";
 import { useT } from "@/i18n";
-import { ApiError, useSaveKey, type KeyStatus } from "@/lib/api";
+import { useSaveKey } from "@/hooks/api";
+import type { KeyStatus } from "@/types/api";
+import { errorText } from "@/utils/errors";
+import { cn } from "@/utils/cn";
 
 /**
  * Masked, write-only key entry. The value is sent once and never shown again;
@@ -38,7 +41,7 @@ export function KeyForm({
   };
 
   const remove = () => save.mutate({ key: envVar, value: "" }, { onSuccess: onSaved });
-  const error = save.error instanceof ApiError ? String(save.error.detail) : save.error?.message;
+  const error = errorText(save.error);
 
   return (
     <form onSubmit={submit} className="space-y-2">
@@ -60,7 +63,7 @@ export function KeyForm({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={status?.set ? L.replacePlaceholder : L.placeholder}
-          className="h-10 min-w-0 flex-1 rounded-control border border-border bg-surface-2 px-3 font-mono text-sm placeholder:font-sans placeholder:text-text-3"
+          className={cn(controlClass, "h-10 min-w-0 flex-1 font-mono placeholder:font-sans")}
         />
         <Button type="submit" variant="primary" disabled={!value.trim() || save.isPending}>
           {save.isPending ? L.saving : L.save}
@@ -71,11 +74,7 @@ export function KeyForm({
           </Button>
         )}
       </div>
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText>{error}</ErrorText>}
       <p className="text-xs text-text-3">
         {L.storedBefore} <code className="font-mono">.env</code> {L.storedAfter}
       </p>

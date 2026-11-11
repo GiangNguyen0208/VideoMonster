@@ -1,10 +1,12 @@
 import { useId, useRef, type KeyboardEvent, type ReactNode } from "react";
-import { cn } from "@/lib/cn";
+import { cn } from "@/utils/cn";
 
 export interface TabItem {
   id: string;
   label: ReactNode;
   content: ReactNode;
+  /** Small count or note after the label (e.g. number of scenes). */
+  badge?: ReactNode;
 }
 
 /** Accessible tabs (WAI-ARIA pattern: arrow keys move between tabs). */
@@ -56,13 +58,23 @@ export function Tabs({
               tabIndex={selected ? 0 : -1}
               onClick={() => onChange(tab.id)}
               className={cn(
-                "-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition",
+                "-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition",
                 selected
-                  ? "border-accent text-text"
+                  ? "border-accent font-semibold text-text"
                   : "border-transparent text-text-2 hover:text-text",
               )}
             >
               {tab.label}
+              {tab.badge != null && (
+                <span
+                  className={cn(
+                    "rounded-full px-1.5 font-mono text-[11px]",
+                    selected ? "bg-accent-dim text-accent" : "bg-surface-2 text-text-3",
+                  )}
+                >
+                  {tab.badge}
+                </span>
+              )}
             </button>
           );
         })}
