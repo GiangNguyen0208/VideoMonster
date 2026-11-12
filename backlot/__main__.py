@@ -91,7 +91,18 @@ def cmd_open(project_id: str | None, studio: bool = False) -> int:
 def cmd_serve(port: int) -> int:
     import uvicorn
 
-    uvicorn.run("backlot.server:app", host="127.0.0.1", port=port, log_level="warning")
+    # Containers set BACKLOT_HOST=0.0.0.0 and publish the port on host loopback only.
+    host = os.environ.get("BACKLOT_HOST", "127.0.0.1")
+    # BACKLOT_RELOAD=1 restarts the server when Python sources change (docker-compose.dev.yml).
+    reload = os.environ.get("BACKLOT_RELOAD") == "1"
+    uvicorn.run(
+        "backlot.server:app",
+        host=host,
+        port=port,
+        log_level="warning",
+        reload=reload,
+        reload_dirs=["backlot", "lib", "tools"] if reload else None,
+    )
     return 0
 
 
