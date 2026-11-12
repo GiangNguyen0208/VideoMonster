@@ -39,7 +39,7 @@ export function Header() {
         </NavLink>
         <nav
           aria-label={t.app.mainNav}
-          className="order-last -mx-1 flex w-full gap-1 overflow-x-auto lg:order-none lg:mx-0 lg:w-auto lg:shrink-0"
+          className="order-last -mx-1 flex w-full gap-1 lg:order-none lg:mx-0 lg:w-auto lg:shrink-0"
         >
           {NAV.map((item) => (
             <NavLink

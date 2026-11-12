@@ -1,0 +1,35 @@
+# Live-reload overlay: edit code on the host, no image rebuild.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#   Studio (hot reload): http://localhost:5173/studio/
+#   Backlot (auto-restart on .py change): http://localhost:4750
+# Rebuild only when requirements.txt or a package.json changes.
+
+services:
+  openmontage:
+    environment:
+      BACKLOT_RELOAD: "1"
+    volumes:
+      - ./backlot:/app/backlot
+      - ./lib:/app/lib
+      - ./tools:/app/tools
+      - ./schemas:/app/schemas
+      - ./pipeline_defs:/app/pipeline_defs
+      - ./styles:/app/styles
+      - ./skills:/app/skills
+
+  studio:
+    image: node:22-slim
+    working_dir: /studio
+    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0"
+    environment:
+      BACKLOT_URL: http://openmontage:4750
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./studio:/studio
+      - studio-node-modules:/studio/node_modules
+    depends_on:
+      - openmontage
+
+volumes:
+  studio-node-modules:
