@@ -1,15 +1,9 @@
 import { Badge } from "@/components/ui";
-import { titleCase } from "@/content/labels";
+import { RUNTIME_LABELS, titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
-import { fmtDuration, fmtMoney } from "@/lib/format";
+import { fmtDuration, fmtMoney } from "@/utils/format";
 import { asArray, asRecord, asText } from "./adapters";
 import { Field } from "./Section";
-
-const RUNTIME_LABELS: Record<string, string> = {
-  remotion: "Remotion",
-  hyperframes: "HyperFrames",
-  ffmpeg: "FFmpeg",
-};
 
 /** Proposal: concept options (selected one highlighted), plan and cost estimate. */
 export function ConceptView({ proposal }: { proposal: unknown }) {

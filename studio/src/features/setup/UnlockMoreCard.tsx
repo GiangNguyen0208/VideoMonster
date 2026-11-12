@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Banner, Button } from "@/components/ui";
+import { Banner, Button, ButtonLink } from "@/components/ui";
 import { capabilityLabel } from "@/content/labels";
 import { useT } from "@/i18n";
-import { useSetup } from "@/lib/api";
+import { useSetup } from "@/hooks/api";
 
 const DISMISS_KEY = "studio.unlockMoreDismissed";
 
@@ -22,12 +21,9 @@ export function UnlockMoreCard() {
       title={L.title}
       action={
         <div className="flex gap-2">
-          <Link
-            to="/setup"
-            className="inline-flex h-8 items-center rounded-control bg-accent px-3 text-sm font-medium text-on-accent"
-          >
+          <ButtonLink to="/setup" variant="primary" size="sm">
             {L.unlockMore}
-          </Link>
+          </ButtonLink>
           <Button
             size="sm"
             variant="ghost"

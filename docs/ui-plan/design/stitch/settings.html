@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cài đặt hệ thống &amp; Hạn mức chi tiêu - OpenMontage Studio</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "tertiary-fixed-dim": "#6adc9b",
+            "on-error": "#690005",
+            "on-tertiary-fixed": "#002110",
+            "border-soft": "#1a1a1f",
+            "border-base": "#232329",
+            "inverse-surface": "#e5e1e4",
+            "surface-container-lowest": "#0e0e10",
+            "on-tertiary-container": "#00532f",
+            "primary-container": "#f0a83c",
+            "tertiary-fixed": "#87f9b5",
+            "error": "#ffb4ab",
+            "inverse-on-surface": "#313032",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "status-danger": "#e5544b",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "status-info": "#6aa1ff",
+            "on-primary-fixed-variant": "#633f00",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "surface-tint": "#ffb956",
+            "on-primary-container": "#644000",
+            "secondary": "#c8c5ca",
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "on-secondary-fixed": "#1b1b1e",
+            "surface-container-high": "#2a2a2c",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "on-primary-fixed": "#2a1800",
+            "on-primary": "#452b00",
+            "surface-container-low": "#1c1b1d",
+            "on-error-container": "#ffdad6",
+            "primary-fixed-dim": "#ffb956",
+            "screenplay-ink": "#29231a",
+            "secondary-container": "#47464a",
+            "surface-variant": "#353437",
+            "screenplay-parchment": "#f2e9d5",
+            "inverse-primary": "#835400",
+            "surface-3": "#1c1c21",
+            "on-tertiary-fixed-variant": "#00522f",
+            "surface-container": "#201f21",
+            "surface-bright": "#39393b",
+            "on-secondary": "#303033",
+            "on-secondary-container": "#b7b4b8",
+            "text-muted": "#5f5f68",
+            "status-success": "#4fc283",
+            "surface-container-highest": "#353437",
+            "outline": "#9e8e7c",
+            "surface-dim": "#131315",
+            "tertiary-container": "#59cb8b",
+            "on-surface": "#e5e1e4",
+            "outline-variant": "#514535",
+            "text-secondary": "#a0a0a9",
+            "primary": "#ffc881",
+            "surface-1": "#101013",
+            "secondary-fixed": "#e4e1e6",
+            "on-background": "#e5e1e4",
+            "surface": "#131315",
+            "on-surface-variant": "#d6c4b0",
+            "primary-fixed": "#ffddb5",
+            "on-tertiary": "#00391f",
+            "text-primary": "#ececef",
+            "error-container": "#93000a",
+            "tertiary": "#76e8a5",
+            "background": "#131315",
+            "on-secondary-fixed-variant": "#47464a",
+            "secondary-fixed-dim": "#c8c5ca",
+            "surface-2": "#16161a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-2xl": "2.5rem",
+            "space-md": "1rem",
+            "gutter-desktop": "1.5rem",
+            "margin-tablet": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xl": "2rem",
+            "gutter": "1rem",
+            "margin-desktop": "2rem",
+            "space-lg": "1.5rem",
+            "margin": "1rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "body-medium": ["Inter"],
+            "screenplay-heading": ["Courier Prime"],
+            "display-hero-mobile": ["Inter"],
+            "screenplay-body": ["Courier Prime"],
+            "headline-section": ["Inter"],
+            "code-mono": ["JetBrains Mono"],
+            "title-card": ["Inter"],
+            "display-hero": ["Inter"],
+            "body-base": ["Inter"],
+            "caption-meta": ["Inter"],
+            "badge-label": ["Inter"]
+          },
+          "fontSize": {
+            "body-medium": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500" }],
+            "screenplay-heading": ["18px", { "lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "display-hero-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "screenplay-body": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-section": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "code-mono": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "title-card": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-hero": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "body-base": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "caption-meta": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "badge-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-surface text-text-primary min-h-screen flex flex-col font-body-base antialiased selection:bg-primary-container selection:text-surface-1">
+<!-- Top Navigation Bar: Shared Component Blueprint -->
+<header class="bg-surface/90 dark:bg-surface/90 backdrop-blur-md docked full-width top-0 sticky z-50 border-b border-border-base dark:border-border-base">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Brand & Global Badges -->
+<div class="flex items-center gap-space-lg">
+<a class="font-title-card text-title-card font-bold tracking-tight text-text-primary dark:text-text-primary flex items-center gap-space-sm" href="#">
+<span class="w-7 h-7 rounded-lg bg-primary-container flex items-center justify-center text-surface-1">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">movie_filter</span>
+</span>
+<span>OpenMontage Studio</span>
+</a>
+<!-- Runtime engine status tag -->
+<div class="hidden lg:flex items-center gap-space-xs px-2.5 py-1 rounded bg-surface-2 border border-border-base font-code-mono text-caption-meta text-text-secondary">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success inline-block"></span>
+<span>Engine Remotion 4.0</span>
+</div>
+<!-- Real-time spending micro-counter -->
+<div class="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface-2 border border-border-base font-caption-meta text-caption-meta">
+<span class="text-text-secondary">Chi tiêu phiên:</span>
+<span class="font-code-mono text-primary font-medium">$0.35</span>
+<span class="text-text-muted">/</span>
+<span class="font-code-mono text-text-secondary">$2.00</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Home</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">New Video</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Library</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 transition-colors duration-150" href="#">Setup</a>
+<!-- Active Tab: Settings -->
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary font-body-medium text-body-medium pb-1" href="#">Settings</a>
+</nav>
+<!-- Trailing Controls & Primary Action -->
+<div class="flex items-center gap-space-sm">
+<!-- EN/VI Toggle -->
+<button class="px-2 py-1 rounded text-caption-meta font-code-mono text-text-secondary hover:text-text-primary bg-surface-2 hover:bg-surface-3 border border-border-base transition-colors duration-150" title="Chuyển ngôn ngữ">
+          EN/VI
+        </button>
+<!-- Dark Mode Toggle (Visual Anchor) -->
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-3 transition-colors duration-150" title="Chế độ giao diện">
+<span class="material-symbols-outlined text-[18px]">dark_mode</span>
+</button>
+<!-- Notifications -->
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-3 transition-colors duration-150 relative" title="Thông báo hệ thống">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary"></span>
+</button>
+<!-- Account Circle -->
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-3 transition-colors duration-150 mr-2" title="Tài khoản Studio">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+</button>
+<!-- Trailing Primary Action: New Video -->
+<button class="hidden sm:inline-flex items-center gap-1.5 bg-primary-container text-surface-1 font-body-medium text-body-medium px-3.5 py-1.5 rounded-lg font-medium hover:brightness-110 active:scale-[0.98] transition-all duration-100 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>New Video</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="flex-1 max-w-5xl w-full mx-auto px-6 py-space-xl pb-32">
+<!-- Header Section -->
+<div class="mb-space-lg">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm mb-space-xs">
+<h1 class="font-display-hero text-display-hero text-text-primary tracking-tight">
+          Cài đặt hệ thống &amp; Hạn mức chi tiêu (Studio Settings)
+        </h1>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-surface-2 border border-border-base text-caption-meta font-code-mono text-text-secondary">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
+            agent-daemon: ready
+          </span>
+</div>
+</div>
+<p class="font-body-base text-body-base text-text-secondary max-w-3xl">
+        Cấu hình ngôn ngữ, giới hạn ngân sách AI, chính sách duyệt và định dạng video xuất xưởng mặc định.
+      </p>
+<!-- Read-only Banner Notification Option -->
+<div class="mt-space-md p-3.5 rounded-lg bg-surface-1 border border-border-base flex items-start sm:items-center gap-space-sm text-text-secondary">
+<span class="material-symbols-outlined text-[20px] text-primary shrink-0">terminal</span>
+<span class="font-code-mono text-caption-meta leading-relaxed">
+          Lưu trực tiếp vào <span class="text-text-primary font-medium">config.yaml</span> trên máy cá nhân • Cập nhật tự động cho mọi phiên AI Agent tiếp theo.
+        </span>
+</div>
+</div>
+<!-- Settings Cards Stack -->
+<div class="space-y-space-lg">
+<!-- CARD 1: Ngôn ngữ & Bản địa hóa (Language & Localization) -->
+<section class="bg-surface-1 rounded-xl border border-border-base p-space-lg relative overflow-hidden transition-all">
+<div class="flex items-center justify-between border-b border-border-base/60 pb-space-md mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-border-base flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">language</span>
+</div>
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary">
+                Ngôn ngữ &amp; Bản địa hóa (Language &amp; Localization)
+              </h2>
+<span class="font-caption-meta text-caption-meta text-text-muted">app.locale &amp; prompt translation context</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-badge-label font-badge-label bg-surface-3 text-text-secondary border border-border-base">
+            System UI
+          </span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg items-start">
+<div>
+<label class="block font-body-medium text-body-medium text-text-primary mb-space-xs">
+              Chọn ngôn ngữ Studio (Studio Interface Language)
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-2 border border-border-base text-text-primary rounded-lg h-10 px-3 pr-9 font-body-base text-body-base focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors duration-150 appearance-none cursor-pointer">
+<option selected="" value="vi">Tiếng Việt (Mặc định)</option>
+<option value="en">English (US)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-text-muted pointer-events-none text-[18px]">
+                expand_more
+              </span>
+</div>
+</div>
+<div class="bg-surface-2/60 border border-border-soft rounded-lg p-space-md">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">info</span>
+<p class="font-body-base text-body-base text-text-secondary leading-relaxed">
+                Giao diện Studio sẽ hiển thị bằng ngôn ngữ bạn chọn. Trợ lý AI sẽ tiếp tục giao tiếp theo ngôn ngữ bạn nhập trong kịch bản.
+              </p>
+</div>
+</div>
+</div>
+</section>
+<!-- CARD 2: Hạn mức chi tiêu & Ngân sách AI (Spending Limits & Cost Control) -->
+<section class="bg-surface-1 rounded-xl border border-border-base p-space-lg relative overflow-hidden transition-all">
+<!-- Amber subtle luminescence accent indicator -->
+<div class="flex items-center justify-between border-b border-border-base/60 pb-space-md mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-border-base flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary">
+                Hạn mức chi tiêu &amp; Ngân sách AI (Spending Limits &amp; Cost Control)
+              </h2>
+<span class="font-caption-meta text-caption-meta text-text-muted">spending.policy &amp; token metering</span>
+</div>
+</div>
+<span class="px-2.5 py-0.5 rounded text-badge-label font-badge-label bg-accent-dim text-primary border border-primary/20">
+            Quản trị rủi ro chi phí
+          </span>
+</div>
+<!-- Radio / Segmented control: Xử lý khi video vượt hạn mức -->
+<div class="mb-space-lg">
+<label class="block font-body-medium text-body-medium text-text-primary mb-space-xs">
+            Xử lý khi video vượt hạn mức ngân sách
+          </label>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm pt-1">
+<!-- Option 1: Track only -->
+<label class="cursor-pointer group flex flex-col justify-between p-3.5 rounded-lg border border-border-base bg-surface-2 hover:border-border-soft hover:bg-surface-3 transition-colors duration-150">
+<div class="flex items-start gap-2.5">
+<input class="mt-1 text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="budget_action" type="radio" value="track"/>
+<div>
+<span class="block font-body-medium text-body-medium text-text-primary">Theo dõi ghi nhận</span>
+<span class="block font-caption-meta text-caption-meta text-text-secondary mt-0.5">Track only - Không dừng</span>
+</div>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-muted mt-2 pl-6">
+                Chỉ ghi nhật ký chi phí mà không làm gián đoạn chu trình chạy của agent.
+              </p>
+</label>
+<!-- Option 2: Warn me (Selected) -->
+<label class="cursor-pointer group flex flex-col justify-between p-3.5 rounded-lg border-2 border-primary-container bg-accent-dim/20 transition-all duration-150 relative">
+<div class="flex items-start gap-2.5">
+<input checked="" class="mt-1 text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="budget_action" type="radio" value="warn"/>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="font-body-medium text-body-medium text-text-primary font-semibold">Cảnh báo người dùng</span>
+<span class="bg-primary-container/20 text-primary px-1.5 py-0.2 rounded text-[10px] uppercase font-bold tracking-wider">Khuyến nghị</span>
+</div>
+<span class="block font-caption-meta text-caption-meta text-text-secondary mt-0.5">Warn me - Dừng lại hỏi ý kiến trước khi gọi API trả phí</span>
+</div>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-secondary mt-2 pl-6">
+                Chủ động tạm dừng và tạo nút phê duyệt trực tiếp khi chi phí tiến sát ngưỡng.
+              </p>
+</label>
+<!-- Option 3: Hard limit -->
+<label class="cursor-pointer group flex flex-col justify-between p-3.5 rounded-lg border border-border-base bg-surface-2 hover:border-border-soft hover:bg-surface-3 transition-colors duration-150">
+<div class="flex items-start gap-2.5">
+<input class="mt-1 text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="budget_action" type="radio" value="hard"/>
+<div>
+<span class="block font-body-medium text-body-medium text-text-primary">Giới hạn cứng ngắt</span>
+<span class="block font-caption-meta text-caption-meta text-text-secondary mt-0.5">Hard limit - Dừng ngay lập tức khi chạm mốc</span>
+</div>
+</div>
+<p class="font-caption-meta text-caption-meta text-text-muted mt-2 pl-6">
+                Hủy tác vụ tức thì nếu tổng hóa đơn vượt quá giới hạn thiết lập, bảo toàn ngân sách.
+              </p>
+</label>
+</div>
+</div>
+<!-- Spending Number Inputs Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg mb-space-md pt-2 border-t border-border-base/40">
+<!-- Input 1: Ngân sách tối đa cho mỗi video -->
+<div>
+<label class="block font-body-medium text-body-medium text-text-primary mb-1" for="max_video_budget">
+              Ngân sách tối đa cho mỗi video (USD)
+            </label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted font-code-mono text-body-base">
+                $
+              </div>
+<input class="w-full bg-surface-2 border border-border-base text-text-primary font-code-mono rounded-lg h-10 pl-8 pr-12 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors" id="max_video_budget" step="0.25" type="number" value="2.00"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-text-muted font-code-mono text-caption-meta">
+                USD
+              </div>
+</div>
+<p class="mt-1.5 font-caption-meta text-caption-meta text-text-secondary">
+              Được áp dụng khi tạo video mới nếu không đặt ngân sách riêng trong Wizard.
+            </p>
+</div>
+<!-- Input 2: Cảnh báo tác vụ đơn lẻ -->
+<div>
+<label class="block font-body-medium text-body-medium text-text-primary mb-1" for="single_task_warning">
+              Cảnh báo trước mọi tác vụ đơn lẻ vượt quá (USD)
+            </label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-muted font-code-mono text-body-base">
+                $
+              </div>
+<input class="w-full bg-surface-2 border border-border-base text-text-primary font-code-mono rounded-lg h-10 pl-8 pr-12 focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors" id="single_task_warning" step="0.10" type="number" value="0.50"/>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-text-muted font-code-mono text-caption-meta">
+                USD
+              </div>
+</div>
+<p class="mt-1.5 font-caption-meta text-caption-meta text-text-secondary">
+              Bất kỳ tác vụ sinh ảnh 4K, video AI Kling/Runway hoặc giọng đọc ElevenLabs vượt quá mức này sẽ yêu cầu xác nhận.
+            </p>
+</div>
+</div>
+<!-- Checkbox Toggle -->
+<div class="pt-space-sm">
+<label class="flex items-start gap-space-sm cursor-pointer p-3 rounded-lg bg-surface-2/60 border border-border-soft hover:bg-surface-2 transition-colors">
+<input checked="" class="mt-0.5 rounded text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" type="checkbox"/>
+<span class="font-body-base text-body-base text-text-primary select-none">
+              Luôn hỏi ý kiến tôi trước khi sử dụng một dịch vụ AI trả phí lần đầu tiên.
+            </span>
+</label>
+</div>
+</section>
+<!-- CARD 3: Cấu hình mặc định cho video mới (Production & Engine Defaults) -->
+<section class="bg-surface-1 rounded-xl border border-border-base p-space-lg relative overflow-hidden transition-all">
+<div class="flex items-center justify-between border-b border-border-base/60 pb-space-md mb-space-md">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-border-base flex items-center justify-center text-status-info">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</div>
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary">
+                Cấu hình mặc định cho video mới (Production &amp; Engine Defaults)
+              </h2>
+<span class="font-caption-meta text-caption-meta text-text-muted">render.pipeline &amp; remotion configuration</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded text-badge-label font-badge-label bg-surface-3 text-text-secondary border border-border-base">
+            Remotion Defaults
+          </span>
+</div>
+<!-- Segmented control: Chính sách kiểm duyệt -->
+<div class="mb-space-lg">
+<label class="block font-body-medium text-body-medium text-text-primary mb-space-xs">
+            Chính sách kiểm duyệt (Review checkpoints)
+          </label>
+<div class="space-y-2">
+<!-- Checkpoint 1 (Selected) -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-primary-container bg-accent-dim/20 cursor-pointer">
+<div class="flex items-center gap-space-sm">
+<input checked="" class="text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="checkpoint_policy" type="radio" value="milestones"/>
+<div>
+<span class="font-body-medium text-body-medium text-text-primary font-medium">Tại các mốc quan trọng</span>
+<span class="text-caption-meta text-caption-meta text-text-secondary ml-2">(Khuyến nghị: Ý tưởng, Kịch bản &amp; Bản dựng trước khi render)</span>
+</div>
+</div>
+<span class="text-caption-meta font-code-mono text-primary font-medium hidden sm:inline">3 Điểm dừng</span>
+</label>
+<!-- Checkpoint 2 -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-border-base bg-surface-2 hover:bg-surface-3 cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<input class="text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="checkpoint_policy" type="radio" value="all_steps"/>
+<div>
+<span class="font-body-medium text-body-medium text-text-primary">Sau từng bước của quy trình</span>
+<span class="text-caption-meta text-caption-meta text-text-muted ml-2">(Dành cho kiểm soát chi tiết 8 bước)</span>
+</div>
+</div>
+<span class="text-caption-meta font-code-mono text-text-muted hidden sm:inline">8 Điểm dừng</span>
+</label>
+<!-- Checkpoint 3 -->
+<label class="flex items-center justify-between p-3 rounded-lg border border-border-base bg-surface-2 hover:bg-surface-3 cursor-pointer transition-colors">
+<div class="flex items-center gap-space-sm">
+<input class="text-primary-container focus:ring-primary-container bg-surface-1 border-border-base cursor-pointer" name="checkpoint_policy" type="radio" value="creative_only"/>
+<div>
+<span class="font-body-medium text-body-medium text-text-primary">Chỉ các bước sáng tạo cốt lõi</span>
+<span class="text-caption-meta text-caption-meta text-text-muted ml-2">(Tự động hóa hoàn toàn các khâu kỹ thuật)</span>
+</div>
+</div>
+<span class="text-caption-meta font-code-mono text-text-muted hidden sm:inline">1 Điểm dừng</span>
+</label>
+</div>
+</div>
+<!-- Dropdowns: Kích thước & Tốc độ khung hình -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg mb-space-md pt-2 border-t border-border-base/40">
+<!-- Dropdown 1: Kích thước & Tỷ lệ khung hình mặc định -->
+<div>
+<label class="block font-body-medium text-body-medium text-text-primary mb-space-xs">
+              Kích thước &amp; Tỷ lệ khung hình mặc định
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-2 border border-border-base text-text-primary rounded-lg h-10 px-3 pr-9 font-body-base text-body-base focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors duration-150 appearance-none cursor-pointer">
+<option selected="" value="9_16">1080x1920 (Dọc 9:16 - TikTok / Reels / Shorts)</option>
+<option value="16_9">1920x1080 (Ngang 16:9 - YouTube Standard)</option>
+<option value="1_1">1080x1080 (Vuông 1:1 - Instagram Feed)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-text-muted pointer-events-none text-[18px]">
+                aspect_ratio
+              </span>
+</div>
+</div>
+<!-- Dropdown 2: Tốc độ khung hình (Frame Rate) -->
+<div>
+<label class="block font-body-medium text-body-medium text-text-primary mb-space-xs">
+              Tốc độ khung hình (Frame Rate)
+            </label>
+<div class="relative">
+<select class="w-full bg-surface-2 border border-border-base text-text-primary rounded-lg h-10 px-3 pr-9 font-body-base text-body-base focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-colors duration-150 appearance-none cursor-pointer">
+<option selected="" value="60">60 fps (Mượt mà điện ảnh - Tối ưu Remotion)</option>
+<option value="30">30 fps (Tiêu chuẩn)</option>
+<option value="24">24 fps (Điện ảnh cổ điển)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-text-muted pointer-events-none text-[18px]">
+                speed
+              </span>
+</div>
+</div>
+</div>
+<!-- Screenplay Parchment Texture Accent / CLI Keys Hint -->
+<div class="mt-space-md p-3.5 rounded-lg bg-surface-container-lowest border border-border-base flex items-center justify-between gap-space-sm font-code-mono text-caption-meta">
+<div class="flex items-center gap-space-sm text-text-secondary truncate">
+<span class="material-symbols-outlined text-[16px] text-text-muted shrink-0">data_object</span>
+<span class="truncate">Engine key mapping: <span class="text-primary font-code-mono">config.yaml: output.default_resolution, output.default_fps, spending.budget_mode</span></span>
+</div>
+<button class="text-text-muted hover:text-text-primary transition-colors shrink-0" title="Sao chép đường dẫn cấu hình">
+<span class="material-symbols-outlined text-[16px]">content_copy</span>
+</button>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Action Bar (Fixed / Docked at Bottom) -->
+<footer class="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-border-base py-3 px-6 z-40">
+<div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<!-- Safe synchronization status indicator -->
+<div class="flex items-center gap-2 text-status-success font-body-base text-caption-meta">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span class="text-text-secondary">
+<span class="text-status-success font-medium">✓ Đã đồng bộ an toàn</span> với tệp cấu hình cục bộ lúc 14:25 hôm nay
+        </span>
+</div>
+<!-- Action Buttons Cluster -->
+<div class="flex items-center gap-space-sm w-full sm:w-auto justify-end">
+<!-- Secondary Button: Khôi phục cài đặt gốc -->
+<button class="w-full sm:w-auto px-4 h-10 rounded-lg bg-surface-2 border border-border-base text-text-primary hover:bg-surface-3 font-body-medium text-body-medium active:scale-[0.98] transition-all duration-150" type="button">
+          Khôi phục cài đặt gốc
+        </button>
+<!-- Primary Amber Button: Lưu thay đổi vào config.yaml -->
+<button class="w-full sm:w-auto px-5 h-10 rounded-lg bg-primary-container text-surface-1 font-body-medium text-body-medium font-bold hover:brightness-110 active:scale-[0.98] transition-all duration-150 flex items-center justify-center gap-2 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Lưu thay đổi vào config.yaml</span>
+</button>
+</div>
+</div>
+</footer>
+</body></html>

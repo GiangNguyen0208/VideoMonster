@@ -1,22 +1,27 @@
-import { useEffect, useId, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Button, Card } from "@/components/ui";
+import { useId, useState } from "react";
+import { Button, Card, controlClass, ErrorText } from "@/components/ui";
 import { useT } from "@/i18n";
 import {
-  ApiError,
-  queryKeys,
   useAddReference,
   useInputs,
   useRemoveReference,
   useRemoveUpload,
   useUploadLimits,
-  type InputFile,
-} from "@/lib/api";
-import { fmtBytes, mediaURL } from "@/lib/format";
+} from "@/hooks/api";
+import { ApiError, mediaURL } from "@/services";
+import type { InputFile } from "@/types/api";
+import { fmtBytes } from "@/utils/format";
+import { cn } from "@/utils/cn";
 import { DropZone } from "./DropZone";
 import { FileRow, MediaPreview } from "./FileRow";
 import { acceptAttr, ALL_KINDS, describeMedia, kindOf, uploadErrorText } from "./media";
-import { cancelUpload, dismissUpload, enqueueUploads, isActive, useUploads } from "./uploadStore";
+import {
+  cancelUpload,
+  dismissUpload,
+  enqueueUploads,
+  isActive,
+  useUploadsSync,
+} from "./uploadStore";
 
 /**
  * Source material of a project: uploaded files (with live upload progress)
@@ -32,21 +37,10 @@ export function InputsPanel({
 }) {
   const t = useT();
   const L = t.uploads;
-  const queryClient = useQueryClient();
   const inputs = useInputs(projectId).data;
   const limits = useUploadLimits().data;
-  const uploads = useUploads(projectId);
+  const uploads = useUploadsSync(projectId);
   const remove = useRemoveUpload(projectId);
-  const doneCount = uploads.filter((u) => u.state === "done").length;
-
-  // A finished upload is in inputs.json now; drop its progress row once the
-  // refreshed list shows it.
-  useEffect(() => {
-    if (doneCount === 0) return;
-    void queryClient.invalidateQueries({ queryKey: queryKeys.inputs(projectId) }).then(() => {
-      for (const u of uploads) if (u.state === "done") dismissUpload(u.id);
-    });
-  }, [doneCount, projectId, queryClient, uploads]);
 
   const files = inputs?.files ?? [];
   const refs = inputs?.references ?? [];
@@ -95,11 +89,7 @@ export function InputsPanel({
             />
           ))}
       </ul>
-      {removeError && (
-        <p role="alert" className="text-sm text-danger">
-          {removeError}
-        </p>
-      )}
+      {removeError && <ErrorText>{removeError}</ErrorText>}
 
       <DropZone
         label={L.choose}
@@ -226,7 +216,7 @@ function References({
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="https://"
-            className="h-10 w-full rounded-control border border-border bg-surface-2 px-3"
+            className={cn(controlClass, "h-10")}
           />
         </label>
         <label htmlFor={notesId} className="space-y-1 text-sm">
@@ -235,18 +225,14 @@ function References({
             id={notesId}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="h-10 w-full rounded-control border border-border bg-surface-2 px-3"
+            className={cn(controlClass, "h-10")}
           />
         </label>
         <Button type="submit" disabled={!url.trim() || add.isPending}>
           {L.addLink}
         </Button>
       </form>
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText>{error}</ErrorText>}
       <DropZone
         compact
         multiple={false}

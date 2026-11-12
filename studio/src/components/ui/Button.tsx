@@ -1,44 +1,121 @@
-import type { ButtonHTMLAttributes } from "react";
-import { cn } from "@/lib/cn";
+import type { VariantProps } from "class-variance-authority";
+import {
+  forwardRef,
+  type AnchorHTMLAttributes,
+  type ButtonHTMLAttributes,
+  type ReactNode,
+} from "react";
+import { Link, type LinkProps } from "react-router-dom";
+import { cn } from "@/utils/cn";
+import { buttonVariants } from "./buttonVariants";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger";
-type Size = "sm" | "md";
+type Look = VariantProps<typeof buttonVariants>;
 
-const VARIANTS: Record<Variant, string> = {
-  primary: "bg-accent text-on-accent hover:brightness-110",
-  secondary: "border border-border bg-surface-2 text-text hover:bg-surface-3",
-  ghost: "text-text-2 hover:bg-surface-2 hover:text-text",
-  danger: "border border-danger/50 bg-danger-dim text-danger hover:bg-danger/20",
-};
-
-const SIZES: Record<Size, string> = {
-  sm: "h-8 px-3 text-sm",
-  md: "h-10 px-4 text-sm",
-};
-
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant;
-  size?: Size;
+interface Decor {
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
 }
 
-export function Button({
-  variant = "secondary",
-  size = "md",
-  className,
-  type = "button",
-  ...props
-}: ButtonProps) {
+function Content({
+  loading,
+  leftIcon,
+  rightIcon,
+  children,
+}: Decor & { loading?: boolean; children?: ReactNode }) {
+  return (
+    <>
+      {loading ? (
+        <span
+          aria-hidden
+          className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+        />
+      ) : (
+        leftIcon && (
+          <span className="inline-flex shrink-0" aria-hidden>
+            {leftIcon}
+          </span>
+        )
+      )}
+      {children}
+      {!loading && rightIcon && (
+        <span className="inline-flex shrink-0" aria-hidden>
+          {rightIcon}
+        </span>
+      )}
+    </>
+  );
+}
+
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Look, Decor {
+  /** Shows a spinner and blocks clicks. */
+  loading?: boolean;
+}
+
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant,
+    size,
+    loading = false,
+    leftIcon,
+    rightIcon,
+    className,
+    type = "button",
+    disabled,
+    children,
+    ...props
+  },
+  ref,
+) {
   return (
     <button
+      ref={ref}
       type={type}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-control font-medium transition",
-        "disabled:cursor-not-allowed disabled:opacity-50",
-        VARIANTS[variant],
-        SIZES[size],
-        className,
-      )}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      <Content loading={loading} leftIcon={leftIcon} rightIcon={rightIcon}>
+        {children}
+      </Content>
+    </button>
+  );
+});
+
+/** In-app link styled as a button. */
+export function ButtonLink({
+  variant,
+  size,
+  leftIcon,
+  rightIcon,
+  className,
+  children,
+  ...props
+}: LinkProps & Look & Decor) {
+  return (
+    <Link className={cn(buttonVariants({ variant, size }), className)} {...props}>
+      <Content leftIcon={leftIcon} rightIcon={rightIcon}>
+        {children}
+      </Content>
+    </Link>
+  );
+}
+
+/** Plain `<a>` (downloads, other origins) styled as a button. */
+export function ButtonAnchor({
+  variant,
+  size,
+  leftIcon,
+  rightIcon,
+  className,
+  children,
+  ...props
+}: AnchorHTMLAttributes<HTMLAnchorElement> & Look & Decor) {
+  return (
+    <a className={cn(buttonVariants({ variant, size }), className)} {...props}>
+      <Content leftIcon={leftIcon} rightIcon={rightIcon}>
+        {children}
+      </Content>
+    </a>
   );
 }

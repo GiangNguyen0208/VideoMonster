@@ -1,5 +1,5 @@
 import { msg } from "@/i18n";
-import { cn } from "@/lib/cn";
+import { cn } from "@/utils/cn";
 
 export function Spinner({
   label = msg().common.loading,

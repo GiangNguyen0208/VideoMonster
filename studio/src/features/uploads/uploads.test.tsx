@@ -2,7 +2,7 @@ import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { setLocale } from "@/i18n";
-import type { BoardState, IntakeInput, PipelineInfo, ProjectInputs } from "@/lib/api";
+import type { BoardState, IntakeInput, PipelineInfo, ProjectInputs } from "@/types/api";
 import boardFixture from "@/test/fixtures/board-state.json";
 import { mockFetch } from "@/test/fakes";
 import { renderRoute } from "@/test/render";
@@ -309,7 +309,7 @@ describe("Footage & links panel", () => {
   it("shows a failed upload with its translated reason", async () => {
     serve();
     __testing.setSender(async () => {
-      const { ApiError } = await import("@/lib/api");
+      const { ApiError } = await import("@/services/http");
       throw new ApiError(413, "too big", "/x", "too_large");
     });
     renderRoute(`/p/${PID}`);

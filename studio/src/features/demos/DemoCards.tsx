@@ -1,6 +1,8 @@
-import { Button, Card } from "@/components/ui";
+import { Button, Card, ErrorText, ProgressBar } from "@/components/ui";
 import { useT } from "@/i18n";
-import { ApiError, useDemoRender, useDemos, type Demo } from "@/lib/api";
+import { useDemoRender, useDemos } from "@/hooks/api";
+import type { Demo } from "@/types/api";
+import { errorText } from "@/utils/errors";
 
 /** Home → "Try a demo": zero-key Remotion demos rendered from the browser. */
 export function DemoCards() {
@@ -31,8 +33,7 @@ function DemoCard({ demo }: { demo: Demo }) {
   const description = L.descriptions[demo.name] ?? demo.description;
   const running = start.isPending || job?.status === "running";
   const failed = job?.status === "failed" ? job.error : null;
-  const startError =
-    start.error instanceof ApiError ? String(start.error.detail) : start.error?.message;
+  const startError = errorText(start.error);
   const videoUrl = (job?.output?.video_url as string | undefined) ?? demo.video_url;
   const pct = Math.round((job?.progress ?? 0) * 100);
 
@@ -53,24 +54,11 @@ function DemoCard({ demo }: { demo: Demo }) {
       )}
       {running && (
         <div className="space-y-1" role="status">
-          <div
-            className="h-2 overflow-hidden rounded-full bg-surface-3"
-            role="progressbar"
-            aria-label={L.rendering(demo.title)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={pct}
-          >
-            <div className="h-full bg-accent transition-all" style={{ width: `${pct}%` }} />
-          </div>
+          <ProgressBar value={pct / 100} label={L.rendering(demo.title)} className="h-2" />
           <p className="text-xs text-text-3">{pct > 0 ? L.progress(pct) : L.preparing}</p>
         </div>
       )}
-      {(failed || startError) && (
-        <p role="alert" className="text-sm text-danger">
-          {L.failed(failed ?? startError ?? "")}
-        </p>
-      )}
+      {(failed || startError) && <ErrorText>{L.failed(failed ?? startError ?? "")}</ErrorText>}
       <div className="mt-auto">
         <Button
           size="sm"

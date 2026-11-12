@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui";
 import { capabilityLabel, videoTypeLabel } from "@/content/labels";
 import { useT } from "@/i18n";
-import type { UnlockOffer, VideoTypeAvailability } from "@/lib/api";
+import type { UnlockOffer, VideoTypeAvailability } from "@/types/api";
 
 const ORDER = { ready: 0, limited: 1, locked: 2 } as const;
 

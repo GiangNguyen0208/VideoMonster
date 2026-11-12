@@ -7,7 +7,7 @@
  * tests/contracts/test_studio_wizard_contract.py enforces that from the Python side.
  */
 import { CATALOGS, msg } from "@/i18n";
-import type { MediaKind, Platform } from "@/lib/api";
+import type { MediaKind, Platform } from "@/types/api";
 
 export interface GoalPreset {
   platform: Platform;
@@ -31,9 +31,13 @@ export interface FootageNeeds {
   target_languages?: boolean;
 }
 
+/** Filter chips on the goal step; labels in `wizard.categories`. */
+export type GoalCategory = "visual" | "story" | "footage" | "tech";
+
 export interface Goal {
   id: string;
   icon: string;
+  category: GoalCategory;
   pipeline_type: string;
   /** Set when the agent works from the user's own media. */
   footage?: FootageNeeds;
@@ -52,34 +56,41 @@ export function goalText(goal: Goal): GoalText {
   return msg().goals[goal.id] ?? { title: goal.id, promise: "", examples: [] };
 }
 
+export const GOAL_CATEGORIES: GoalCategory[] = ["visual", "story", "footage", "tech"];
+
 export const GOALS: Goal[] = [
   {
     id: "explain-topic",
     icon: "💡",
+    category: "visual",
     pipeline_type: "animated-explainer",
     preset: { platform: "youtube", duration_seconds: 60, tone: ["friendly", "clear"] },
   },
   {
     id: "animated",
     icon: "🎨",
+    category: "visual",
     pipeline_type: "animation",
     preset: { platform: "shorts", duration_seconds: 30, tone: ["dreamy"] },
   },
   {
     id: "trailer",
     icon: "🎬",
+    category: "story",
     pipeline_type: "cinematic",
     preset: { platform: "youtube", duration_seconds: 30, tone: ["dramatic"] },
   },
   {
     id: "character-story",
     icon: "🧸",
+    category: "story",
     pipeline_type: "character-animation",
     preset: { platform: "shorts", duration_seconds: 30, tone: ["playful"] },
   },
   {
     id: "app-demo",
     icon: "💻",
+    category: "tech",
     pipeline_type: "screen-demo",
     footage: {
       accept: ["video"],
@@ -90,6 +101,7 @@ export const GOALS: Goal[] = [
   {
     id: "footage-visuals",
     icon: "🎞️",
+    category: "footage",
     pipeline_type: "hybrid",
     footage: { accept: ["video", "image", "audio"] },
     preset: { platform: "youtube", duration_seconds: 60, tone: ["professional"] },
@@ -97,12 +109,14 @@ export const GOALS: Goal[] = [
   {
     id: "ai-presenter",
     icon: "🧑‍💼",
+    category: "story",
     pipeline_type: "avatar-spokesperson",
     preset: { platform: "linkedin", duration_seconds: 60, tone: ["professional"] },
   },
   {
     id: "polish-talking",
     icon: "🎙️",
+    category: "footage",
     pipeline_type: "talking-head",
     footage: { accept: ["video"] },
     preset: { platform: "youtube", duration_seconds: 90, tone: ["friendly"] },
@@ -110,6 +124,7 @@ export const GOALS: Goal[] = [
   {
     id: "long-to-clips",
     icon: "✂️",
+    category: "footage",
     pipeline_type: "clip-factory",
     footage: { accept: ["video"], min_s: 300 },
     preset: { platform: "shorts", duration_seconds: 30, tone: ["energetic"] },
@@ -117,6 +132,7 @@ export const GOALS: Goal[] = [
   {
     id: "podcast-highlights",
     icon: "🎧",
+    category: "footage",
     pipeline_type: "podcast-repurpose",
     footage: { accept: ["audio", "video"], min_s: 300 },
     preset: { platform: "shorts", duration_seconds: 45, tone: ["conversational"] },
@@ -124,6 +140,7 @@ export const GOALS: Goal[] = [
   {
     id: "translate-dub",
     icon: "🌐",
+    category: "footage",
     pipeline_type: "localization-dub",
     footage: { accept: ["video", "audio", "subtitle"], target_languages: true },
     preset: { platform: "youtube", duration_seconds: 60, tone: ["faithful"] },
@@ -131,6 +148,7 @@ export const GOALS: Goal[] = [
   {
     id: "archive-montage",
     icon: "📽️",
+    category: "visual",
     pipeline_type: "documentary-montage",
     preset: { platform: "youtube", duration_seconds: 90, tone: ["reflective"] },
   },

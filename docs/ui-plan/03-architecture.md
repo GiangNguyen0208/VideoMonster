@@ -248,7 +248,7 @@ Studio's own writes under `studio/` already trigger the existing watcher. That g
 | Forms | React Hook Form + Zod, with schemas mirroring `studio.intake/1` and `studio.decision/1` |
 | Video preview | Native `<video>` against `/media`. `@remotion/player` is optional later. |
 | Testing | Vitest + Testing Library (unit), Playwright (e2e; reuses the `tests/backlot/test_ui_bug_bash.py` approach) |
-| Layout | `studio/src/{app,routes,components,features/<area>,lib/api,content/goals.ts}` |
+| Layout | `studio/src/{app,routes,components/{ui,layout},features/<area>,services,hooks/api,types/api,utils,content/goals.ts}` (since Phase D.5; see `design/ui-refresh.md` §B.1) |
 
 ## 7. Hosted path (Phase 7, design only)
 

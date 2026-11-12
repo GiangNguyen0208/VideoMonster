@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenMontage Studio - Live Production &amp; AI Video Rendering</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "primary-fixed": "#ffddb5",
+            "on-tertiary-fixed-variant": "#00522f",
+            "screenplay-ink": "#29231a",
+            "primary-container": "#f0a83c",
+            "on-background": "#e5e1e4",
+            "surface-container-highest": "#353437",
+            "text-secondary": "#a0a0a9",
+            "on-secondary-container": "#b7b4b8",
+            "text-muted": "#5f5f68",
+            "primary": "#ffc881",
+            "status-info": "#6aa1ff",
+            "surface-tint": "#ffb956",
+            "surface-2": "#16161a",
+            "surface-bright": "#39393b",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "status-danger": "#e5544b",
+            "inverse-primary": "#835400",
+            "text-primary": "#ececef",
+            "on-primary": "#452b00",
+            "on-surface": "#e5e1e4",
+            "tertiary": "#76e8a5",
+            "on-primary-fixed-variant": "#633f00",
+            "border-base": "#232329",
+            "error-container": "#93000a",
+            "on-surface-variant": "#d6c4b0",
+            "on-tertiary": "#00391f",
+            "on-secondary-fixed-variant": "#47464a",
+            "surface-3": "#1c1c21",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "secondary-fixed-dim": "#c8c5ca",
+            "on-primary-container": "#644000",
+            "status-success": "#4fc283",
+            "inverse-surface": "#e5e1e4",
+            "on-secondary": "#303033",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "surface-container-lowest": "#0e0e10",
+            "outline": "#9e8e7c",
+            "on-tertiary-container": "#00532f",
+            "surface-dim": "#131315",
+            "secondary-fixed": "#e4e1e6",
+            "tertiary-fixed-dim": "#6adc9b",
+            "error": "#ffb4ab",
+            "surface-container-low": "#1c1b1d",
+            "surface-variant": "#353437",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "secondary": "#c8c5ca",
+            "primary-fixed-dim": "#ffb956",
+            "tertiary-fixed": "#87f9b5",
+            "screenplay-parchment": "#f2e9d5",
+            "surface-container-high": "#2a2a2c",
+            "surface-container": "#201f21",
+            "surface-1": "#101013",
+            "on-primary-fixed": "#2a1800",
+            "on-error": "#690005",
+            "surface": "#131315",
+            "secondary-container": "#47464a",
+            "outline-variant": "#514535",
+            "on-error-container": "#ffdad6",
+            "tertiary-container": "#59cb8b",
+            "border-soft": "#1a1a1f",
+            "background": "#131315",
+            "inverse-on-surface": "#313032",
+            "on-tertiary-fixed": "#002110",
+            "on-secondary-fixed": "#1b1b1e"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-desktop": "2rem",
+            "space-md": "1rem",
+            "space-2xl": "2.5rem",
+            "gutter-desktop": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin-tablet": "1.5rem",
+            "margin": "1rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "gutter": "1rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "screenplay-body": ["Courier Prime"],
+            "badge-label": ["Inter"],
+            "caption-meta": ["Inter"],
+            "title-card": ["Inter"],
+            "screenplay-heading": ["Courier Prime"],
+            "code-mono": ["JetBrains Mono"],
+            "body-medium": ["Inter"],
+            "body-base": ["Inter"],
+            "display-hero": ["Inter"],
+            "headline-section": ["Inter"],
+            "display-hero-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "screenplay-body": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "badge-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "caption-meta": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "title-card": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "screenplay-heading": ["18px", { "lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "code-mono": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-medium": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500" }],
+            "body-base": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "display-hero": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "headline-section": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }],
+            "display-hero-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 20px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    @keyframes pulse-amber {
+      0%, 100% { opacity: 0.9; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.04); }
+    }
+    
+    .amber-pulse {
+      animation: pulse-amber 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Custom subtle scrollbar for code/terminal */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #101013;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232329;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #353437;
+    }
+  </style>
+</head>
+<body class="bg-surface text-text-primary min-h-screen flex flex-col font-body-base selection:bg-primary-container selection:text-surface-1">
+<!-- ========================================================================= -->
+<!-- SHARED COMPONENT: TopNavBar (from Shared Components JSON)                -->
+<!-- ========================================================================= -->
+<header class="docked full-width top-0 sticky z-50 bg-surface/90 dark:bg-surface/90 backdrop-blur-md border-b border-border-base dark:border-border-base flat no shadows">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Left: Logo & Top Nav Links -->
+<div class="flex items-center space-x-8">
+<a class="flex items-center space-x-2 font-title-card text-title-card font-bold tracking-tight text-text-primary dark:text-text-primary active:scale-[0.98] transition-transform duration-100" href="#">
+<div class="w-5 h-5 rounded border-2 border-primary-container flex items-center justify-center p-0.5">
+<div class="w-full h-full bg-primary-container rounded-[1px]"></div>
+</div>
+<span>OpenMontage <span class="text-primary font-normal">Studio</span></span>
+</a>
+<!-- Desktop Navigation Items -->
+<nav class="hidden md:flex items-center space-x-6">
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">Home</a>
+<!-- Active Nav Item based on currently rendering video -->
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary font-body-medium text-body-medium pb-1" href="#">New Video</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">Library</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">Setup</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1 hover:text-text-primary dark:hover:text-text-primary hover:bg-surface-container dark:hover:bg-surface-container transition-colors duration-150" href="#">Settings</a>
+</nav>
+</div>
+<!-- Center Status: Engine heartbeat -->
+<div class="hidden xl:flex items-center space-x-2.5 px-3 py-1 bg-surface-1 border border-border-base rounded-full">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+</span>
+<span class="font-code-mono text-[12px] text-text-secondary">
+          Remotion 4.0 Live: <span class="text-status-success font-medium">Renderer Hoạt động</span>
+</span>
+</div>
+<!-- Right: Action clusters & Account icons -->
+<div class="flex items-center space-x-3.5">
+<div class="hidden sm:flex items-center text-caption-meta font-caption-meta text-text-muted px-2.5 py-1 bg-surface-2 rounded border border-border-base font-code-mono">
+<span>Ngân sách: </span>
+<span class="text-primary font-medium ml-1.5">$0.35</span>
+<span class="text-text-muted"> / $2.00</span>
+</div>
+<button class="text-text-secondary hover:text-text-primary transition-colors text-xs font-code-mono px-2 py-1 bg-surface-1 rounded border border-border-base">
+          EN/VI
+        </button>
+<button aria-label="Dark Mode" class="p-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button aria-label="Notifications" class="p-1.5 relative text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-primary-container rounded-full"></span>
+</button>
+<button aria-label="Account Profile" class="p-1.5 text-text-secondary hover:text-text-primary hover:bg-surface-2 rounded transition-colors active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+<!-- Trailing Primary Action button from JSON -->
+<button class="h-9 px-3.5 bg-primary-container hover:bg-primary-fixed-dim text-surface-container-lowest font-body-medium text-body-medium rounded font-medium flex items-center space-x-1.5 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+<span>New Video</span>
+</button>
+</div>
+</div>
+</header>
+<!-- ========================================================================= -->
+<!-- MAIN WORKSPACE: Studio Cockpit (Desktop-First 1280-1440px bound)         -->
+<!-- ========================================================================= -->
+<main class="flex-1 max-w-7xl mx-auto w-full px-6 py-6 space-y-6">
+<!-- Section: Breadcrumbs & Project Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-1">
+<div class="space-y-1.5">
+<div class="flex items-center space-x-2 text-caption-meta font-caption-meta text-text-muted">
+<a class="hover:text-text-secondary transition-colors" href="#">Dự án</a>
+<span>/</span>
+<a class="hover:text-text-secondary transition-colors" href="#">Video hoạt hình chuyển động</a>
+<span>/</span>
+<span class="text-text-secondary">om-proj-8842</span>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<h1 class="font-display-hero text-display-hero tracking-tight text-text-primary">
+            The Cyber Odyssey: Tương lai của AI Agent
+          </h1>
+<div class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-accent-dim border border-primary-container/40 text-primary-container font-badge-label text-badge-label">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span>ĐANG RENDER KHUNG HÌNH (Frame 420 / 900 • 46%)</span>
+</div>
+</div>
+<p class="text-text-secondary font-body-base text-body-base max-w-3xl">
+          Autonomous AI Agent đang biên dịch mã TypeScript Remotion và xuất luồng video thời gian thực 60 FPS.
+        </p>
+</div>
+<!-- Quick Fast Actions -->
+<div class="flex items-center gap-2.5 self-start md:self-center shrink-0">
+<button class="h-9 px-3.5 bg-surface-2 hover:bg-surface-3 border border-border-base text-text-primary rounded font-body-medium text-body-medium flex items-center space-x-1.5 active:scale-[0.98] transition-all" id="btn-pause">
+<span class="material-symbols-outlined text-[18px]" data-icon="pause">pause</span>
+<span>Tạm dừng</span>
+</button>
+<button class="h-9 px-3.5 bg-surface-2 hover:bg-surface-3 border border-border-base text-text-secondary hover:text-text-primary rounded font-body-medium text-body-medium flex items-center space-x-1.5 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+<span>CLI Live</span>
+</button>
+<button class="h-9 px-3 bg-status-danger-dim border border-status-danger/40 text-status-danger hover:bg-status-danger/20 rounded font-body-medium text-body-medium flex items-center space-x-1.5 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="cancel">cancel</span>
+<span>Hủy tác vụ</span>
+</button>
+</div>
+</div>
+<!-- Live Stage Ribbon (8-Node Workflow Timeline) -->
+<div class="p-3 bg-surface-1 border border-border-base rounded-xl overflow-x-auto">
+<div class="flex items-center justify-between min-w-[760px] gap-2">
+<!-- Step 1 -->
+<div class="flex items-center space-x-2 text-status-success">
+<span class="w-5 h-5 rounded-full bg-status-success-dim border border-status-success flex items-center justify-center text-[10px] font-bold">✓</span>
+<span class="text-caption-meta font-caption-meta">1. Khởi tạo</span>
+</div>
+<div class="flex-1 h-[1px] bg-status-success/40 mx-1"></div>
+<!-- Step 2 -->
+<div class="flex items-center space-x-2 text-status-success">
+<span class="w-5 h-5 rounded-full bg-status-success-dim border border-status-success flex items-center justify-center text-[10px] font-bold">✓</span>
+<span class="text-caption-meta font-caption-meta">2. Kịch bản</span>
+</div>
+<div class="flex-1 h-[1px] bg-status-success/40 mx-1"></div>
+<!-- Step 3 -->
+<div class="flex items-center space-x-2 text-status-success">
+<span class="w-5 h-5 rounded-full bg-status-success-dim border border-status-success flex items-center justify-center text-[10px] font-bold">✓</span>
+<span class="text-caption-meta font-caption-meta">3. Storyboard</span>
+</div>
+<div class="flex-1 h-[1px] bg-status-success/40 mx-1"></div>
+<!-- Step 4: Active Stage Pulsing -->
+<div class="flex items-center space-x-2 text-primary-container px-2.5 py-1 bg-accent-dim rounded border border-primary-container/40">
+<span class="w-5 h-5 rounded-full bg-primary-container text-surface-container-lowest flex items-center justify-center text-[10px] font-bold amber-pulse">4</span>
+<span class="text-caption-meta font-caption-meta font-medium">4. Render Remotion (46%)</span>
+</div>
+<div class="flex-1 h-[1px] bg-border-base mx-1"></div>
+<!-- Step 5 -->
+<div class="flex items-center space-x-2 text-text-muted">
+<span class="w-5 h-5 rounded-full bg-surface-2 border border-border-base flex items-center justify-center text-[10px]">5</span>
+<span class="text-caption-meta font-caption-meta">5. Voice Ducking</span>
+</div>
+<div class="flex-1 h-[1px] bg-border-base mx-1"></div>
+<!-- Step 6 -->
+<div class="flex items-center space-x-2 text-text-muted">
+<span class="w-5 h-5 rounded-full bg-surface-2 border border-border-base flex items-center justify-center text-[10px]">6</span>
+<span class="text-caption-meta font-caption-meta">6. Hậu kỳ &amp; Chữ</span>
+</div>
+<div class="flex-1 h-[1px] bg-border-base mx-1"></div>
+<!-- Step 7 -->
+<div class="flex items-center space-x-2 text-text-muted">
+<span class="w-5 h-5 rounded-full bg-surface-2 border border-border-base flex items-center justify-center text-[10px]">7</span>
+<span class="text-caption-meta font-caption-meta">7. Đóng gói MP4</span>
+</div>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- 2-COLUMN COCKPIT (60% Left / 40% Right)                                  -->
+<!-- ========================================================================= -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- LEFT COLUMN: Live Cinema Monitor & Frame Inspector (approx 60% = 7 cols) -->
+<section class="lg:col-span-7 space-y-4">
+<!-- Cinema Viewport Card -->
+<div class="bg-surface-1 border border-border-base rounded-xl p-4 space-y-4 shadow-xl">
+<!-- Monitor Header Bar -->
+<div class="flex items-center justify-between border-b border-border-base/70 pb-3">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="videocam">videocam</span>
+<span class="font-title-card text-title-card text-text-primary">Màn hình Canvas Giám sát Render</span>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-2 text-text-secondary border border-border-base font-code-mono">Remotion Chromium Headless</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="font-code-mono text-caption-meta text-primary">60 FPS</span>
+<div class="w-2 h-2 rounded-full bg-status-success animate-ping"></div>
+</div>
+</div>
+<!-- Video Viewport / Canvas Container (16:9 Cinema Aspect) -->
+<div class="relative w-full aspect-video bg-black rounded-lg overflow-hidden border border-border-base group">
+<!-- Simulated Frame Graphic using Image Prompt Requirement -->
+<img alt="Live render frame" class="w-full h-full object-cover opacity-85" data-alt="A cinematic dark cyberpunk scene of a futuristic holographic control deck with abstract glowing golden amber data streams, digital particles, and illuminated robotic wireframe nodes. Deep black background with amber and cyan volumetric light rays, 8k resolution, photorealistic render styling, moody and cinematic high tech video frame." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUbY-JWUBFRiKo35kbWXrMqUVYneG6nd7czlQm7-XqHg3RpI8a1y9I-vwu_j4hFbMTZOwfdmXL6i1P5xNcxpikwp9y1PfcWElIwbzoLwBjhgro1YI6rnBfYp9Gf5omyz7QEvQPP0SbAOQ8pmwEt2UdryV7lk2DRWcvT0vf8DS3e0wN7rlCO-pDz2FJECGNwviLBznV4FWz9oY60713Eew8-pFqMhb3uVLiEC61KTA"/>
+<!-- Frame Scanning Sweep Overlay -->
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary-container/10 to-transparent pointer-events-none opacity-40 animate-pulse"></div>
+<!-- Top HUD Overlays -->
+<div class="absolute top-3 left-3 flex flex-wrap gap-2 pointer-events-none">
+<div class="flex items-center space-x-1.5 px-2.5 py-1 bg-surface-1/90 backdrop-blur-md rounded border border-border-base text-[11px] font-code-mono text-text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>REC LIVE [FRAME 0420]</span>
+</div>
+<div class="px-2 py-1 bg-surface-1/90 backdrop-blur-md rounded border border-border-base text-[11px] font-code-mono text-text-secondary">
+                RES: 1080x1920 (Vertical 9:16 Canvas)
+              </div>
+</div>
+<div class="absolute top-3 right-3 flex items-center space-x-2 pointer-events-none">
+<div class="px-2 py-1 bg-surface-1/90 backdrop-blur-md rounded border border-border-base text-[11px] font-code-mono text-status-success">
+                GPU: Metal API • 58.4 FPS
+              </div>
+</div>
+<!-- Center Timecode Watermark (Cinematic aesthetic) -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="text-center bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/5">
+<div class="font-code-mono text-2xl font-bold tracking-wider text-text-primary/90">00:07:00 / 00:15:00</div>
+<div class="text-[11px] text-text-secondary tracking-widest font-mono">SCENE 02 : KINETIC TYPOGRAPHY MORPH</div>
+</div>
+</div>
+<!-- Bottom Transport Bar Inside Monitor -->
+<div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-surface-1 via-surface-1/80 to-transparent p-3 pt-6 flex items-center justify-between text-xs font-code-mono">
+<div class="flex items-center space-x-3 text-text-secondary">
+<span class="text-primary font-bold">Remotion 4.0.120</span>
+<span>•</span>
+<span>Chunk: #07 [Frames 360-480]</span>
+</div>
+<div class="flex items-center space-x-2 text-text-muted">
+<span>Lossless Buffer: 98%</span>
+<span class="material-symbols-outlined text-[16px] text-text-secondary" data-icon="fullscreen">fullscreen</span>
+</div>
+</div>
+</div>
+<!-- Real-Time Render Scrubber & Progress Strip -->
+<div class="space-y-2 pt-1">
+<div class="flex items-center justify-between text-xs font-code-mono">
+<div class="flex items-center space-x-2">
+<span class="text-primary font-medium">Tiến độ Render: Frame 420 / 900</span>
+<span class="text-text-muted">(46.6%)</span>
+</div>
+<div class="flex items-center space-x-3 text-text-secondary">
+<span>Tốc độ: <strong class="text-text-primary">1.8x Realtime</strong></span>
+<span>Ước tính còn lại: <strong class="text-primary">~12 giây</strong></span>
+</div>
+</div>
+<!-- Segmented Continuous Amber Glow Bar -->
+<div class="relative w-full h-2.5 bg-surface-2 rounded-full overflow-hidden border border-border-base p-[1px]">
+<div class="h-full bg-gradient-to-r from-primary-container via-primary to-primary-container rounded-full w-[46.6%] relative transition-all duration-300">
+<div class="absolute right-0 top-0 bottom-0 w-2 bg-white/70 animate-pulse"></div>
+</div>
+</div>
+<div class="flex justify-between text-[11px] font-code-mono text-text-muted pt-0.5">
+<span>0s (Frame 0)</span>
+<span>7.5s (Frame 450)</span>
+<span>15.0s (Frame 900)</span>
+</div>
+</div>
+<!-- Live Render Telemetry Stats Strip -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+<div class="bg-surface-2 p-2.5 rounded border border-border-base space-y-0.5">
+<div class="text-[11px] text-text-muted">Phân cảnh đang chạy</div>
+<div class="text-xs font-body-medium text-text-primary truncate">Scene 02: Core Hook</div>
+<div class="text-[10px] text-primary font-code-mono">TSX Keyframes Active</div>
+</div>
+<div class="bg-surface-2 p-2.5 rounded border border-border-base space-y-0.5">
+<div class="text-[11px] text-text-muted">Nhạc nền &amp; Audio</div>
+<div class="text-xs font-body-medium text-text-primary truncate">Cyber Pulse 128 BPM</div>
+<div class="text-[10px] text-status-success font-code-mono">Auto-Ducking: -18dB</div>
+</div>
+<div class="bg-surface-2 p-2.5 rounded border border-border-base space-y-0.5">
+<div class="text-[11px] text-text-muted">RAM Tiêu thụ</div>
+<div class="text-xs font-body-medium text-text-primary font-code-mono">420 MB / 8 GB</div>
+<div class="text-[10px] text-text-secondary font-code-mono">Chromium 4 Threads</div>
+</div>
+<div class="bg-surface-2 p-2.5 rounded border border-border-base space-y-0.5">
+<div class="text-[11px] text-text-muted">Chi phí phát sinh</div>
+<div class="text-xs font-body-medium text-status-success font-code-mono">$0.00 (Local)</div>
+<div class="text-[10px] text-text-muted font-code-mono">Chạy miễn phí trên máy</div>
+</div>
+</div>
+</div>
+<!-- Tactile Screenplay Segment Inspector (Design System Requirement: Parchment Card) -->
+<div class="bg-screenplay-parchment rounded-xl p-5 text-screenplay-ink space-y-3 shadow-md border border-amber-900/10">
+<div class="flex items-center justify-between border-b border-screenplay-ink/15 pb-2">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-screenplay-ink" data-icon="description">description</span>
+<span class="font-screenplay-heading text-screenplay-heading uppercase text-xs tracking-wider">Phân đoạn kịch bản tương ứng (Scene 02)</span>
+</div>
+<span class="text-[11px] font-screenplay-body bg-screenplay-ink/10 px-2 py-0.5 rounded text-screenplay-ink">
+              TIMECODE: 00:05 - 00:10
+            </span>
+</div>
+<div class="font-screenplay-body text-screenplay-body space-y-2 leading-relaxed">
+<p class="font-bold text-center text-xs tracking-widest">[CẢNH 2: VŨ TRỤ DỮ LIỆU ĐIỆN TOÁN]</p>
+<p>
+              GÓC MÁY CẬN. Chùm sáng quang học phóng vụt qua màn đêm. Các dòng mã lệnh TypeScript tự sắp đặt 
+              thành khối hình học 3D phát sáng. Giọng thuyết minh vang lên trầm ấm và đầy quyết đoán:
+            </p>
+<p class="pl-6 italic border-l-2 border-screenplay-ink/30 my-2">
+              "Kỷ nguyên làm phim không còn giới hạn bởi dòng thời gian dựng video thông thường. 
+              Mỗi khung hình là một logic toán học được AI thực thi trong chớp mắt."
+            </p>
+</div>
+</div>
+</section>
+<!-- RIGHT COLUMN: Agent Execution Stream, Thoughts & CLI Controls (approx 40% = 5 cols) -->
+<section class="lg:col-span-5 space-y-4">
+<!-- CARD 1: Production Pipeline Status -->
+<div class="bg-surface-1 border border-border-base rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-title-card text-title-card text-text-primary flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="account_tree">account_tree</span>
+<span>Tiến trình sản xuất tự động</span>
+</h3>
+<span class="text-caption-meta font-code-mono text-status-success">3/6 Bước Xong</span>
+</div>
+<!-- Step Items List -->
+<div class="space-y-2 text-xs font-body-base">
+<!-- Step 1 -->
+<div class="flex items-center justify-between p-2 rounded bg-surface-2 border border-border-base/50">
+<div class="flex items-center space-x-2">
+<span class="text-status-success material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-text-primary">1. Khởi tạo &amp; phân tích brief kịch bản</span>
+</div>
+<span class="font-code-mono text-text-muted">0.8s</span>
+</div>
+<!-- Step 2 -->
+<div class="flex items-center justify-between p-2 rounded bg-surface-2 border border-border-base/50">
+<div class="flex items-center space-x-2">
+<span class="text-status-success material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-text-primary">2. Soạn kịch bản phân đoạn &amp; Hook</span>
+</div>
+<span class="font-code-mono text-text-muted">3.2s</span>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center justify-between p-2 rounded bg-surface-2 border border-border-base/50">
+<div class="flex items-center space-x-2">
+<span class="text-status-success material-symbols-outlined text-[16px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-text-primary">3. Lựa chọn âm thanh &amp; Nhịp 128 BPM</span>
+</div>
+<span class="font-code-mono text-text-muted">1.5s</span>
+</div>
+<!-- Step 4: Active Stage -->
+<div class="flex items-center justify-between p-2.5 rounded bg-accent-dim border border-primary-container/40">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary-container text-[18px] animate-spin" data-icon="sync">sync</span>
+<span class="text-primary font-medium">4. Biên dịch mã Remotion &amp; Render Frame</span>
+</div>
+<span class="font-code-mono text-primary font-bold">46%</span>
+</div>
+<!-- Step 5 -->
+<div class="flex items-center justify-between p-2 rounded bg-surface-1 border border-border-base/40 opacity-70">
+<div class="flex items-center space-x-2">
+<span class="text-text-muted material-symbols-outlined text-[16px]" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-text-secondary">5. Ghép nối giọng đọc TTS &amp; Auto-Ducking</span>
+</div>
+<span class="font-code-mono text-text-muted">Chờ</span>
+</div>
+<!-- Step 6 -->
+<div class="flex items-center justify-between p-2 rounded bg-surface-1 border border-border-base/40 opacity-70">
+<div class="flex items-center space-x-2">
+<span class="text-text-muted material-symbols-outlined text-[16px]" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="text-text-secondary">6. Đóng gói MP4 &amp; Xuất Thumbnail 4K</span>
+</div>
+<span class="font-code-mono text-text-muted">Chờ</span>
+</div>
+</div>
+</div>
+<!-- CARD 2: Agent Thought Stream & Live Terminal Logs -->
+<div class="bg-surface-1 border border-border-base rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-status-info text-[18px]" data-icon="smart_toy">smart_toy</span>
+<h3 class="font-title-card text-title-card text-text-primary">Dòng suy nghĩ &amp; Nhật ký Agent</h3>
+</div>
+<span class="px-2 py-0.5 rounded bg-status-info-dim text-status-info text-[11px] font-code-mono">Live Stream</span>
+</div>
+<!-- Monospace Terminal Box -->
+<div class="bg-surface-container-lowest border border-border-base rounded-lg p-3 font-code-mono text-xs text-text-secondary h-44 overflow-y-auto space-y-2 select-text">
+<p class="text-text-muted">[10:42:08] <span class="text-primary">Agent:</span> Khởi tạo cấu trúc dự án Remotion composition `CyberMotionStory`.</p>
+<p class="text-text-muted">[10:42:11] <span class="text-status-info">Config:</span> Audio samplerate 48000Hz, FPS=60, Resolution=1080x1920.</p>
+<p class="text-text-muted">[10:42:14] <span class="text-primary">Agent:</span> Tính toán thời gian hiển thị Kinetic text: hook duration = 4.2s.</p>
+<p class="text-text-muted">[10:42:18] <span class="text-status-success">Remotion:</span> Chunk 1-240 render thành công. 0 dropping frames.</p>
+<p class="text-text-muted">[10:42:21] <span class="text-primary">Agent:</span> Chuyển tiếp Scene 02: Kích hoạt hiệu ứng Particle Mesh Shader.</p>
+<p class="text-primary-container font-medium animate-pulse">[10:42:25] [Rendering] Biên dịch khung hình 420/900: VRAM cấp phát 420MB...</p>
+</div>
+<div class="flex items-center justify-between text-[11px] text-text-muted">
+<span>Agent: Claude 3.7 Sonnet (Autopilot)</span>
+<button class="hover:text-text-secondary underline transition-colors">Tải log chi tiết (.log)</button>
+</div>
+</div>
+<!-- CARD 3: CLI Kickoff Panel (Design System Specified Component) -->
+<div class="bg-surface-1 border border-border-base rounded-xl p-4 space-y-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-text-secondary text-[18px]" data-icon="terminal">terminal</span>
+<h3 class="font-title-card text-title-card text-text-primary">Lệnh CLI điều khiển từ máy cục bộ</h3>
+</div>
+<span class="text-[11px] text-text-muted font-code-mono">Cursor / Claude Code</span>
+</div>
+<p class="text-caption-meta font-caption-meta text-text-secondary">
+            Bạn có thể giám sát hoặc can thiệp trực tiếp từ terminal cá nhân:
+          </p>
+<div class="flex items-center justify-between bg-surface-2 border border-border-base rounded px-3 py-2 font-code-mono text-xs text-text-primary">
+<code class="text-primary">python -m backlot watch-render om-proj-8842</code>
+<button class="ml-2 p-1 text-text-muted hover:text-text-primary rounded transition-colors active:scale-95" id="copy-btn" title="Sao chép lệnh">
+<span class="material-symbols-outlined text-[16px]" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- ========================================================================= -->
+<!-- BOTTOM STICKY NOTIFICATION BAR (Review Stage-Gate Alert)                 -->
+<!-- ========================================================================= -->
+<footer class="sticky bottom-0 z-40 bg-surface-1/95 backdrop-blur-md border-t border-border-base py-3 px-6 shadow-2xl">
+<div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center space-x-3 text-sm">
+<div class="w-8 h-8 rounded-full bg-accent-dim border border-primary-container/40 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[18px]" data-icon="flag">flag</span>
+</div>
+<div>
+<span class="text-text-primary font-body-medium font-medium">Sắp đến cổng kiểm duyệt (Review Gate):</span>
+<span class="text-text-secondary font-body-base ml-1">
+            Trợ lý AI sẽ tự động kích hoạt bước Kiểm tra &amp; Duyệt (Review Gate) khi render hoàn tất. Bạn có thể mở thông báo đẩy hoặc để máy tự xử lý.
+          </span>
+</div>
+</div>
+<div class="flex items-center space-x-3 shrink-0">
+<button class="h-9 px-3.5 bg-surface-2 hover:bg-surface-3 border border-border-base text-text-primary rounded text-xs font-body-medium flex items-center space-x-1.5 transition-all">
+<span class="material-symbols-outlined text-[16px]" data-icon="notifications_active">notifications_active</span>
+<span>Bật thông báo trình duyệt</span>
+</button>
+<a class="h-9 px-4 bg-primary-container hover:bg-primary-fixed-dim text-surface-container-lowest rounded text-xs font-body-medium font-semibold flex items-center space-x-1 transition-all" href="#">
+<span>Xem phân đoạn kịch bản</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</footer>
+<!-- Micro-interactions Script -->
+<script>
+    // Copy Command to clipboard micro-interaction
+    const copyBtn = document.getElementById('copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        const text = 'python -m backlot watch-render om-proj-8842';
+        navigator.clipboard.writeText(text).then(() => {
+          const originalHTML = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-status-success">check</span>';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalHTML;
+          }, 2000);
+        });
+      });
+    }
+
+    // Pause toggle interaction
+    const pauseBtn = document.getElementById('btn-pause');
+    if (pauseBtn) {
+      let isPaused = false;
+      pauseBtn.addEventListener('click', () => {
+        isPaused = !isPaused;
+        if (isPaused) {
+          pauseBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">play_arrow</span><span>Tiếp tục render</span>';
+          pauseBtn.classList.add('bg-primary-container', 'text-surface-1');
+          pauseBtn.classList.remove('bg-surface-2', 'text-text-primary');
+        } else {
+          pauseBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">pause</span><span>Tạm dừng</span>';
+          pauseBtn.classList.remove('bg-primary-container', 'text-surface-1');
+          pauseBtn.classList.add('bg-surface-2', 'text-text-primary');
+        }
+      });
+    }
+  </script>
+</body></html>

@@ -1,8 +1,8 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import type { BoardState, ProjectSummary } from "@/lib/api";
-import { SSE_DEBOUNCE_MS } from "@/lib/api";
+import type { BoardState, ProjectSummary } from "@/types/api";
+import { SSE_DEBOUNCE_MS } from "@/hooks/api";
 import boardFixture from "@/test/fixtures/board-state.json";
 import summaryFixture from "@/test/fixtures/project-summary.json";
 import { FakeEventSource, mockFetch } from "@/test/fakes";
@@ -35,7 +35,7 @@ const serve = (projects: ProjectSummary[], state: BoardState = board()) =>
   );
 
 describe("Home", () => {
-  it("groups projects into waiting, attention, in progress and results", async () => {
+  it("leads with the video waiting for you and narrows the grid with status chips", async () => {
     serve([
       summary({
         project_id: "a",
@@ -52,15 +52,30 @@ describe("Home", () => {
         title: "Busy one",
         stage_states: [{ name: "assets", status: "in_progress" }],
       }),
-      summary({ project_id: "d", title: "Done one", latest_render: "renders/final.mp4" }),
+      summary({
+        project_id: "d",
+        title: "Done one",
+        stage_states: [{ name: "compose", status: "completed" }],
+        render_count: 1,
+        latest_render: "renders/final.mp4",
+      }),
     ]);
     renderRoute("/");
-    expect(await screen.findByText("1 video is waiting for you")).toBeInTheDocument();
-    const section = (name: string) => screen.getByRole("region", { name });
-    expect(within(section("Waiting for you")).getByText("Waiting one")).toBeInTheDocument();
-    expect(within(section("Needs attention")).getByText("Broken one")).toBeInTheDocument();
-    expect(within(section("In progress")).getByText("Busy one")).toBeInTheDocument();
-    expect(within(section("Recent results")).getByText("Done one")).toBeInTheDocument();
+    const hero = await screen.findByRole("region", { name: "Waiting one" });
+    expect(within(hero).getByText("1 video is waiting for you")).toBeInTheDocument();
+    expect(within(hero).getByRole("link", { name: "Review and approve" })).toHaveAttribute(
+      "href",
+      "/p/a",
+    );
+    expect(screen.getByText("Broken one")).toBeInTheDocument();
+    expect(screen.getByText("Busy one")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: /^Needs attention/ }));
+    expect(screen.getByText("Broken one")).toBeInTheDocument();
+    expect(screen.queryByText("Busy one")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /^Finished/ }));
+    expect(screen.getByText("Done one")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Download Done one" })).toBeInTheDocument();
   });
 
   it("shows a first-run empty state", async () => {
@@ -99,12 +114,12 @@ describe("Library", () => {
 
     await userEvent.type(screen.getByRole("searchbox", { name: "Search videos" }), "black");
     expect(screen.queryByText("Lighthouse")).not.toBeInTheDocument();
-    expect(screen.getByText("Black holes")).toBeInTheDocument();
+    expect(screen.getAllByText("Black holes").length).toBeGreaterThan(0);
     expect(router.state.location.search).toContain("q=black");
 
     await userEvent.clear(screen.getByRole("searchbox", { name: "Search videos" }));
-    await userEvent.click(screen.getByRole("button", { name: "Waiting for you" }));
-    expect(screen.getByText("Black holes")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: /^Waiting for you/ }));
+    expect(screen.getAllByText("Black holes").length).toBeGreaterThan(0);
     expect(screen.queryByText("Lighthouse")).not.toBeInTheDocument();
   });
 

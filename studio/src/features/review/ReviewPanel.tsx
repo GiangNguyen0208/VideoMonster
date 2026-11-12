@@ -1,20 +1,21 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Banner, Button, Card, Dialog, Spinner } from "@/components/ui";
+import {
+  Banner,
+  Button,
+  Card,
+  CodeBox,
+  controlClass,
+  Dialog,
+  ErrorText,
+  Spinner,
+} from "@/components/ui";
 import { stageLabel } from "@/content/labels";
 import { asArray, asRecord, asText } from "@/features/project/adapters";
 import { useT } from "@/i18n";
-import {
-  ApiError,
-  useDecisions,
-  useRetractDecision,
-  useSetup,
-  useSubmitDecision,
-  type BoardState,
-  type DecisionAction,
-  type Stage,
-  type StudioDecision,
-} from "@/lib/api";
-import { fmtMoney } from "@/lib/format";
+import { useDecisions, useRetractDecision, useSetup, useSubmitDecision } from "@/hooks/api";
+import type { BoardState, DecisionAction, Stage, StudioDecision } from "@/types/api";
+import { errorText } from "@/utils/errors";
+import { fmtMoney } from "@/utils/format";
 import { ProposalPicker } from "./ProposalPicker";
 import { ReferenceInsights } from "./ReferenceInsights";
 import {
@@ -126,10 +127,7 @@ function ReviewForm({
       proposal: action === "approve" && picks ? toProposal(picks) : null,
     });
 
-  const error =
-    submit.error instanceof ApiError
-      ? (submit.error.code && L.errors[submit.error.code]) || String(submit.error.detail)
-      : submit.error?.message;
+  const error = errorText(submit.error, L.errors);
 
   return (
     <Card className="space-y-6 border-accent/50" aria-labelledby="review-h" role="region">
@@ -182,7 +180,7 @@ function ReviewForm({
                   rows={2}
                   value={sectionNotes[s.id] ?? ""}
                   onChange={(e) => setSectionNotes({ ...sectionNotes, [s.id]: e.target.value })}
-                  className="w-full rounded-control border border-border bg-surface-2 px-3 py-2"
+                  className={controlClass}
                 />
               </label>
             ))}
@@ -201,17 +199,13 @@ function ReviewForm({
             autoFocus
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            className="w-full rounded-control border border-border bg-surface-2 px-3 py-2 text-sm"
+            className={controlClass}
           />
           <p className="text-xs text-text-3">{L.notesHint}</p>
         </div>
       )}
 
-      {error && (
-        <p role="alert" className="text-sm text-danger">
-          {error}
-        </p>
-      )}
+      {error && <ErrorText>{error}</ErrorText>}
 
       <div className="flex flex-wrap items-center gap-2">
         {revising ? (
@@ -279,12 +273,13 @@ function SentCard({ projectId, decision }: { projectId: string; decision: Studio
   const L = t.review;
   const retract = useRetractDecision(projectId);
   return (
-    <Card className="space-y-3" role="status">
+    <Card variant="active" className="space-y-3" role="status">
       <p className="font-medium">{L.sent[decision.action] ?? decision.action}</p>
       <p className="text-sm text-text-2">{L.waitingAgent}</p>
-      <code className="block overflow-x-auto rounded-control border border-border bg-surface-2 px-3 py-2 font-mono text-sm whitespace-nowrap select-all">
-        {`claude "/studio-continue ${projectId}"`}
-      </code>
+      <CodeBox
+        code={`claude "/studio-continue ${projectId}"`}
+        copyLabel={t.project.kickoff.copyCommand("Claude Code")}
+      />
       <Button size="sm" variant="ghost" onClick={() => retract.mutate(decision.id)}>
         {L.retract}
       </Button>

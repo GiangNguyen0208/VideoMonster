@@ -1,6 +1,6 @@
 import { titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
-import { fmtDuration } from "@/lib/format";
+import { fmtDuration } from "@/utils/format";
 import { asArray, asRecord, asText } from "./adapters";
 import { BulletList, Field } from "./Section";
 

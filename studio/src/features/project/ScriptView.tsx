@@ -1,5 +1,6 @@
+import { Screenplay } from "@/components/ui";
 import { useT } from "@/i18n";
-import { fmtDuration } from "@/lib/format";
+import { fmtDuration } from "@/utils/format";
 import { asArray, asRecord, asText } from "./adapters";
 
 /** Script as a screenplay page: section label, timing, narration text. */
@@ -12,7 +13,7 @@ export function ScriptView({ script }: { script: unknown }) {
     .filter((x): x is Record<string, unknown> => Boolean(x));
 
   return (
-    <article className="mx-auto max-w-2xl rounded-card bg-cream px-6 py-8 font-screenplay text-cream-ink shadow-lg sm:px-10">
+    <Screenplay className="mx-auto max-w-2xl px-6 py-8 sm:px-10">
       {asText(s.title) && (
         <h3 className="mb-6 text-center text-lg font-bold tracking-wide uppercase">
           {asText(s.title)}
@@ -39,6 +40,6 @@ export function ScriptView({ script }: { script: unknown }) {
         })}
       </ol>
       {sections.length === 0 && <p className="text-center opacity-60">{t.project.script.empty}</p>}
-    </article>
+    </Screenplay>
   );
 }

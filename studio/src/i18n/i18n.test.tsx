@@ -1,8 +1,8 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi as mock } from "vitest";
-import type { IntakeInput } from "@/lib/api";
-import { fmtAgo } from "@/lib/format";
+import type { IntakeInput } from "@/types/api";
+import { fmtAgo } from "@/utils/format";
 import { mockFetch } from "@/test/fakes";
 import { renderRoute } from "@/test/render";
 import { en } from "./en";
@@ -88,7 +88,7 @@ describe("Studio in Vietnamese", () => {
     for (const label of ["Trang chủ", "Video mới", "Thư viện", "Thiết lập", "Cài đặt"]) {
       expect(navVi).toHaveTextContent(label);
     }
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Làm video với OpenMontage",
     );
     expect(await screen.findByText("Chưa có video nào")).toBeInTheDocument();
@@ -173,10 +173,10 @@ describe("Studio in Vietnamese", () => {
     expect(created[0]!.brief.topic).toBe("Cài CLI của chúng tôi và chạy lệnh đầu tiên");
   });
 
-  it("follows a language change made in another tab", () => {
+  it("follows a language change made in another tab", async () => {
     mock.stubGlobal("fetch", mock.fn(mockFetch([["/api/projects", []]])));
     renderRoute("/settings");
-    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Settings");
+    expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent("Settings");
     act(() => {
       localStorage.setItem(LOCALE_KEY, "vi");
       window.dispatchEvent(new StorageEvent("storage", { key: LOCALE_KEY, newValue: "vi" }));

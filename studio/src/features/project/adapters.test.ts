@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ProjectSummary, StageState } from "@/lib/api";
+import type { ProjectSummary, StageState } from "@/types/api";
 import { activityLines, currentDecisions, deriveStatus, progress, summaryStatus } from "./adapters";
 
 const stages = (...statuses: StageState["status"][]): StageState[] =>

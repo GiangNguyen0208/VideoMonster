@@ -1,7 +1,9 @@
+import { ErrorText } from "@/components/ui";
 import { stageLabel, titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
-import { useProjectCost, type CostStatus } from "@/lib/api";
-import { fmtMoney } from "@/lib/format";
+import { useProjectCost } from "@/hooks/api";
+import type { CostStatus } from "@/types/api";
+import { fmtMoney } from "@/utils/format";
 import { costBar } from "./cost";
 
 const STATUS_ORDER: CostStatus[] = ["completed", "failed", "reserved", "estimated", "refunded"];
@@ -50,11 +52,7 @@ export function CostPanel({ projectId }: { projectId: string }) {
           danger={bar.over}
         />
       </dl>
-      {bar.over && (
-        <p role="alert" className="text-sm text-danger">
-          {L.over}
-        </p>
-      )}
+      {bar.over && <ErrorText>{L.over}</ErrorText>}
       <p className="text-sm text-text-2">
         <span className="font-medium">{L.modes[cost.budget_mode]?.title}:</span>{" "}
         {L.modes[cost.budget_mode]?.body}

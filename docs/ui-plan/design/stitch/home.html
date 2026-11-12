@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenMontage Studio - Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#2a2a2c",
+            "on-tertiary-fixed": "#002110",
+            "screenplay-parchment": "#f2e9d5",
+            "on-primary-fixed": "#2a1800",
+            "on-secondary": "#303033",
+            "tertiary-container": "#59cb8b",
+            "status-info-dim": "rgba(106, 161, 255, 0.12)",
+            "surface-container-lowest": "#0e0e10",
+            "status-info": "#6aa1ff",
+            "on-error-container": "#ffdad6",
+            "surface-bright": "#39393b",
+            "surface-1": "#101013",
+            "surface-variant": "#353437",
+            "text-primary": "#ececef",
+            "secondary-container": "#47464a",
+            "on-primary-fixed-variant": "#633f00",
+            "primary": "#ffc881",
+            "on-secondary-container": "#b7b4b8",
+            "status-success": "#4fc283",
+            "tertiary-fixed-dim": "#6adc9b",
+            "surface-container-low": "#1c1b1d",
+            "primary-container": "#f0a83c",
+            "accent-dim": "rgba(240, 168, 60, 0.14)",
+            "text-secondary": "#a0a0a9",
+            "surface-container": "#201f21",
+            "on-tertiary-container": "#00532f",
+            "inverse-primary": "#835400",
+            "on-tertiary-fixed-variant": "#00522f",
+            "surface-container-highest": "#353437",
+            "error": "#ffb4ab",
+            "surface": "#131315",
+            "primary-fixed-dim": "#ffb956",
+            "inverse-on-surface": "#313032",
+            "on-error": "#690005",
+            "on-primary": "#452b00",
+            "tertiary": "#76e8a5",
+            "screenplay-ink": "#29231a",
+            "on-tertiary": "#00391f",
+            "surface-dim": "#131315",
+            "on-primary-container": "#644000",
+            "background": "#131315",
+            "inverse-surface": "#e5e1e4",
+            "tertiary-fixed": "#87f9b5",
+            "surface-2": "#16161a",
+            "surface-3": "#1c1c21",
+            "status-danger": "#e5544b",
+            "border-soft": "#1a1a1f",
+            "on-secondary-fixed-variant": "#47464a",
+            "status-success-dim": "rgba(79, 194, 131, 0.12)",
+            "error-container": "#93000a",
+            "secondary-fixed": "#e4e1e6",
+            "scrim-backdrop": "rgba(5, 5, 7, 0.82)",
+            "border-base": "#232329",
+            "secondary-fixed-dim": "#c8c5ca",
+            "surface-tint": "#ffb956",
+            "secondary": "#c8c5ca",
+            "status-danger-dim": "rgba(229, 84, 75, 0.12)",
+            "outline-variant": "#514535",
+            "on-surface": "#e5e1e4",
+            "primary-fixed": "#ffddb5",
+            "on-secondary-fixed": "#1b1b1e",
+            "text-muted": "#5f5f68",
+            "on-surface-variant": "#d6c4b0",
+            "on-background": "#e5e1e4",
+            "outline": "#9e8e7c"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xl": "2rem",
+            "space-2xl": "2.5rem",
+            "gutter": "1rem",
+            "margin": "1rem",
+            "margin-tablet": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "margin-desktop": "2rem",
+            "gutter-desktop": "1.5rem",
+            "space-md": "1rem",
+            "space-xs": "0.25rem"
+          },
+          "fontFamily": {
+            "body-medium": ["Inter"],
+            "title-card": ["Inter"],
+            "body-base": ["Inter"],
+            "caption-meta": ["Inter"],
+            "display-hero-mobile": ["Inter"],
+            "screenplay-body": ["Courier Prime"],
+            "screenplay-heading": ["Courier Prime"],
+            "code-mono": ["JetBrains Mono"],
+            "badge-label": ["Inter"],
+            "display-hero": ["Inter"],
+            "headline-section": ["Inter"]
+          },
+          "fontSize": {
+            "body-medium": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "500" }],
+            "title-card": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-base": ["14px", { "lineHeight": "20px", "letterSpacing": "0", "fontWeight": "400" }],
+            "caption-meta": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "400" }],
+            "display-hero-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "screenplay-body": ["14px", { "lineHeight": "22px", "letterSpacing": "0", "fontWeight": "400" }],
+            "screenplay-heading": ["18px", { "lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+            "code-mono": ["13px", { "lineHeight": "18px", "letterSpacing": "0", "fontWeight": "400" }],
+            "badge-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0", "fontWeight": "500" }],
+            "display-hero": ["30px", { "lineHeight": "36px", "letterSpacing": "-0.025em", "fontWeight": "600" }],
+            "headline-section": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0a0a0c] text-text-primary antialiased min-h-screen flex flex-col font-body-base text-body-base selection:bg-primary-container selection:text-screenplay-ink">
+<!-- TopNavBar (Shared Component) -->
+<header class="docked full-width top-0 sticky z-50 bg-surface/90 dark:bg-surface/90 backdrop-blur-md border-b border-border-base dark:border-border-base flat no shadows">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-6 h-16 w-full">
+<!-- Brand & Product -->
+<div class="flex items-center gap-8">
+<a class="flex items-center gap-2.5 font-title-card text-title-card font-bold tracking-tight text-text-primary dark:text-text-primary active:scale-[0.98] transition-transform duration-100" href="#">
+<div class="w-8 h-8 rounded-lg bg-surface-2 border border-border-base flex items-center justify-center relative overflow-hidden group shadow-inner">
+<span class="material-symbols-outlined text-primary-container text-lg" data-icon="movie">movie</span>
+<div class="absolute inset-0 bg-primary-container/10 group-hover:bg-primary-container/20 transition-colors"></div>
+</div>
+<div class="flex items-center gap-2">
+<span>OpenMontage Studio</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-[#4fc283] border border-[#4fc283]/30">Agent Live</span>
+</div>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-6">
+<!-- Active: Home -->
+<a class="text-primary dark:text-primary border-b-2 border-primary dark:border-primary font-body-medium text-body-medium pb-1" href="#">Home</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1" href="#">New Video</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1" href="#">Library</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1" href="#">Setup</a>
+<a class="text-text-secondary dark:text-text-secondary font-body-base text-body-base hover:text-text-primary dark:hover:text-text-primary pb-1" href="#">Settings</a>
+</nav>
+</div>
+<!-- Trailing Controls & User Menu -->
+<div class="flex items-center gap-3">
+<a class="hidden lg:flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary px-2.5 py-1.5 rounded-lg border border-border-base/50 hover:bg-surface-2 transition-colors" href="#">
+<span>Classic board</span>
+<span class="material-symbols-outlined text-xs" data-icon="north_east">north_east</span>
+</a>
+<!-- Language Switcher Button -->
+<div class="relative">
+<button class="flex items-center gap-1 text-xs text-text-secondary hover:text-text-primary bg-surface-2 px-2.5 py-1.5 rounded-lg border border-border-base transition-colors hover:bg-surface-3">
+<span>VI / EN</span>
+<span class="material-symbols-outlined text-sm" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+<div class="h-4 w-px bg-border-base mx-1"></div>
+<!-- Trailing Icon Actions -->
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150" title="Dark Mode Toggle">
+<span class="material-symbols-outlined text-lg" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-container relative transition-colors duration-150" title="Notifications">
+<span class="material-symbols-outlined text-lg" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-150" title="Account">
+<span class="material-symbols-outlined text-xl" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+<!-- Trailing Primary Action -->
+<a class="hidden sm:inline-flex items-center gap-1.5 bg-primary-container text-screenplay-ink font-body-medium text-body-medium px-4 h-9 rounded-lg hover:bg-primary transition-all shadow-[0_0_20px_rgba(240,168,60,0.2)] active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+<span>New Video</span>
+</a>
+</div>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="flex-1 max-w-7xl w-full mx-auto px-6 py-8 space-y-10">
+<!-- Section 1: Friendly Greeting, AI Context & Budget Overview Bar -->
+<section class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-2 border-b border-border-base/40">
+<div>
+<div class="flex items-center gap-2 mb-1.5">
+<span class="text-xl">✨</span>
+<h1 class="font-display-hero text-display-hero tracking-tight text-text-primary">
+            Chào buổi sáng, Nhà sáng tạo!
+          </h1>
+</div>
+<p class="font-body-base text-body-base text-text-secondary max-w-2xl">
+          Trợ lý AI đang chờ bạn duyệt phân cảnh kịch bản và sẵn sàng nhận yêu cầu mới cho quy trình Remotion tiếp theo.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-4 w-full md:w-auto justify-start md:justify-end">
+<!-- Monthly Budget Token Pill -->
+<div class="bg-surface-1 border border-border-base rounded-xl px-4 py-2.5 flex items-center gap-4 shadow-sm">
+<div class="flex flex-col">
+<div class="flex items-center justify-between text-xs text-text-secondary mb-1 gap-3">
+<span>Hạn mức tháng</span>
+<span class="text-primary font-medium">$0.35 / $2.00</span>
+</div>
+<div class="w-32 h-1.5 bg-surface-3 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 18%"></div>
+</div>
+</div>
+<button class="text-xs text-text-secondary hover:text-primary transition-colors flex items-center gap-0.5 border-l border-border-base pl-3">
+<span>Nâng cấp</span>
+<span class="material-symbols-outlined text-xs" data-icon="arrow_outward">arrow_outward</span>
+</button>
+</div>
+<!-- Primary Call to Action -->
+<button class="inline-flex items-center gap-2 bg-primary-container hover:bg-primary text-screenplay-ink font-body-medium text-body-medium h-11 px-5 rounded-lg transition-all shadow-[0_0_24px_rgba(240,168,60,0.28)] active:scale-[0.98]">
+<span class="material-symbols-outlined text-xl" data-icon="movie_creation">movie_creation</span>
+<span>+ Tạo video mới</span>
+</button>
+</div>
+</section>
+<!-- Section 2: Spotlight Hero Action Card (Waiting for You Review Checkpoint) -->
+<section>
+<div class="relative rounded-2xl bg-surface-1 border border-primary-container/40 p-6 md:p-8 shadow-[0_0_35px_rgba(240,168,60,0.07)] overflow-hidden">
+<!-- Ambient subtle glow in top-left -->
+<div class="absolute -top-24 -left-24 w-72 h-72 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Top Header of Card -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6 border-b border-border-base/60 pb-4 relative z-10">
+<div class="flex items-center gap-3">
+<span class="flex h-3 w-3 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-primary-container"></span>
+</span>
+<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-accent-dim text-primary-container border border-primary-container/30">
+              1 video cần bạn phản hồi ngay
+            </span>
+<span class="text-text-secondary text-xs">• Cập nhật 2 phút trước từ Claude Code Agent</span>
+</div>
+<div class="flex items-center gap-2 text-xs font-code-mono text-text-secondary">
+<span>Workflow ID:</span>
+<span class="bg-surface-2 px-2 py-0.5 rounded border border-border-base text-text-primary">om-proj-8842-lh</span>
+</div>
+</div>
+<!-- Split Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+<!-- Left 7 Cols: Project Context & Screenplay Parchment Excerpt -->
+<div class="lg:col-span-7 space-y-4">
+<div>
+<div class="flex items-center gap-2.5 mb-1">
+<h2 class="font-headline-section text-headline-section text-text-primary">
+                  The last lighthouse
+                </h2>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-2 text-text-secondary border border-border-base">Topic Explainer • 60s</span>
+</div>
+<p class="text-sm text-text-secondary">
+                Bước 3/8: Duyệt kịch bản giọng đọc &amp; phân cảnh kỹ xảo trước khi tổng hợp âm thanh Remotion.
+              </p>
+</div>
+<!-- Tactile Screenplay Card -->
+<div class="rounded-xl bg-screenplay-parchment text-screenplay-ink p-5 shadow-inner border border-[#d8cca8] font-screenplay-body text-screenplay-body relative">
+<div class="flex items-center justify-between border-b border-screenplay-ink/15 pb-2 mb-3 text-xs uppercase tracking-wider opacity-70">
+<span>SCENE 01: EXT. BỜ BIỂN HOANG SƠ - HOÀNG HÔN (00:00 - 00:15)</span>
+<span class="font-code-mono text-[11px]">HOOK • VOICE_VI_MALE</span>
+</div>
+<p class="leading-relaxed mb-3">
+<strong class="font-bold">VOICEOVER:</strong> "Khi ngọn đèn cuối cùng trên bán đảo vụt tắt, ai sẽ chỉ đường cho những thủy thủ trong đêm bão? Đây không chỉ là câu chuyện về ánh sáng..."
+              </p>
+<div class="flex items-center justify-between text-xs pt-2 border-t border-screenplay-ink/10 text-screenplay-ink/80">
+<span class="italic">Gợi ý chuyển cảnh: Zoom-in ngọn hải đăng cổ 3D qua Remotion Canvas.</span>
+<span class="font-mono">148 từ • 01:02</span>
+</div>
+</div>
+<!-- AI Status Notice -->
+<div class="flex items-start gap-2.5 text-xs text-text-secondary bg-surface-2/60 p-3 rounded-lg border border-border-base">
+<span class="material-symbols-outlined text-primary-container text-base mt-0.5" data-icon="smart_toy">smart_toy</span>
+<p>
+<strong class="text-text-primary font-medium">Báo cáo của Agent:</strong> Đã phân bổ 3 phân cảnh chuyển động mượt, nhịp đọc 130 wpm phù hợp phong cách tài liệu lịch sử. Đã kiểm tra tính tương thích Remotion code, không phát sinh lỗi.
+              </p>
+</div>
+</div>
+<!-- Right 5 Cols: Quick Action Decision Panel -->
+<div class="lg:col-span-5 bg-surface-2 border border-border-base rounded-xl p-5 space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">Hành động trực tiếp</span>
+<a class="text-xs text-primary hover:underline flex items-center gap-1" href="#">
+<span>Xem toàn bộ kịch bản</span>
+<span class="material-symbols-outlined text-xs" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+<!-- Waveform Mini Player Mockup -->
+<div class="bg-surface-1 rounded-lg p-3 border border-border-base space-y-2">
+<div class="flex items-center justify-between text-xs">
+<span class="flex items-center gap-1.5 text-text-primary">
+<span class="material-symbols-outlined text-sm text-status-success" data-icon="volume_up">volume_up</span>
+                  Thử giọng đọc AI (Demo 15s)
+                </span>
+<span class="font-code-mono text-text-secondary text-[11px]">00:15 / 01:02</span>
+</div>
+<div class="flex items-center gap-1 h-6 px-1">
+<span class="w-1 h-3 bg-primary-container rounded-full"></span>
+<span class="w-1 h-5 bg-primary-container rounded-full"></span>
+<span class="w-1 h-2 bg-primary-container rounded-full"></span>
+<span class="w-1 h-6 bg-primary-container rounded-full"></span>
+<span class="w-1 h-4 bg-primary-container rounded-full"></span>
+<span class="w-1 h-5 bg-primary-container rounded-full"></span>
+<span class="w-1 h-3 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-2 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-4 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-5 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-3 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-6 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-2 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-3 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-4 bg-surface-container-high rounded-full"></span>
+<span class="w-1 h-1 bg-surface-container-high rounded-full"></span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="space-y-2.5 pt-1">
+<button class="w-full h-11 bg-primary-container hover:bg-primary text-screenplay-ink font-body-medium text-body-medium rounded-lg font-semibold flex items-center justify-center gap-2 shadow-[0_0_18px_rgba(240,168,60,0.25)] transition-all">
+<span class="material-symbols-outlined text-lg" data-icon="check_circle">check_circle</span>
+<span>Duyệt nhanh kịch bản (Approve)</span>
+</button>
+<button class="w-full h-10 bg-surface-1 hover:bg-surface-3 text-text-primary font-body-medium text-body-medium rounded-lg border border-border-base flex items-center justify-center gap-2 transition-colors">
+<span class="material-symbols-outlined text-base text-text-secondary" data-icon="edit_note">edit_note</span>
+<span>Góp ý chỉnh sửa (Request changes)</span>
+</button>
+</div>
+<div class="pt-2 text-center">
+<span class="text-[11px] text-text-secondary">
+                Duyệt sẽ tự động kích hoạt Agent chuyển tiếp sang <strong class="text-text-primary">Bước 4: Tạo Visual Storyboard</strong>
+</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Active & Recent Projects Portfolio -->
+<section class="space-y-5">
+<!-- Section Title & Segmented Filtering -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary flex items-center gap-2">
+<span>Dự án đang thực hiện &amp; Gần đây</span>
+<span class="text-xs font-normal text-text-secondary px-2 py-0.5 rounded-full bg-surface-2 border border-border-base">4 dự án</span>
+</h2>
+<p class="text-xs text-text-secondary mt-0.5">Quản lý tiến độ từng phân đoạn sản xuất của AI Agents</p>
+</div>
+<!-- Filter Segmented Tabs -->
+<div class="inline-flex bg-surface-1 p-1 rounded-xl border border-border-base self-start sm:self-auto">
+<button class="px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-3 text-text-primary shadow-sm">
+            Tất cả (4)
+          </button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary transition-colors">
+            Chờ duyệt (1)
+          </button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary transition-colors">
+            Đang xử lý (1)
+          </button>
+<button class="px-3 py-1.5 rounded-lg text-xs font-medium text-text-secondary hover:text-text-primary transition-colors">
+            Đã hoàn thành (2)
+          </button>
+</div>
+</div>
+<!-- Bento / Card Grid (4 Projects) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- Card 1: The last lighthouse (Waiting) -->
+<div class="group bg-surface-1 rounded-xl border border-primary-container/30 hover:border-primary-container transition-all p-4 flex flex-col justify-between space-y-4">
+<div>
+<!-- Media Preview Well -->
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base flex items-center justify-center overflow-hidden mb-3.5">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-60" data-alt="A cinematic dark moody view of an isolated weathered lighthouse perched on jagged coastal cliffs during a tempestuous twilight storm, with deep moody charcoal tones, warm amber glow emitting from the lantern room, soft atmospheric fog, cinematic 8k wallpaper framing for creative video production studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7va-D655FgK9Rjr6OPIW-8lQdzbWOeQb3CEgu4KPHqVe8ha6otJT2CC1FK9YmDCogZd2ZXHN3dqfvrhiHQl_Mkvfmxy8hwwgxplRmlZ-63MAI1O-bPgA4zMtoMi69iTcfmwhrT-THsHtrT5mwGWoNvM2rhb745j_qYZZ0rQU9d4X0evhTJZJNWLPmgBQ2HS1YHSxpUjAb83Uc0Xb4VWwWU08cVRx9vUJ3TdzgigA"/>
+<span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-accent-dim text-primary-container border border-primary-container/40">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+                Chờ duyệt
+              </span>
+<div class="absolute bottom-2 left-2 text-[10px] font-code-mono text-text-secondary bg-surface-1/80 px-2 py-0.5 rounded backdrop-blur-sm">
+                Topic Explainer
+              </div>
+</div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold truncate group-hover:text-primary transition-colors">
+              The last lighthouse
+            </h3>
+<p class="text-xs text-text-secondary mt-1">Giải thích sự suy tàn và bí ẩn lịch sử</p>
+<!-- Step Progress -->
+<div class="mt-4 space-y-1.5">
+<div class="flex justify-between text-xs">
+<span class="text-primary-container font-medium">Bước 3/8: Kịch bản</span>
+<span class="text-text-secondary">37%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-3 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 37%"></div>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-border-base/50 flex items-center justify-between text-xs text-text-secondary">
+<span>2 phút trước</span>
+<span class="text-text-primary font-code-mono">$0.08</span>
+</div>
+</div>
+<!-- Card 2: The Last Lighthouse Trailer (In Progress / Paused before Edit) -->
+<div class="group bg-surface-1 rounded-xl border border-border-base hover:border-text-secondary/40 transition-all p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base flex items-center justify-center overflow-hidden mb-3.5">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-50" data-alt="A dark cinematic trailer storyboard frame showcasing intense ocean waves crashing against granite sea walls in dramatic monochrome with subtle electric blue rim lighting accents, film noir style, minimalist cinematic studio render." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuDwgZBirCqpuF8RPHyDUpdob4tQsy0fU_dDCVkOFMU8r0iHbAEC6swP9oLX_IjLnwjDkbYLVVhZd7GU8VwSFfoscIIBhOt3RjLRnbbBQ3LNxRTTTbgZNxjl3Jl0f7q5_bb3EA5Wc6dLzUlMTUCBnmgoIsT4jgFRXrhEW6mVaz6gSqcz_v1BpWJ5kJoSGCfz0ipYesvtSFn_yQSNG8AiS0UgsD6-OfwgTCmZMHxAw"/>
+<span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-status-info-dim text-status-info border border-status-info/30">
+                Tạm dừng trước Edit
+              </span>
+<div class="absolute bottom-2 left-2 text-[10px] font-code-mono text-text-secondary bg-surface-1/80 px-2 py-0.5 rounded backdrop-blur-sm">
+                Trailer or Teaser
+              </div>
+</div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold truncate group-hover:text-status-info transition-colors">
+              The Last Lighthouse
+            </h3>
+<p class="text-xs text-text-secondary mt-1">Trailer kịch tính 30s với hiệu ứng âm thanh</p>
+<div class="mt-4 space-y-1.5">
+<div class="flex justify-between text-xs">
+<span class="text-status-info font-medium">Bước 5/8: Visuals Ready</span>
+<span class="text-text-secondary">62%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-3 rounded-full overflow-hidden">
+<div class="bg-status-info h-full rounded-full" style="width: 62%"></div>
+</div>
+</div>
+</div>
+<div class="pt-3 border-t border-border-base/50 flex items-center justify-between text-xs text-text-secondary">
+<span>20 giờ trước</span>
+<span class="text-text-primary font-code-mono">$0.20</span>
+</div>
+</div>
+<!-- Card 3: Phase 6 lighthouse (Completed / Ready) -->
+<div class="group bg-surface-1 rounded-xl border border-border-base hover:border-status-success/50 transition-all p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base flex items-center justify-center overflow-hidden mb-3.5 group/vid">
+<!-- Color Calibration Card style from prompt image -->
+<div class="w-full h-full flex">
+<div class="w-1/7 bg-white h-full"></div>
+<div class="w-1/7 bg-cyan-400 h-full"></div>
+<div class="w-1/7 bg-emerald-400 h-full"></div>
+<div class="w-1/7 bg-yellow-400 h-full"></div>
+<div class="w-1/7 bg-blue-600 h-full"></div>
+<div class="w-1/7 bg-fuchsia-600 h-full"></div>
+<div class="w-1/7 bg-red-600 h-full flex flex-col justify-center items-center">
+<div class="w-2 h-6 bg-black mb-1"></div>
+<div class="w-2 h-6 bg-black"></div>
+</div>
+</div>
+<div class="absolute inset-0 bg-black/40 group-hover/vid:bg-black/20 flex items-center justify-center transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-1/90 border border-white/20 flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined text-xl pl-0.5" data-icon="play_arrow">play_arrow</span>
+</div>
+</div>
+<span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-status-success-dim text-status-success border border-status-success/30">
+                ● Sẵn sàng
+              </span>
+<div class="absolute bottom-2 left-2 text-[10px] font-code-mono text-white bg-black/70 px-1.5 py-0.5 rounded">
+                1080p • 60s
+              </div>
+</div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold truncate group-hover:text-status-success transition-colors">
+              Phase 6 lighthouse
+            </h3>
+<p class="text-xs text-text-secondary mt-1">Explain a topic • 2 phiên bản video</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="inline-flex items-center text-xs text-status-success bg-status-success-dim px-2.5 py-1 rounded-md border border-status-success/20">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="check">check</span>
+                Hoàn tất kết xuất
+              </span>
+</div>
+</div>
+<div class="pt-3 border-t border-border-base/50 flex items-center justify-between text-xs">
+<a class="text-primary hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+              Tải MP4
+            </a>
+<a class="text-text-secondary hover:text-text-primary" href="#">
+              Xem lại ↗
+            </a>
+</div>
+</div>
+<!-- Card 4: Demos Showcase Pack (Completed) -->
+<div class="group bg-surface-1 rounded-xl border border-border-base hover:border-status-success/50 transition-all p-4 flex flex-col justify-between space-y-4">
+<div>
+<div class="relative w-full aspect-video rounded-lg bg-[#121217] border border-border-base flex items-center justify-center overflow-hidden mb-3.5 group/demo">
+<div class="text-center p-3">
+<span class="text-xs font-bold tracking-tight text-white block">OpenMontage</span>
+<span class="text-[9px] uppercase tracking-widest text-fuchsia-400 bg-fuchsia-950/60 px-2 py-0.5 rounded border border-fuchsia-800/40 inline-block mt-1">20-Second Animated Reel</span>
+</div>
+<span class="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-status-success-dim text-status-success border border-status-success/30">
+                ● Đã xuất
+              </span>
+<div class="absolute bottom-2 left-2 text-[10px] font-code-mono text-text-secondary bg-surface-1/80 px-2 py-0.5 rounded">
+                5 video mẫu
+              </div>
+</div>
+<h3 class="font-title-card text-title-card text-text-primary font-semibold truncate group-hover:text-status-success transition-colors">
+              Demos
+            </h3>
+<p class="text-xs text-text-secondary mt-1">Custom Remotion production components</p>
+<div class="mt-4 flex items-center gap-2">
+<span class="inline-flex items-center text-xs text-status-success bg-status-success-dim px-2.5 py-1 rounded-md border border-status-success/20">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="check">check</span>
+                Video ready
+              </span>
+</div>
+</div>
+<div class="pt-3 border-t border-border-base/50 flex items-center justify-between text-xs">
+<a class="text-primary hover:underline flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+              Tải toàn bộ
+            </a>
+<a class="text-text-secondary hover:text-text-primary" href="#">
+              Mở thư mục ↗
+            </a>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 4: Creative Playground / Zero-Key Local Demos -->
+<section class="space-y-4 pt-4">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h2 class="font-headline-section text-headline-section text-text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" data-icon="science">science</span>
+<span>Thử nghiệm Video Demo (Creative Playground)</span>
+</h2>
+<p class="text-xs text-text-secondary">
+            Thử nghiệm kết xuất miễn phí ngay trên máy — không cần tài khoản hay API key của bên thứ ba.
+          </p>
+</div>
+<div class="text-xs text-text-secondary flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span>Local Engine: Remotion v4.0 ready</span>
+</div>
+</div>
+<!-- Demo Cards Grid (3 Columns) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Demo Card 1 -->
+<div class="bg-surface-1 rounded-xl border border-border-base p-4 flex flex-col justify-between space-y-4 hover:border-border-base/80 transition-colors">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-title-card text-title-card text-text-primary font-medium">Animated reel 20s</h3>
+<span class="text-[10px] font-code-mono px-2 py-0.5 rounded bg-surface-2 text-text-secondary border border-border-base">0:20</span>
+</div>
+<p class="text-xs text-text-secondary mb-3">Checked-in Remotion motion graphics demo với kinetic typography.</p>
+<!-- Video Simulation Container -->
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base overflow-hidden flex flex-col justify-between p-3">
+<div class="flex justify-between items-center text-[10px] text-text-secondary">
+<span class="bg-black/60 px-1.5 py-0.5 rounded font-mono">Remotion.Sequence</span>
+<span class="material-symbols-outlined text-sm" data-icon="fullscreen">fullscreen</span>
+</div>
+<div class="self-center">
+<button class="w-10 h-10 rounded-full bg-surface-3/90 hover:bg-primary-container hover:text-screenplay-ink text-text-primary border border-border-base flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-xl pl-0.5" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-1/4 h-full"></div>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<button class="text-xs text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+<span>Kết xuất lại</span>
+</button>
+<span class="text-[11px] text-text-muted">CPU Render • ~3s</span>
+</div>
+</div>
+<!-- Demo Card 2 -->
+<div class="bg-surface-1 rounded-xl border border-border-base p-4 flex flex-col justify-between space-y-4 hover:border-border-base/80 transition-colors">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-title-card text-title-card text-text-primary font-medium">Code to screen</h3>
+<span class="text-[10px] font-code-mono px-2 py-0.5 rounded bg-surface-2 text-text-secondary border border-border-base">0:30</span>
+</div>
+<p class="text-xs text-text-secondary mb-3">Developer workflow explainer with terminal comparison and KPI cards.</p>
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base overflow-hidden flex flex-col justify-between p-3">
+<div class="flex justify-between items-center text-[10px] text-text-secondary">
+<span class="bg-black/60 px-1.5 py-0.5 rounded font-mono">CLI-Terminal.tsx</span>
+<span class="material-symbols-outlined text-sm" data-icon="fullscreen">fullscreen</span>
+</div>
+<div class="self-center">
+<button class="w-10 h-10 rounded-full bg-surface-3/90 hover:bg-primary-container hover:text-screenplay-ink text-text-primary border border-border-base flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-xl pl-0.5" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-0 h-full"></div>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<button class="text-xs text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+<span>Kết xuất lại</span>
+</button>
+<span class="text-[11px] text-text-muted">CPU Render • ~4s</span>
+</div>
+</div>
+<!-- Demo Card 3 -->
+<div class="bg-surface-1 rounded-xl border border-border-base p-4 flex flex-col justify-between space-y-4 hover:border-border-base/80 transition-colors">
+<div>
+<div class="flex items-center justify-between mb-2">
+<h3 class="font-title-card text-title-card text-text-primary font-medium">Focusflow pitch</h3>
+<span class="text-[10px] font-code-mono px-2 py-0.5 rounded bg-surface-2 text-text-secondary border border-border-base">0:15</span>
+</div>
+<p class="text-xs text-text-secondary mb-3">Startup-style pitch video build only with atomic Remotion components.</p>
+<div class="relative w-full aspect-video rounded-lg bg-surface-2 border border-border-base overflow-hidden flex flex-col justify-between p-3">
+<div class="flex justify-between items-center text-[10px] text-text-secondary">
+<span class="bg-black/60 px-1.5 py-0.5 rounded font-mono">ProductPitch.tsx</span>
+<span class="material-symbols-outlined text-sm" data-icon="fullscreen">fullscreen</span>
+</div>
+<div class="self-center">
+<button class="w-10 h-10 rounded-full bg-surface-3/90 hover:bg-primary-container hover:text-screenplay-ink text-text-primary border border-border-base flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-xl pl-0.5" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full overflow-hidden">
+<div class="bg-primary w-1/2 h-full"></div>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between">
+<button class="text-xs text-text-secondary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm" data-icon="refresh">refresh</span>
+<span>Kết xuất lại</span>
+</button>
+<span class="text-[11px] text-text-muted">CPU Render • ~2s</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 5: Fast-Track Creative Shortcuts -->
+<section class="pt-4 border-t border-border-base/40">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<a class="group p-5 rounded-xl bg-surface-1 border border-border-base hover:border-primary-container/60 hover:bg-surface-2 transition-all flex items-start gap-4" href="#">
+<div class="w-10 h-10 rounded-lg bg-accent-dim text-primary-container flex items-center justify-center border border-primary-container/20 group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+</div>
+<div>
+<h4 class="font-title-card text-title-card text-text-primary font-semibold group-hover:text-primary transition-colors">
+              New video
+            </h4>
+<p class="text-xs text-text-secondary mt-1">
+              Describe what you want to make. Nhập ý tưởng hoặc dán tài liệu tham khảo cho Agent.
+            </p>
+</div>
+</a>
+<a class="group p-5 rounded-xl bg-surface-1 border border-border-base hover:border-primary-container/60 hover:bg-surface-2 transition-all flex items-start gap-4" href="#">
+<div class="w-10 h-10 rounded-lg bg-surface-3 text-text-secondary group-hover:text-text-primary flex items-center justify-center border border-border-base group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="video_library">video_library</span>
+</div>
+<div>
+<h4 class="font-title-card text-title-card text-text-primary font-semibold group-hover:text-primary transition-colors">
+              Library
+            </h4>
+<p class="text-xs text-text-secondary mt-1">
+              Find, watch and download your videos. Quản lý kho tài nguyên và video hoàn thiện.
+            </p>
+</div>
+</a>
+<a class="group p-5 rounded-xl bg-surface-1 border border-border-base hover:border-primary-container/60 hover:bg-surface-2 transition-all flex items-start gap-4" href="#">
+<div class="w-10 h-10 rounded-lg bg-surface-3 text-text-secondary group-hover:text-text-primary flex items-center justify-center border border-border-base group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</div>
+<div>
+<h4 class="font-title-card text-title-card text-text-primary font-semibold group-hover:text-primary transition-colors">
+              Setup
+            </h4>
+<p class="text-xs text-text-secondary mt-1">
+              See what works now and unlock more. Kiểm tra kết nối AI models, TTS và Remotion.
+            </p>
+</div>
+</a>
+</div>
+</section>
+</main>
+<!-- Tactile Footer -->
+<footer class="mt-12 border-t border-border-base py-6 text-xs text-text-secondary">
+<div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-3">
+<span class="font-semibold text-text-primary">OpenMontage Studio</span>
+<span>•</span>
+<span>AI Coding Agent Companion Environment</span>
+</div>
+<div class="flex items-center gap-6">
+<span class="font-code-mono text-text-muted">v0.9.4-cinematic-beta</span>
+<a class="hover:text-text-primary" href="#">Tài liệu API</a>
+<a class="hover:text-text-primary" href="#">Phím tắt bàn phím</a>
+</div>
+</div>
+</footer>
+</body></html>

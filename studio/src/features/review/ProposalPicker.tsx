@@ -1,19 +1,17 @@
 import { useId } from "react";
-import { Badge, ChipGroup } from "@/components/ui";
+import { Badge, ChipGroup, controlClass } from "@/components/ui";
 import { RUNTIME_LABELS } from "@/content/labels";
 import { MusicPicker } from "@/features/music/MusicPicker";
 import { useT } from "@/i18n";
-import { cn } from "@/lib/cn";
-import { fmtMoney } from "@/lib/format";
+import { cn } from "@/utils/cn";
+import { fmtMoney } from "@/utils/format";
 import {
+  MUSIC_SOURCES,
   runtimeOptions,
-  type MusicSource,
   type Picks,
   type ProposalDefaults,
   type RuntimeId,
 } from "./review";
-
-const MUSIC: MusicSource[] = ["user_library", "ai_generated", "bring_your_own", "none"];
 
 /**
  * Proposal review point: pick a concept, the budget, the rendering engine
@@ -78,7 +76,7 @@ export function ProposalPicker({
           step={0.5}
           value={picks.budget}
           onChange={(e) => set({ budget: e.target.value })}
-          className="h-10 w-40 rounded-control border border-border bg-surface-2 px-3 text-sm"
+          className={cn(controlClass, "h-10 w-40")}
         />
         {defaults.estimate != null && (
           <p className="text-xs text-text-3">{L.estimate(fmtMoney(defaults.estimate))}</p>
@@ -137,7 +135,7 @@ export function ProposalPicker({
         label={L.music}
         value={picks.music}
         onChange={(v) => set({ music: v as Picks["music"] })}
-        options={MUSIC.map((m) => ({ value: m, label: L.musicOptions[m] ?? m }))}
+        options={MUSIC_SOURCES.map((m) => ({ value: m, label: L.musicOptions[m] ?? m }))}
       />
       {picks.music === "user_library" && (
         <div className="space-y-2">

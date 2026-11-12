@@ -1,0 +1,204 @@
+/* ==========================================================================
+   OpenMontage Studio — Design System Tokens (Cinematic Darkroom Theme)
+   Phase D.4 Token Export: Compatible with Tailwind CSS v4 (@theme inline)
+   and classic Backlot board tokens.
+   ========================================================================== */
+
+:root {
+  /* Surface & Background Palette (Near-black & deep darkroom tones) */
+  --bg: #0a0a0c;
+  --surface: #131315;
+  --surface-dim: #0e0e10;
+  --surface-bright: #1c1b1f;
+  --surface-container-lowest: #0a0a0c;
+  --surface-container-low: #121215;
+  --surface-container: #16161a;
+  --surface-container-high: #1c1c21;
+  --surface-container-highest: #24242a;
+
+  /* Borders & Dividers */
+  --border: #232329;
+  --border-soft: #1a1a20;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-active: #f0a83c;
+  --border-focus: #f0a83c;
+
+  /* Typography / Text Colors */
+  --text: #ececef;
+  --text-primary: #ececef;
+  --text-2: #a0a0a9;
+  --text-secondary: #a0a0a9;
+  --text-3: #62626e;
+  --text-muted: #62626e;
+  --text-on-accent: #0e0e10;
+
+  /* Primary Brand & Accent: Cinematic Amber (Warm Hổ Phách) */
+  --accent: #f0a83c;
+  --accent-hover: #f5b754;
+  --accent-active: #de962a;
+  --accent-dim: rgba(240, 168, 60, 0.12);
+  --accent-subtle: rgba(240, 168, 60, 0.06);
+  --amber: #f0a83c;
+  --amber-dim: rgba(240, 168, 60, 0.15);
+  --amber-glow: rgba(240, 168, 60, 0.25);
+
+  /* Status / Feedback Semantics */
+  /* Success: Forest Green / Mint */
+  --success: #4fc283;
+  --success-dim: rgba(79, 194, 131, 0.12);
+  --green: #4fc283;
+  --green-dim: rgba(79, 194, 131, 0.15);
+
+  /* Info / Progress: Electric Blue */
+  --info: #6aa1ff;
+  --info-dim: rgba(106, 161, 255, 0.12);
+  --blue: #6aa1ff;
+  --blue-dim: rgba(106, 161, 255, 0.15);
+
+  /* Warning / Awaiting Human: Amber */
+  --warning: #f0a83c;
+  --warning-dim: rgba(240, 168, 60, 0.12);
+
+  /* Danger / Failed: Crimson Red */
+  --danger: #e5544b;
+  --danger-dim: rgba(229, 84, 75, 0.12);
+  --red: #e5544b;
+  --red-dim: rgba(229, 84, 75, 0.15);
+
+  /* Radius Tokens */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation & Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 10px 24px -3px rgba(0, 0, 0, 0.55);
+  --shadow-glow: 0 0 20px -2px rgba(240, 168, 60, 0.2);
+
+  /* Typography Fonts */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+}
+
+/* Warm Light Theme Variant (Khớp với quy chuẩn design/stitch.md §2.1) */
+[data-theme="light"] {
+  --bg: #f8f8fa;
+  --surface: #ffffff;
+  --surface-dim: #f1f1f4;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f5f5f7;
+  --surface-container: #ededf1;
+  --surface-container-high: #e4e4e9;
+  --surface-container-highest: #dadade;
+
+  --border: #dcdce2;
+  --border-soft: #e7e7ec;
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-active: #d6871a;
+  --border-focus: #d6871a;
+
+  --text: #18181b;
+  --text-primary: #18181b;
+  --text-2: #52525c;
+  --text-secondary: #52525c;
+  --text-3: #8c8c98;
+  --text-muted: #8c8c98;
+  --text-on-accent: #ffffff;
+
+  --accent: #d6871a;
+  --accent-hover: #b87010;
+  --accent-active: #9c5d07;
+  --accent-dim: rgba(214, 135, 26, 0.1);
+  --accent-subtle: rgba(214, 135, 26, 0.05);
+  --amber: #d6871a;
+  --amber-dim: rgba(214, 135, 26, 0.12);
+  --amber-glow: rgba(214, 135, 26, 0.2);
+
+  --success: #2e9f64;
+  --success-dim: rgba(46, 159, 100, 0.1);
+  --green: #2e9f64;
+  --green-dim: rgba(46, 159, 100, 0.12);
+
+  --info: #3b82f6;
+  --info-dim: rgba(59, 130, 246, 0.1);
+  --blue: #3b82f6;
+  --blue-dim: rgba(59, 130, 246, 0.12);
+
+  --warning: #d6871a;
+  --warning-dim: rgba(214, 135, 26, 0.1);
+
+  --danger: #dc2626;
+  --danger-dim: rgba(220, 38, 38, 0.1);
+  --red: #dc2626;
+  --red-dim: rgba(220, 38, 38, 0.12);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 24px -3px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 0 20px -2px rgba(214, 135, 26, 0.15);
+}
+
+/* Tailwind CSS v4 Theme Mapping Directive */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-lowest: var(--surface-container-lowest);
+  --color-surface-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-high: var(--surface-container-high);
+  --color-surface-highest: var(--surface-container-highest);
+
+  --color-border: var(--border);
+  --color-border-soft: var(--border-soft);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-active: var(--border-active);
+
+  --color-text: var(--text);
+  --color-text-primary: var(--text-primary);
+  --color-text-2: var(--text-2);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-3: var(--text-3);
+  --color-text-muted: var(--text-muted);
+  --color-on-accent: var(--text-on-accent);
+
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-hover: var(--accent-hover);
+  --color-amber: var(--amber);
+  --color-amber-dim: var(--amber-dim);
+
+  --color-success: var(--success);
+  --color-success-dim: var(--success-dim);
+  --color-green: var(--green);
+  --color-green-dim: var(--green-dim);
+
+  --color-info: var(--info);
+  --color-info-dim: var(--info-dim);
+  --color-blue: var(--blue);
+  --color-blue-dim: var(--blue-dim);
+
+  --color-warning: var(--warning);
+  --color-warning-dim: var(--warning-dim);
+
+  --color-danger: var(--danger);
+  --color-danger-dim: var(--danger-dim);
+  --color-red: var(--red);
+  --color-red-dim: var(--red-dim);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-xs: var(--radius-xs);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-full: var(--radius-full);
+}
