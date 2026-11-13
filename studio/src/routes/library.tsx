@@ -12,6 +12,7 @@ import {
   STATUS_FILTERS,
   filterProjects,
   groupBySeries,
+  seriesNames,
   statusFilterOf,
   type StatusFilter,
 } from "@/features/library/filters";
@@ -26,6 +27,7 @@ export function LibraryPage() {
   const q = params.get("q") ?? "";
   const status = (params.get("status") as StatusFilter | null) ?? "all";
   const type = params.get("type") ?? "";
+  const series = params.get("series") ?? "";
   const bySeries = params.get("view") === "series";
 
   const set = (key: string, value: string) =>
@@ -44,7 +46,7 @@ export function LibraryPage() {
     () => [...new Set(all.map((p) => p.pipeline_type).filter((x) => x && x !== "unknown"))],
     [all],
   );
-  const shown = filterProjects(all, { q, status, type });
+  const shown = filterProjects(all, { q, status, type, series });
   const counts = Object.fromEntries(
     STATUS_FILTERS.map((f) => [
       f,
@@ -84,6 +86,8 @@ export function LibraryPage() {
         status={status}
         type={type}
         types={types}
+        series={series}
+        seriesList={seriesNames(all)}
         bySeries={bySeries}
         counts={counts}
         onChange={set}

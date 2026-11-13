@@ -19,6 +19,8 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | 7 | [Hosted readiness](phases/phase-7-hosted-readiness.md) | done | 2026-11-11 |
 | 7.1 | [Review hardening](#phase-71--review-hardening--done) (follow-up to the Phase 7 code review) | done | 2026-11-11 |
 | D | [Design refresh via Stitch](#phase-d--design-refresh-via-google-stitch--done) | done (D.1–D.11; backend placeholders E-1…E-27 open) | 2026-11-11 |
+| F | [Remove the classic board](#phase-f--remove-the-classic-board--done) (port missing flows to Studio, then delete `backlot/ui/`) | done | 2026-11-13 |
+| G | [Unify migrated UI with shared components](#phase-g--unify-migrated-ui-with-shared-components--done) | done | 2026-11-13 |
 
 ## Resume here — snapshot 2026-11-11
 
@@ -621,3 +623,33 @@ Requested 2026-11-11: design Studio in Google Stitch, then apply the designs to 
 
 **Resume note:** Phase D complete (D.1–D.11). Next: review the diff and commit when the user asks; Phase E (backend for the E-n placeholders) only on request.
 
+
+## Phase F — Remove the classic board · done
+
+Goal: delete the old vanilla-JS board (`backlot/ui/`, routes `/`, `/p/<id>`, `/ui/*`) and keep Studio only. Plan: port the flows Studio lacks first, then remove. Decisions: replay is ported; `/` and `/p/<id>` redirect (302) to `/studio`; `backlot_visual_eval`, `backlot_screenshot_stage` and the old README images are deleted; `backlot_simulate_run` and `backlot_watch_captures` are retargeted to Studio.
+
+Gap review (old board vs Studio): see the plan. Dropped on purpose: narration modal, `renderAwaitingNotice` text, `?static=1`, old cost meter.
+
+- [x] F.0 Track Phase F here
+- [x] F.1 Project ids containing `/`: not supported by the API (`_safe_project_dir` returns 400 for ids with `/`), so the old `/p/{path:path}` catch-all served only the board. Studio keeps single-segment ids.
+- [x] F.2 Review coverage: `features/review/artifacts.ts` + `ArtifactSummaries` (facts for brief, research, scene plan, assets, edit, render, publish, generic fallback); activity feed drops closed starts. Tests: `artifacts.test.ts` (incl. `vi`), `adapters.test.ts`.
+- [x] F.3 Stage drawer (`StageDrawer`, steps are buttons) + storyboard take switcher and image lightbox. Tests: `StageDrawer.test.tsx`, `StoryboardView.test.tsx` (incl. `vi`).
+- [x] F.4 Replay: `features/project/replay.ts` (pure `stateAt`/`replayBounds`) + `ReplayBar`; the project page redraws from the replayed state and hides write panels. Tests: `replay.test.ts`, `ReplayBar.test.tsx` (incl. `vi`).
+- [x] F.5 Library `?series=` filter + series list; `FoundMedia` snapshot grid for projects without pipeline state. Tests: `filters.test.ts`, `FoundMedia.test.tsx` (incl. `vi`).
+- [x] F.6 Backend: `backlot/ui/` deleted; `GET /` and `GET /p/{path}` redirect (302) to `/studio`; `cmd_open` always opens Studio (`--studio` kept as a hidden no-op).
+- [x] F.7 Studio cleanup: removed the Classic board link, `classicBoardPath`, the two i18n keys and board.css references in comments.
+- [x] F.8 Tests and scripts: redirect tests (`TestOldUrls`); deleted `test_ui_bug_bash`, `test_visual_eval`, `backlot_visual_eval`, `backlot_screenshot_stage`; `simulate_run` and `watch_captures` now point at Studio.
+- [x] F.9 Docs: `backlot/README.md` rewritten, README x3 "Watch it happen" section, AGENT_GUIDE, checkpoint-protocol, the four `/backlot` command prompts, ARCHITECTURE, `04-ui-flows.md`, a Phase F note on the historical plan docs; four old screenshots removed.
+- [x] F.10 Verify: `make studio-check` (143 tests), `pytest tests/backlot tests/contracts tests/lib` (1873 passed), grep gate clean outside `docs/ui-plan`, real server on a spare port (`/` and `/p/<id>` → 302 `/studio/...`, `/ui/board.js` → 404, Playwright: drawer and replay render, no page errors). Docker image not rebuilt (no Docker file references `backlot/ui`).
+
+**Resume note:** Phase F complete. Nothing is committed. Open: Phase E backend backlog (only on request).
+
+## Phase G — Unify migrated UI with shared components · done
+
+Goal: the code ported in Phase F re-implemented things Studio already has. Reuse existing components and helpers where they fit; extract the few missing shared pieces. No behaviour change.
+
+- [x] G.1 New shared pieces: `Eyebrow`, `Fact` + `BulletList` (moved from `features/project/Section.tsx`, file deleted), `MediaThumb` (image with a failure fallback). Tests: `primitives.test.tsx`, `MediaThumb.test.tsx`
+- [x] G.2 Applied in migrated code: `Drawer`, `fmtClock`, `selectableClass`, `MediaThumb` (storyboard, found media, project card), `Fact`, `Eyebrow`, local `FilterSelect`
+- [x] G.3 Adjacent cleanup: `InfoBox` in `ReviewPanel` and `ReferenceInsights`, `Collapsible` for section comments
+- [x] G.4 Verify: `make studio-check` (149 tests), no `./Section` or `<Dialog side>` leftovers, real-server screenshots (storyboard, lightbox, drawer, library, home light) with no page errors
+- [x] G.5 Product name shown as VideoMonster (`content/brand.ts`: header logo, footer, tab title, home title en/vi); folder-name instructions keep `OpenMontage`

@@ -10,6 +10,8 @@ export interface LibraryToolbarProps {
   status: StatusFilter;
   type: string;
   types: string[];
+  series: string;
+  seriesList: string[];
   bySeries: boolean;
   counts: Record<StatusFilter, number>;
   /** Writes one URL search param (empty value removes it). */
@@ -22,6 +24,8 @@ export function LibraryToolbar({
   status,
   type,
   types,
+  series,
+  seriesList,
   bySeries,
   counts,
   onChange,
@@ -45,19 +49,22 @@ export function LibraryToolbar({
           />
         </div>
         {types.length > 1 && (
-          <Select
+          <FilterSelect
+            label={t.library.filterByType}
+            allLabel={t.library.allTypes}
             value={type}
-            onChange={(e) => onChange("type", e.target.value)}
-            aria-label={t.library.filterByType}
-            className="h-10 w-auto"
-          >
-            <option value="">{t.library.allTypes}</option>
-            {types.map((x) => (
-              <option key={x} value={x}>
-                {videoTypeLabel(x)}
-              </option>
-            ))}
-          </Select>
+            options={types.map((x) => ({ value: x, label: videoTypeLabel(x) }))}
+            onChange={(v) => onChange("type", v)}
+          />
+        )}
+        {seriesList.length > 0 && (
+          <FilterSelect
+            label={t.library.filterBySeries}
+            allLabel={t.library.allSeries}
+            value={series}
+            options={seriesList.map((x) => ({ value: x, label: x }))}
+            onChange={(v) => onChange("series", v)}
+          />
         )}
         <label className="flex items-center gap-2 text-sm text-text-2">
           <input
@@ -89,5 +96,36 @@ export function LibraryToolbar({
         }))}
       />
     </div>
+  );
+}
+
+/** A dropdown that narrows the list; the empty value means "all". */
+function FilterSelect({
+  label,
+  allLabel,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  allLabel: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <Select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={label}
+      className="h-10 w-auto"
+    >
+      <option value="">{allLabel}</option>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </Select>
   );
 }

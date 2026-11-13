@@ -11,7 +11,17 @@ export { StepStatus } from "./StepStatus";
 export { STEP_TONES, stepLabel, type StepState } from "./stepLabels";
 export { Tabs, type TabItem } from "./Tabs";
 export { Breadcrumb } from "./Breadcrumb";
-export { Collapsible, InfoBox, KeyValueList, ListBox, Screenplay, StatCard } from "./Boxes";
+export {
+  BulletList,
+  Collapsible,
+  Fact,
+  InfoBox,
+  KeyValueList,
+  ListBox,
+  Screenplay,
+  StatCard,
+} from "./Boxes";
+export { Eyebrow } from "./Eyebrow";
 export { ComingSoon } from "./ComingSoon";
 export { controlClass, selectableClass } from "./controlClass";
 export { CodeBox, CopyButton } from "./CopyButton";

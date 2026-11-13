@@ -1,8 +1,8 @@
-"""Capture Backlot board screenshots whenever watched project state changes.
+"""Capture Studio screenshots whenever watched project state changes.
 
 This is the Half-B dogfood watcher from internal/evals/BACKLOT_EVAL_PLAN.md.
-It polls the Backlot API, fingerprints board-relevant state, and captures the
-library plus the changed project board through Playwright.
+It polls the Backlot API, fingerprints Studio-relevant state, and captures the
+Library plus the changed project page of Studio through Playwright.
 
 Example:
     python scripts/backlot_watch_captures.py --projects why-cities-glow rain-on-glass
@@ -38,7 +38,7 @@ def capture_slug(project_id: str, stage: str | None, status: str | None) -> str:
 
 
 def state_fingerprint(state: dict[str, Any]) -> str:
-    """Hashable representation of board-visible state.
+    """Hashable representation of Studio-visible state.
 
     Intentionally ignores mtime-ish noise such as last_activity while keeping
     the pieces that should trigger a capture: stage transitions, generating
@@ -123,9 +123,9 @@ def capture_url(url: str, output: Path, *, width: int = 1560, height: int = 1150
 def capture_project(base_url: str, capture_dir: Path, project_id: str, seq: int, state: dict[str, Any]) -> None:
     stage, status = active_stage(state)
     stem = f"{seq:03d}-{capture_slug(project_id, stage, status)}"
-    capture_url(f"{base_url.rstrip('/')}/?static=1", capture_dir / "library" / f"{stem}.png", height=620)
+    capture_url(f"{base_url.rstrip('/')}/studio/library", capture_dir / "library" / f"{stem}.png", height=620)
     capture_url(
-        f"{base_url.rstrip('/')}/p/{project_id}?static=1",
+        f"{base_url.rstrip('/')}/studio/p/{project_id}",
         capture_dir / project_id / f"{stem}.png",
     )
 

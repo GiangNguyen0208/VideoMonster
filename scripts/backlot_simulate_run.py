@@ -1,8 +1,8 @@
-"""Simulate a pipeline run on disk to exercise the Backlot live board.
+"""Simulate a pipeline run on disk to exercise Studio live.
 
 Drives a fake production through the REAL contract — init_project,
 in_progress checkpoints, gated awaiting_human states, tool events,
-progressively-written artifacts — so the board can be watched updating live.
+progressively-written artifacts — so Studio can be watched updating live.
 Also useful as a demo driver.
 
     python scripts/backlot_simulate_run.py [--project backlot-demo-run]
@@ -113,7 +113,7 @@ def main() -> int:
     cp("script", "awaiting_human", {"script": art["script"]},
        review={"round": 1, "decision": "pass", "critical": 0, "suggestions": 1,
                "nitpicks": 0, "summary": "Hook is strong; tightened s3."})
-    time.sleep(wait)  # "user reads the script on the board"
+    time.sleep(wait)  # "user reads the script in Studio"
     cp("script", "completed", {"script": art["script"]}, human_approved=True)
 
     # scene_plan gates too
@@ -163,7 +163,7 @@ def main() -> int:
     time.sleep(wait)
     cp("assets", "completed", {"asset_manifest": manifest}, human_approved=True)
 
-    print(f"[sim] done — board at http://127.0.0.1:4750/p/{pid}")
+    print(f"[sim] done — Studio at http://127.0.0.1:4750/studio/p/{pid}")
     if args.cleanup:
         shutil.rmtree(pdir)
         print("[sim] cleaned up")

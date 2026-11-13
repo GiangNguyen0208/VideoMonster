@@ -2,8 +2,11 @@ import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { setLocale } from "@/i18n";
 import {
+  BulletList,
   ComingSoon,
   CopyButton,
+  Eyebrow,
+  Fact,
   Field,
   Input,
   ProgressBar,
@@ -127,5 +130,27 @@ describe("progress", () => {
     expect(
       screen.getByRole("list", { name: "Wizard" }).querySelector("[aria-current=step]"),
     ).toHaveTextContent("2. Brief");
+  });
+});
+
+describe("Fact and Eyebrow", () => {
+  it("pair a label with its value in a description list", () => {
+    render(
+      <dl>
+        <Fact label="Platform">Shorts</Fact>
+      </dl>,
+    );
+    expect(screen.getByText("Platform").tagName).toBe("DT");
+    expect(screen.getByText("Shorts").tagName).toBe("DD");
+  });
+
+  it("render as the element asked for", () => {
+    render(<Eyebrow as="h3">History</Eyebrow>);
+    expect(screen.getByRole("heading", { name: "History" })).toBeInTheDocument();
+  });
+
+  it("BulletList lists every item", () => {
+    render(<BulletList items={["a", "b"]} />);
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
   });
 });

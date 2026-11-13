@@ -1,3 +1,4 @@
+import { InfoBox } from "@/components/ui";
 import { titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
 import type { ReferenceInsights as Insights } from "./review";
@@ -16,23 +17,22 @@ export function ReferenceInsights({ insights }: { insights: Insights }) {
   ].filter(Boolean);
 
   return (
-    <section
-      aria-labelledby="ref-insights-h"
-      className="space-y-3 rounded-control border border-border-soft bg-surface-2 px-4 py-3 text-sm"
-    >
-      <h3 id="ref-insights-h" className="font-medium">
-        {L.heading}
-      </h3>
-      {(insights.title || insights.url) && (
-        <p className="break-all text-text-3">{insights.title ?? insights.url}</p>
-      )}
-      {insights.summary && <p className="text-text-2">{insights.summary}</p>}
-      {facts.length > 0 && <p className="text-text-3">{facts.join(" · ")}</p>}
-      <div className="grid gap-3 sm:grid-cols-2">
-        {insights.keep.length > 0 && <List title={L.keep} items={insights.keep} />}
-        {insights.ownTake.length > 0 && <List title={L.ownTake} items={insights.ownTake} />}
-      </div>
-    </section>
+    <InfoBox>
+      <section aria-labelledby="ref-insights-h" className="space-y-3">
+        <h3 id="ref-insights-h" className="font-medium">
+          {L.heading}
+        </h3>
+        {(insights.title || insights.url) && (
+          <p className="break-all text-text-3">{insights.title ?? insights.url}</p>
+        )}
+        {insights.summary && <p className="text-text-2">{insights.summary}</p>}
+        {facts.length > 0 && <p className="text-text-3">{facts.join(" · ")}</p>}
+        <div className="grid gap-3 sm:grid-cols-2">
+          {insights.keep.length > 0 && <List title={L.keep} items={insights.keep} />}
+          {insights.ownTake.length > 0 && <List title={L.ownTake} items={insights.ownTake} />}
+        </div>
+      </section>
+    </InfoBox>
   );
 }
 

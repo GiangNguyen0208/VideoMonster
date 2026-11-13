@@ -1,5 +1,7 @@
 # Phase 0 — Foundation
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](../STATUS.md#phase-f--remove-the-classic-board--done).
+
 **Goal.** An empty but production-shaped Studio app served by the Backlot server, with the API skeleton, the security plumbing and CI in place. No user-facing features yet.
 
 **Use cases served:** none directly; every later phase depends on this one.

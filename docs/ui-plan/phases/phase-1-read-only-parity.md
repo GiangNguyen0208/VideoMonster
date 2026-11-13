@@ -1,5 +1,7 @@
 # Phase 1 — Read-only Parity
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](../STATUS.md#phase-f--remove-the-classic-board--done).
+
 **Goal.** Studio can show everything the vanilla Backlot board shows, in plain words, using only the existing read API. This is the first thing a user can actually use: a better viewer for productions started from chat.
 
 **Use cases served:** UC7 (track progress), UC8 (library part).

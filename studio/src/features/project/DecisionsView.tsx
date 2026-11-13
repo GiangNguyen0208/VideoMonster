@@ -1,4 +1,4 @@
-import { EmptyState } from "@/components/ui";
+import { EmptyState, Eyebrow } from "@/components/ui";
 import { useT } from "@/i18n";
 import { currentDecisions } from "./adapters";
 
@@ -12,12 +12,12 @@ export function DecisionsView({ log }: { log: unknown }) {
     <ul className="divide-y divide-border-soft rounded-card border border-border bg-surface">
       {decisions.map((d) => (
         <li key={d.key} className="space-y-1 px-4 py-3">
-          <p className="text-xs tracking-wide text-text-3 uppercase">
+          <Eyebrow>
             {d.category}
             {d.revisions > 0 && (
               <span className="text-accent">{t.decisions.changed(d.revisions)}</span>
             )}
-          </p>
+          </Eyebrow>
           <p>
             <span className="text-text-2">{d.subject}</span>
             {d.subject && " → "}

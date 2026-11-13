@@ -10,7 +10,7 @@ const V1 = "/api/v1";
 /** Encode each segment of a project-relative path but keep the slashes. */
 export const encodePath = (rel: string) => rel.split("/").map(enc).join("/");
 
-/** Backlot read API (unversioned, shared with the classic board). */
+/** Backlot read API (unversioned). */
 export const board = {
   projects: "/api/projects",
   state: (id: string) => `/api/project/${enc(id)}/state`,

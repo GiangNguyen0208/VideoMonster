@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { LanguageSelect } from "@/app/LanguageSelect";
 import { Clapperboard, Moon, Plus, Sun, UserCircle } from "@/components/icons";
 import { ButtonLink, ComingSoon } from "@/components/ui";
+import { BRAND } from "@/content/brand";
 import { useT } from "@/i18n";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/utils/cn";
@@ -25,8 +26,8 @@ export function Header() {
   const t = useT();
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-bg/85 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-2.5">
-        <NavLink to="/" className="flex items-center gap-2.5 font-semibold tracking-tight">
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 lg:flex-nowrap xl:gap-x-5">
+        <NavLink to="/" className="flex shrink-0 items-center gap-2.5 font-semibold tracking-tight">
           <span
             aria-hidden
             className="grid size-8 place-items-center rounded-control bg-accent text-on-accent"
@@ -34,7 +35,8 @@ export function Header() {
             <Clapperboard className="size-4.5" />
           </span>
           <span>
-            OpenMontage <span className="text-accent">Studio</span>
+            {BRAND.first}
+            <span className="text-accent">{BRAND.accent}</span>
           </span>
         </NavLink>
         <nav
@@ -48,8 +50,8 @@ export function Header() {
               end={"end" in item ? item.end : undefined}
               className={({ isActive }) =>
                 cn(
-                  "relative shrink-0 px-3 py-2 text-sm font-medium whitespace-nowrap transition",
-                  "after:absolute after:inset-x-3 after:-bottom-[11px] after:h-0.5 after:rounded-full",
+                  "relative shrink-0 px-2 py-2 text-sm font-medium whitespace-nowrap transition xl:px-3",
+                  "after:absolute after:inset-x-2 after:-bottom-[11px] after:h-0.5 after:rounded-full xl:after:inset-x-3",
                   isActive
                     ? "text-accent after:bg-accent"
                     : "text-text-2 after:bg-transparent hover:text-text",
@@ -60,15 +62,9 @@ export function Header() {
             </NavLink>
           ))}
         </nav>
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5">
           <ConnectionPill />
           <SpendPill />
-          <a
-            href="/"
-            className="hidden px-2 text-sm whitespace-nowrap text-text-2 hover:text-text sm:inline"
-          >
-            {t.app.classicBoard}
-          </a>
           <LanguageSelect compact />
           <button
             type="button"

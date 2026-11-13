@@ -142,33 +142,22 @@ Funciona con **Claude Code, Cursor, Copilot, Windsurf y Codex**: cualquier asist
 
 ---
 
-## Míralo Suceder — El Storyboard Vivo De Backlot
+## Míralo Suceder — Studio
 
-El chat te cuenta lo que el agente *dijo*. **Backlot te muestra lo que la producción está haciendo de verdad**: un tablero local que se va rellenando solo mientras corre la pipeline. Las etapas se encienden, el guion aterriza como página de guion cinematográfico, las fichas de escena parpadean mientras se generan los assets, y cada decisión de proveedor y cada céntimo gastado quedan en la pared.
+El chat te cuenta lo que el agente *dijo*. **Studio te muestra lo que la producción está haciendo de verdad**: una app local en el navegador que se va rellenando sola mientras corre la pipeline. Los pasos se encienden, el guion aparece como una página de guion, las escenas muestran los assets según se generan, y cada decisión de proveedor y cada dólar gastado están a la vista. También puedes empezar un vídeo, aprobar o pedir cambios en cada punto de revisión y repetir una ejecución terminada.
 
-Cuando arranca una producción, el agente lo abre por ti automáticamente. Sin configuración ni informes: el tablero lo deriva todo de los archivos de proyecto que la pipeline ya escribe.
+Cuando arranca una producción, el agente la abre por ti automáticamente. Sin configuración ni informes: Studio lo deriva todo de los archivos de proyecto que la pipeline ya escribe.
 
-<p align="center"><img src="docs/images/backlot/board-live.png" alt="Tablero en directo de Backlot — generando assets" width="920"></p>
-
-**El storyboard es ahora una barrera de aprobación real.** La generación de assets se detiene en una hoja de contactos escena por escena —tomas, prompts, coste por asset, puntuaciones de calidad— para que apruebes las imágenes *antes* del render, no cuando ya es tarde:
-
-<p align="center"><img src="docs/images/backlot/storyboard.png" alt="Storyboard de Backlot — tira de película con tomas y renders" width="920"></p>
-
-Las barreras creativas esperan hasta que respondas. El tablero muestra qué está pendiente y por qué; tú contestas en el chat:
-
-<p align="center"><img src="docs/images/backlot/script-gate.png" alt="Barrera de guion de Backlot — a la espera de aprobación" width="920"></p>
-
-Todas las producciones de tu máquina, con lo que está en directo primero, en la biblioteca:
-
-<p align="center"><img src="docs/images/backlot/library.png" alt="Biblioteca de Backlot" width="920"></p>
+**El storyboard es una barrera de aprobación real.** La generación de assets se detiene en una hoja de contactos escena por escena —tomas, prompts, coste por asset, puntuaciones de calidad— para que apruebes lo visual *antes* del render, no cuando ya es tarde. Las barreras creativas esperan hasta que respondas, en Studio o en el chat.
 
 ```bash
-python -m backlot open                  # la biblioteca — todos los proyectos en disco
-python -m backlot open <project-id>     # el tablero en directo de una producción
+make studio-build                       # una vez: compila Studio
+python -m backlot open                  # inicio de Studio — todos los proyectos en disco
+python -m backlot open <project-id>     # una producción, en directo
 python scripts/backlot_simulate_run.py  # ¿aún sin producción? mira una simulada en directo
 ```
 
-Y cuando una ejecución termina, pulsa **▶ REPLAY RUN**: toda la producción se reproduce a partir de sus marcas de tiempo, navegable de principio a fin. Consulta [`backlot/README.md`](backlot/README.md) para ver cómo funciona.
+Cuando una ejecución termina, pulsa **Replay run**: toda la producción se reproduce a partir de sus marcas de tiempo, navegable de principio a fin. Consulta [`backlot/README.md`](backlot/README.md) para ver cómo funciona.
 
 ---
 
@@ -650,7 +639,7 @@ OpenMontage trata la producción de vídeo como ingeniería de verdad: con barre
 
 ### Barreras De Calidad
 
-- **Las barreras de aprobación humana se exigen, no se sugieren** — la propuesta, el guion, el plan de escenas, los assets generados y la publicación se detienen a esperar tu visto bueno. El escritor de puntos de control rechaza una etapa con barrera marcada como "completada" sin aprobación registrada, y todo punto de control sustituido se archiva para que el rastro de auditoría (incluidas las transiciones de barrera) sobreviva a las revisiones. La revisión se hace visualmente en el [tablero de Backlot](#míralo-suceder--el-storyboard-vivo-de-backlot).
+- **Las barreras de aprobación humana se exigen, no se sugieren** — la propuesta, el guion, el plan de escenas, los assets generados y la publicación se detienen a esperar tu visto bueno. El escritor de puntos de control rechaza una etapa con barrera marcada como "completada" sin aprobación registrada, y todo punto de control sustituido se archiva para que el rastro de auditoría (incluidas las transiciones de barrera) sobreviva a las revisiones. La revisión se hace visualmente en [Studio](#míralo-suceder--studio).
 - **Validación previa a la composición** — bloquea el render si se incumple la promesa de entrega (por ejemplo, un vídeo "guiado por el movimiento" con un 80 % de imágenes fijas), si la puntuación de riesgo de pase de diapositivas es crítica o si falta la familia de renderizador. Detecta planes rotos antes de desperdiciar tiempo de GPU.
 - **Autorrevisión posterior al render** — después de cada render, el entorno de ejecución lanza la validación con ffprobe, extrae fotogramas en 4 posiciones para comprobar que no haya negros ni superposiciones rotas, analiza los niveles de audio en busca de silencios y saturación, verifica que se haya cumplido la promesa de entrega y comprueba la presencia de subtítulos. Si la revisión falla, el vídeo no se presenta.
 - **Puntuación del riesgo de pase de diapositivas** — un análisis de 6 dimensiones (repetición, imágenes decorativas, movimiento débil, intención de plano, dependencia excesiva de la tipografía, afirmaciones cinematográficas sin respaldo) evita resultados con pinta de "PowerPoint animado".

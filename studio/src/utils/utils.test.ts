@@ -1,7 +1,7 @@
 import { ApiError } from "@/services/http";
 import { errorText, fieldErrors } from "./errors";
 import { fmtFacts, fmtLength, fmtResolution } from "./format";
-import { classicBoardPath, newVideoPath, projectPath } from "./routes";
+import { newVideoPath, projectPath } from "./routes";
 
 describe("format helpers", () => {
   it("formats resolutions from numbers or WxH text", () => {
@@ -23,7 +23,6 @@ describe("format helpers", () => {
 describe("route helpers", () => {
   it("encodes project ids", () => {
     expect(projectPath("a b/c")).toBe("/p/a%20b%2Fc");
-    expect(classicBoardPath("x")).toBe("/p/x");
     expect(newVideoPath()).toBe("/new");
     expect(newVideoPath("brief")).toBe("/new?step=brief");
   });

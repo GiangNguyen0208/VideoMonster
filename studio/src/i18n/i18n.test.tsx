@@ -89,8 +89,10 @@ describe("Studio in Vietnamese", () => {
       expect(navVi).toHaveTextContent(label);
     }
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
-      "Làm video với OpenMontage",
+      "Làm video với VideoMonster",
     );
+    expect(screen.getByRole("link", { name: "VideoMonster" })).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toHaveTextContent("VideoMonster");
     expect(await screen.findByText("Chưa có video nào")).toBeInTheDocument();
   });
 

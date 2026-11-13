@@ -1,4 +1,4 @@
-/** Formatting helpers — ports of backlot/ui/lib.js so both UIs agree. */
+/** Formatting helpers for Studio (money, durations, sizes, relative time). */
 import { getLocale, msg } from "@/i18n";
 
 /** USD in the UI language's format: "$1,234.50" (en) / "1.234,50 US$" (vi). */

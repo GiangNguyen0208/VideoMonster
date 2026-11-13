@@ -51,6 +51,8 @@ export interface Stage {
   human_approved?: boolean;
   partial_progress?: unknown;
   versions?: number;
+  /** Status trail across checkpoint versions (oldest first). */
+  history_entries?: { status: string | null; timestamp: string | null }[];
   stalled?: boolean;
   stalled_minutes?: number;
   undeclared?: boolean;

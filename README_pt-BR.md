@@ -142,33 +142,22 @@ Funciona com **Claude Code, Cursor, Copilot, Windsurf, Codex** — qualquer assi
 
 ---
 
-## Veja Acontecer — O Storyboard Vivo Do Backlot
+## Veja Acontecer — Studio
 
-O chat conta o que o agente *disse*. **O Backlot mostra o que a produção está de fato fazendo** — um quadro local que se preenche sozinho enquanto a pipeline roda. Os estágios se acendem, o roteiro aparece como página de screenplay, os cards de cena cintilam enquanto os assets são gerados, e cada decisão de provedor e cada centavo gasto ficam na parede.
+O chat conta o que o agente *disse*. **O Studio mostra o que a produção está realmente fazendo**: um app local no navegador que se preenche sozinho enquanto a pipeline roda. As etapas se acendem, o roteiro aparece como uma página de roteiro, as cenas mostram os assets conforme são gerados, e cada decisão de provedor e cada dólar gasto estão à vista. Você também pode iniciar um vídeo, aprovar ou pedir mudanças em cada ponto de revisão e rever uma execução concluída.
 
-Quando uma produção começa, o agente o abre para você automaticamente. Sem configuração, sem relatório — o quadro deriva tudo dos arquivos de projeto que a pipeline já escreve.
+Quando uma produção começa, o agente a abre para você automaticamente. Sem configuração nem relatórios: o Studio deriva tudo dos arquivos de projeto que a pipeline já grava.
 
-<p align="center"><img src="docs/images/backlot/board-live.png" alt="Quadro ao vivo do Backlot — assets sendo gerados" width="920"></p>
-
-**O storyboard agora é um portão de aprovação de verdade.** A geração de assets faz uma pausa em uma folha de contato cena a cena — takes, prompts, custo por asset, notas de qualidade — para que você aprove os visuais *antes* da renderização, e não quando já é tarde demais:
-
-<p align="center"><img src="docs/images/backlot/storyboard.png" alt="Storyboard do Backlot — filmstrip com takes e renderizações" width="920"></p>
-
-Os portões criativos seguram até você responder. O quadro mostra o que está esperando e por quê; você responde no chat:
-
-<p align="center"><img src="docs/images/backlot/script-gate.png" alt="Portão de roteiro do Backlot — aguardando aprovação" width="920"></p>
-
-Cada produção na sua máquina, priorizando o que está ao vivo, na biblioteca:
-
-<p align="center"><img src="docs/images/backlot/library.png" alt="Biblioteca do Backlot" width="920"></p>
+**O storyboard é uma barreira de aprovação de verdade.** A geração de assets pausa numa folha de contatos cena a cena — takes, prompts, custo por asset, notas de qualidade — para você aprovar o visual *antes* do render, não depois. As barreiras criativas esperam até você responder, no Studio ou no chat.
 
 ```bash
-python -m backlot open                  # a biblioteca — todos os projetos em disco
-python -m backlot open <project-id>     # o quadro ao vivo de uma produção
-python scripts/backlot_simulate_run.py  # ainda sem produção? assista a uma simulada ao vivo
+make studio-build                       # uma vez: compila o Studio
+python -m backlot open                  # início do Studio — todos os projetos em disco
+python -m backlot open <project-id>     # uma produção, ao vivo
+python scripts/backlot_simulate_run.py  # ainda sem produção? veja uma simulada ao vivo
 ```
 
-E quando uma execução termina, aperte **▶ REPLAY RUN** — a produção inteira é reproduzida a partir dos seus timestamps, navegável de ponta a ponta. Veja [`backlot/README.md`](backlot/README.md) para entender como funciona.
+Quando uma execução termina, clique em **Replay run**: a produção inteira é reproduzida a partir dos seus timestamps, navegável do início ao fim. Veja [`backlot/README.md`](backlot/README.md) para entender como funciona.
 
 ---
 
@@ -650,7 +639,7 @@ O OpenMontage trata a produção de vídeo como engenharia de verdade — com po
 
 ### Portões De Qualidade
 
-- **Os portões de aprovação humana são impostos, não sugeridos** — proposta, roteiro, plano de cenas, assets gerados e publicação param esperando o seu aval. O escritor de checkpoint rejeita um estágio com portão marcado como "concluído" sem aprovação registrada, e todo checkpoint substituído é arquivado para que a trilha de auditoria (incluindo as transições de portão) sobreviva às revisões. A revisão acontece visualmente no [quadro do Backlot](#veja-acontecer--o-storyboard-vivo-do-backlot).
+- **Os portões de aprovação humana são impostos, não sugeridos** — proposta, roteiro, plano de cenas, assets gerados e publicação param esperando o seu aval. O escritor de checkpoint rejeita um estágio com portão marcado como "concluído" sem aprovação registrada, e todo checkpoint substituído é arquivado para que a trilha de auditoria (incluindo as transições de portão) sobreviva às revisões. A revisão acontece visualmente no [Studio](#veja-acontecer--studio).
 - **Validação pré-composição** — bloqueia a renderização se a promessa de entrega for violada (por exemplo, um vídeo "guiado por movimento" com 80% de imagens paradas), se a nota de risco de slideshow estiver crítica ou se faltar a família de renderizador. Pega planos quebrados antes de desperdiçar tempo de GPU.
 - **Autorrevisão pós-renderização** — depois de cada renderização, o runtime roda a validação com ffprobe, extrai quadros em 4 posições para checar quadros pretos e sobreposições quebradas, analisa os níveis de áudio em busca de silêncio e clipping, verifica se a promessa de entrega foi cumprida e checa a presença de legendas. Se a revisão falhar, o vídeo não é apresentado.
 - **Pontuação de risco de slideshow** — uma análise de 6 dimensões (repetição, visuais decorativos, movimento fraco, intenção de plano, dependência excessiva de tipografia, alegações cinematográficas sem respaldo) evita saídas com cara de "PowerPoint animado".

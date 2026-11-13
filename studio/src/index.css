@@ -1,17 +1,16 @@
 @import "tailwindcss";
 
 /*
- * Design tokens mirror backlot/ui/board.css so Studio and the classic board
- * read as one product. Theme is driven by [data-theme] on <html>, shared with
- * Backlot through localStorage "backlot.theme".
+ * Design tokens for Studio. Theme is driven by [data-theme] on <html>, kept
+ * in localStorage "backlot.theme".
  */
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   color-scheme: dark;
-  /* Surfaces: "Cinematic Darkroom" scale (Phase D.4.3). The raw names shared
-     with backlot/ui/board.css (--bg, --surface, --surface-2/3, --border*,
-     --text*, --amber*, --green*, --red*, --blue*, --cream*) are kept. */
+  /* Surfaces: "Cinematic Darkroom" scale (Phase D.4.3). The raw names
+     (--bg, --surface, --surface-2/3, --border*, --text*, --amber*, --green*,
+     --red*, --blue*, --cream*) are kept. */
   --bg: #0a0a0c;
   --surface: #131315;
   --surface-2: #16161a;

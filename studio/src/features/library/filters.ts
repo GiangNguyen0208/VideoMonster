@@ -25,6 +25,8 @@ export interface LibraryFilters {
   q: string;
   status: StatusFilter;
   type: string;
+  /** Only this series (empty: all). */
+  series?: string;
 }
 
 export function filterProjects(projects: ProjectSummary[], f: LibraryFilters): ProjectSummary[] {
@@ -33,7 +35,8 @@ export function filterProjects(projects: ProjectSummary[], f: LibraryFilters): P
     (p) =>
       (!q || p.title.toLowerCase().includes(q) || p.project_id.toLowerCase().includes(q)) &&
       (f.status === "all" || statusFilterOf(p) === f.status) &&
-      (!f.type || p.pipeline_type === f.type),
+      (!f.type || p.pipeline_type === f.type) &&
+      (!f.series || p.series === f.series),
   );
 }
 
@@ -46,5 +49,12 @@ export function groupBySeries(projects: ProjectSummary[]): [string | null, Proje
   }
   return [...groups.entries()].sort(([a], [b]) =>
     a === null ? 1 : b === null ? -1 : a.localeCompare(b),
+  );
+}
+
+/** Distinct series names, sorted. */
+export function seriesNames(projects: ProjectSummary[]): string[] {
+  return [...new Set(projects.map((p) => p.series).filter((x): x is string => Boolean(x)))].sort(
+    (a, b) => a.localeCompare(b),
   );
 }

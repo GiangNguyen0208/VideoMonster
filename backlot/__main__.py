@@ -1,7 +1,6 @@
 """Backlot CLI.
 
-    python -m backlot open [project-id]   # start server if needed, open browser
-    python -m backlot open --studio       # same, but open the Studio app
+    python -m backlot open [project-id]   # start server if needed, open Studio in the browser
     python -m backlot serve [--port N]    # run the server in the foreground
     python -m backlot await-decision <project-id> [stage] [--timeout S]
                                           # agent: wait for a Studio review decision
@@ -57,13 +56,13 @@ def _spawn_server(port: int) -> None:
     subprocess.Popen(cmd, **kwargs)
 
 
-def cmd_open(project_id: str | None, studio: bool = False) -> int:
+def cmd_open(project_id: str | None) -> int:
     port = _port()
     if not _server_alive(port):
         try:
             _spawn_server(port)
         except Exception as exc:
-            print(f"backlot: could not start server ({exc}) — continuing without the board")
+            print(f"backlot: could not start server ({exc}) — continuing without Studio")
             return 1
         deadline = time.time() + 15
         while time.time() < deadline:
@@ -71,15 +70,10 @@ def cmd_open(project_id: str | None, studio: bool = False) -> int:
                 break
             time.sleep(0.4)
         else:
-            print("backlot: server did not come up in time — continuing without the board")
+            print("backlot: server did not come up in time — continuing without Studio")
             return 1
     base = f"http://127.0.0.1:{port}"
-    if studio:
-        url = f"{base}/studio/p/{project_id}" if project_id else f"{base}/studio"
-    elif project_id:
-        url = f"{base}/p/{project_id}"
-    else:
-        url = f"{base}/"
+    url = f"{base}/studio/p/{project_id}" if project_id else f"{base}/studio"
     try:
         webbrowser.open(url)
     except Exception:
@@ -167,9 +161,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="backlot", description=__doc__)
     sub = parser.add_subparsers(dest="command")
 
-    p_open = sub.add_parser("open", help="open the board in the browser (starts server if needed)")
+    p_open = sub.add_parser("open", help="open Studio in the browser (starts server if needed)")
     p_open.add_argument("project_id", nargs="?", default=None)
-    p_open.add_argument("--studio", action="store_true", help="open the Studio app instead of the classic board")
+    # Kept so older scripts and slash commands keep working; Studio is the only UI.
+    p_open.add_argument("--studio", action="store_true", help=argparse.SUPPRESS)
 
     p_serve = sub.add_parser("serve", help="run the Backlot server in the foreground")
     p_serve.add_argument("--port", type=int, default=_port())
@@ -185,7 +180,7 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(argv)
     if args.command == "open":
-        return cmd_open(args.project_id, studio=args.studio)
+        return cmd_open(args.project_id)
     if args.command == "serve":
         return cmd_serve(args.port)
     if args.command == "await-decision":

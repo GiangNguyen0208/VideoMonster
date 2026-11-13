@@ -20,55 +20,76 @@ const NODE: Record<StepNodeState, string> = {
 export function ProgressSteps({
   label,
   steps,
+  onSelect,
   className,
 }: {
   label: string;
   steps: { id: string; name: ReactNode; state: StepNodeState; status: string; gated?: boolean }[];
+  /** Makes each step a button (opens its details). */
+  onSelect?: (id: string) => void;
   className?: string;
 }) {
   return (
     <div className={cn("overflow-x-auto py-1", className)}>
       <ol aria-label={label} className="flex min-w-[640px] items-start">
-        {steps.map((s, i) => (
-          <li key={s.id} className="relative flex flex-1 flex-col items-center text-center">
-            {i < steps.length - 1 && (
+        {steps.map((s, i) => {
+          const content = (
+            <>
               <span
                 aria-hidden
                 className={cn(
-                  "absolute top-4 left-1/2 h-0.5 w-full",
-                  s.state === "done" ? "bg-success/60" : "bg-border",
+                  "relative z-10 grid size-8 place-items-center rounded-full border text-xs font-semibold",
+                  NODE[s.state],
                 )}
-              />
-            )}
-            <span
-              aria-hidden
-              className={cn(
-                "relative z-10 grid size-8 place-items-center rounded-full border text-xs font-semibold",
-                NODE[s.state],
-              )}
-            >
-              {s.state === "done" ? <Check className="size-4" strokeWidth={3} /> : i + 1}
-            </span>
-            <span
-              className={cn(
-                "mt-2 px-1 text-xs font-medium",
-                s.state === "waiting" || s.state === "current"
-                  ? "text-accent"
-                  : s.state === "todo"
-                    ? "text-text-3"
-                    : "text-text",
-              )}
-            >
-              {s.name}
-            </span>
-            <span className="px-1 text-[11px] text-text-2">{s.status}</span>
-            {s.gated && (
-              <span aria-hidden className="mt-0.5 text-[10px] text-accent/80">
-                ◆
+              >
+                {s.state === "done" ? <Check className="size-4" strokeWidth={3} /> : i + 1}
               </span>
-            )}
-          </li>
-        ))}
+              <span
+                className={cn(
+                  "mt-2 px-1 text-xs font-medium",
+                  s.state === "waiting" || s.state === "current"
+                    ? "text-accent"
+                    : s.state === "todo"
+                      ? "text-text-3"
+                      : "text-text",
+                )}
+              >
+                {s.name}
+              </span>
+              <span className="px-1 text-[11px] text-text-2">{s.status}</span>
+              {s.gated && (
+                <span aria-hidden className="mt-0.5 text-[10px] text-accent/80">
+                  ◆
+                </span>
+              )}
+            </>
+          );
+          return (
+            <li key={s.id} className="relative flex flex-1 flex-col items-center text-center">
+              {i < steps.length - 1 && (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute top-4 left-1/2 h-0.5 w-full",
+                    s.state === "done" ? "bg-success/60" : "bg-border",
+                  )}
+                />
+              )}
+              {onSelect ? (
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  onClick={() => onSelect(s.id)}
+                  className="flex flex-col items-center rounded-control focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+                >
+                  {content}
+                </button>
+              ) : (
+                content
+              )}
+            </li>
+          );
+        })}
       </ol>
     </div>
   );

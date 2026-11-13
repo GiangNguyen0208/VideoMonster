@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Activity } from "@/components/icons";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -7,7 +7,6 @@ import {
   Banner,
   Breadcrumb,
   Button,
-  ButtonAnchor,
   Card,
   ComingSoon,
   EmptyState,
@@ -21,9 +20,12 @@ import { boardStatus } from "@/features/project/adapters";
 import { BriefView } from "@/features/project/BriefView";
 import { ConceptView } from "@/features/project/ConceptView";
 import { DecisionsView } from "@/features/project/DecisionsView";
+import { FoundMedia } from "@/features/project/FoundMedia";
 import { KickoffPanel } from "@/features/project/KickoffPanel";
 import { CostPanel } from "@/features/cost/CostPanel";
 import { ResultPanel } from "@/features/result/ResultPanel";
+import { ReplayBar } from "@/features/project/ReplayBar";
+import { stateAt } from "@/features/project/replay";
 import { ScriptView } from "@/features/project/ScriptView";
 import { StepTimeline } from "@/features/project/StepTimeline";
 import { StoryboardView } from "@/features/project/StoryboardView";
@@ -35,7 +37,6 @@ import { useKickoff, useProject } from "@/hooks/api";
 import { ApiError } from "@/services";
 import type { BoardState } from "@/types/api";
 import { fmtAgo, fmtMoney } from "@/utils/format";
-import { classicBoardPath } from "@/utils/routes";
 import { ServerDown } from "@/components/layout/ServerDown";
 
 /** Which tab shows a stage's output — used to open the tab under review. */
@@ -74,8 +75,14 @@ export function ProjectPage() {
   return <ProjectView state={project.data} />;
 }
 
-function ProjectView({ state }: { state: BoardState }) {
+function ProjectView({ state: live }: { state: BoardState }) {
   const t = useT();
+  const [replayAt, setReplayAt] = useState<number | null>(null);
+  const replaying = replayAt !== null;
+  const state = useMemo(
+    () => (replayAt === null ? live : stateAt(live, replayAt)),
+    [live, replayAt],
+  );
   const status = boardStatus(state);
   const kickoff = useKickoff(state.project_id).data;
   const awaitingAgent = status.kind === "empty" && Boolean(kickoff);
@@ -120,17 +127,12 @@ function ProjectView({ state }: { state: BoardState }) {
             ) : null}
           </span>
         }
-        actions={
-          <ButtonAnchor variant="ghost" size="sm" href={classicBoardPath(state.project_id)}>
-            {t.app.openClassicBoard}
-          </ButtonAnchor>
-        }
       />
 
       <Banner
         tone={status.tone}
         title={awaitingAgent ? t.project.banner.awaitingAgentTitle : status.label}
-        action={status.kind === "waiting" ? <NotifyButton /> : undefined}
+        action={status.kind === "waiting" && !replaying ? <NotifyButton /> : undefined}
       >
         {status.kind === "waiting" && t.project.banner.waiting}
         {status.kind === "stalled" && t.project.banner.stalled}
@@ -150,21 +152,30 @@ function ProjectView({ state }: { state: BoardState }) {
             <h2 id="steps-h" className="sr-only">
               {t.project.stepsHeading}
             </h2>
-            <StepTimeline stages={state.stages} />
+            <StepTimeline stages={state.stages} artifacts={state.artifacts} />
           </section>
+          <div className="mt-3 border-t border-border-soft pt-3">
+            <ReplayBar state={live} at={replayAt} onChange={setReplayAt} />
+          </div>
         </Card>
       )}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
         <div className="min-w-0 space-y-6">
-          {awaitingAgent && kickoff && <KickoffPanel kickoff={kickoff} />}
-          {status.kind === "working" && <RunningPanel state={state} />}
-          {status.kind === "waiting" && <ReviewPanel state={state} />}
+          {replaying && <Banner tone="info" title={t.project.replay.banner} />}
+          {!replaying && awaitingAgent && kickoff && <KickoffPanel kickoff={kickoff} />}
+          {!replaying && status.kind === "working" && <RunningPanel state={state} />}
+          {!replaying && status.kind === "waiting" && <ReviewPanel state={state} />}
+          {!state.has_pipeline_state && (
+            <FoundMedia projectId={state.project_id} snapshots={state.media.snapshots} />
+          )}
           <ResultPanel projectId={state.project_id} renders={state.media.renders} />
           {tabs.length > 0 && <Tabs items={tabs} value={active} onChange={setTab} />}
         </div>
         <aside className="min-w-0 space-y-6">
-          <InputsPanel projectId={state.project_id} studioProject={Boolean(kickoff)} />
+          {!replaying && (
+            <InputsPanel projectId={state.project_id} studioProject={Boolean(kickoff)} />
+          )}
           <CostPanel projectId={state.project_id} />
         </aside>
       </div>

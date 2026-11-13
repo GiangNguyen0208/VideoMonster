@@ -1,5 +1,6 @@
 import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/utils/cn";
+import { Eyebrow } from "./Eyebrow";
 
 /** Divided list in a bordered box (files, tracks, renders, decisions). */
 export function ListBox({ className, ...props }: HTMLAttributes<HTMLUListElement>) {
@@ -154,5 +155,33 @@ export function Screenplay({
       )}
       {children}
     </div>
+  );
+}
+
+/** A labelled value ("Platform / Shorts"); place inside a `<dl>`. */
+export function Fact({
+  label,
+  className,
+  children,
+}: {
+  label: ReactNode;
+  className?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className={className}>
+      <Eyebrow as="dt">{label}</Eyebrow>
+      <dd className="mt-1 text-text">{children}</dd>
+    </div>
+  );
+}
+
+export function BulletList({ items }: { items: string[] }) {
+  return (
+    <ul className="list-disc space-y-1 pl-5 text-text-2">
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
+      ))}
+    </ul>
   );
 }

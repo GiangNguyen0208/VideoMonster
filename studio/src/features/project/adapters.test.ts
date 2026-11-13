@@ -124,8 +124,16 @@ describe("activityLines", () => {
     expect(lines.map((l) => l.text)).toEqual([
       "Piper Tts failed: no voice",
       "Flux Image finished for scene sc1 · $0.05",
-      "Flux Image started for scene sc1",
     ]);
     expect(lines[0]!.tone).toBe("danger");
+  });
+
+  it("keeps a start only while it has no later finish", () => {
+    const lines = activityLines([
+      { ts: "1", tool: "a", event: "start", scene_id: "s1" },
+      { ts: "2", tool: "a", event: "start", scene_id: "s1" },
+      { ts: "3", tool: "a", event: "finish", scene_id: "s1", success: true },
+    ]);
+    expect(lines.map((l) => l.text)).toEqual(["A finished for scene s1", "A started for scene s1"]);
   });
 });

@@ -1,7 +1,7 @@
 import { useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
-/** Debounce window for change bursts — same as backlot/ui/lib.js `subscribe`. */
+/** Debounce window for change bursts. */
 export const SSE_DEBOUNCE_MS = 250;
 
 interface SSEMessage {

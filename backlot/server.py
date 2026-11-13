@@ -1,8 +1,8 @@
-"""Backlot server — FastAPI app: board state API, SSE change feed, media.
+"""Backlot server — FastAPI app: project state API, SSE change feed, media, Studio.
 
 The watcher observes ``projects/`` with watchfiles; on any change it bumps a
 per-project version and wakes SSE subscribers, who tell the browser to
-refetch state. The board routes never write to project directories; the
+refetch state. The read routes never write to project directories; the
 Studio API (``backlot/studio_api.py``, mounted at ``/api/v1``) owns the only
 write path, and only for Studio intent files.
 """
@@ -15,11 +15,11 @@ import time
 from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, Response, StreamingResponse
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse, Response, StreamingResponse
 
 from backlot.state import (
     PROJECTS_DIR,
@@ -31,31 +31,20 @@ from backlot.state import (
 )
 from backlot.studio_api import install_studio_api
 
-UI_DIR = Path(__file__).resolve().parent / "ui"
 STUDIO_DIST_DIR = REPO_ROOT / "studio" / "dist"
 THUMB_CACHE_DIR = REPO_ROOT / ".backlot" / "thumbs"
 THUMB_WIDTHS = (320, 640, 960)
 
-# Paths inside a project whose changes are pure noise for the board.
+# Paths inside a project whose changes are pure noise for Studio.
 _IGNORE_PARTS = {"node_modules", ".git", "__pycache__", ".cache"}
 
 SSE_HEARTBEAT_SECONDS = 15
 
 
-def _ui_html(name: str, assets: tuple[str, ...]) -> HTMLResponse:
-    html = (UI_DIR / name).read_text(encoding="utf-8")
-    for asset in assets:
-        path = UI_DIR / asset
-        if path.is_file():
-            version = str(int(path.stat().st_mtime))
-            html = html.replace(f"/ui/{asset}", f"/ui/{asset}?v={version}")
-    return HTMLResponse(html)
-
-
 class ChangeHub:
     """Fan-out of project-change notifications to SSE subscribers.
 
-    Subscriptions are filtered: a board subscribed to one project only ever
+    Subscriptions are filtered: a client subscribed to one project only ever
     receives that project's ids, so unrelated-project bursts can't flood its
     queue and starve out the one notification it actually needs.
     """
@@ -149,7 +138,7 @@ async def _watch_projects() -> None:
     try:
         from watchfiles import awatch
     except ImportError:
-        return  # watcher unavailable → board still works via manual refresh
+        return  # watcher unavailable → Studio still works via manual refresh
     if not PROJECTS_DIR.is_dir():
         return
     async for changes in awatch(PROJECTS_DIR, recursive=True, step=400):
@@ -294,22 +283,16 @@ def create_app() -> FastAPI:
             return FileResponse(target, filename=target.name, content_disposition_type="attachment")
         return FileResponse(target)
 
-    # ---- UI ------------------------------------------------------------
-
-    @app.get("/p/{project_id}")
-    async def board_page(project_id: str) -> HTMLResponse:
-        return _ui_html("board.html", ("board.css", "board.js"))
-
-    @app.get("/p/{project_path:path}")
-    async def board_page_path(project_path: str) -> HTMLResponse:
-        return _ui_html("board.html", ("board.css", "board.js"))
+    # ---- Old URLs -------------------------------------------------------
+    # The classic board is gone; keep bookmarks and `backlot open` links alive.
 
     @app.get("/")
-    async def library_page() -> HTMLResponse:
-        return _ui_html("index.html", ("board.css", "library.js"))
+    async def root() -> RedirectResponse:
+        return RedirectResponse("/studio", status_code=302)
 
-    if UI_DIR.is_dir():
-        app.mount("/ui", StaticFiles(directory=UI_DIR), name="ui")
+    @app.get("/p/{project_path:path}")
+    async def old_project_url(project_path: str) -> RedirectResponse:
+        return RedirectResponse(f"/studio/p/{quote(project_path, safe='')}", status_code=302)
 
     # ---- Studio (React SPA built into studio/dist) ----------------------
 
@@ -334,18 +317,15 @@ def create_app() -> FastAPI:
         # Client-side route (/studio/library, /studio/p/<id>, ...).
         return FileResponse(index)
 
-    # The board is a long-lived SPA: a tab keeps running whatever board.js it
-    # loaded, and browsers heuristically cache /ui assets. no-cache forces a
-    # conditional revalidation (cheap 304 via ETag) on every load so UI fixes
-    # show up on a plain refresh. Media/thumb responses keep normal caching.
+    # Studio is a long-lived SPA: a tab keeps running whatever shell it loaded.
+    # no-cache forces a conditional revalidation (cheap 304 via ETag) on every
+    # load so fixes show up on a plain refresh. Hashed /studio/assets/* and
+    # media/thumb responses keep normal caching.
     @app.middleware("http")
     async def ui_no_cache(request, call_next):
         response = await call_next(request)
         path = request.url.path
-        if path == "/" or path.startswith("/ui") or path.startswith("/p/"):
-            response.headers["Cache-Control"] = "no-cache"
-        elif path.startswith("/studio") and not path.startswith("/studio/assets/"):
-            # Hashed /studio/assets/* may cache; the shell must revalidate.
+        if path.startswith("/studio") and not path.startswith("/studio/assets/"):
             response.headers["Cache-Control"] = "no-cache"
         return response
 
@@ -372,7 +352,7 @@ _STUDIO_NOT_BUILT = """<!doctype html><meta charset="utf-8"><title>Studio not bu
 <h1>Studio is not built yet</h1>
 <p>Run <code>make studio-build</code>, then reload. For live development run
 <code>make studio-dev</code> and open the Vite URL instead.</p>
-<p><a href="/">Open the classic Backlot board</a></p></body>"""
+</body>"""
 
 
 def _sse(payload: dict) -> str:

@@ -4,9 +4,11 @@ import {
   Button,
   Card,
   CodeBox,
+  Collapsible,
   controlClass,
   Dialog,
   ErrorText,
+  InfoBox,
   Spinner,
 } from "@/components/ui";
 import { stageLabel } from "@/content/labels";
@@ -16,6 +18,8 @@ import { useDecisions, useRetractDecision, useSetup, useSubmitDecision } from "@
 import type { BoardState, DecisionAction, Stage, StudioDecision } from "@/types/api";
 import { errorText } from "@/utils/errors";
 import { fmtMoney } from "@/utils/format";
+import { ArtifactSummaries } from "./ArtifactSummaries";
+import { stageArtifactSummaries } from "./artifacts";
 import { ProposalPicker } from "./ProposalPicker";
 import { ReferenceInsights } from "./ReferenceInsights";
 import {
@@ -107,6 +111,7 @@ function ReviewForm({
     : null;
   const spent = state.cost?.total_spent_usd;
   const step = stageLabel(stage.name);
+  const summaries = stageArtifactSummaries(stage, state.artifacts);
 
   const allNotes = () =>
     [
@@ -141,7 +146,7 @@ function ReviewForm({
       {revisedSinceAnswer && <Banner tone="info" title={L.stale} />}
 
       {(counts || spent != null) && (
-        <div className="space-y-1 rounded-control border border-border-soft bg-surface-2 px-4 py-3 text-sm">
+        <InfoBox className="space-y-1">
           {counts && (
             <p>
               <span className="font-medium">{L.selfReview}:</span>{" "}
@@ -152,7 +157,7 @@ function ReviewForm({
             </p>
           )}
           {spent != null && <p className="text-text-3">{L.costSoFar(fmtMoney(spent))}</p>}
-        </div>
+        </InfoBox>
       )}
 
       {insights && <ReferenceInsights insights={insights} />}
@@ -166,13 +171,17 @@ function ReviewForm({
           rationale={runtimeRationale(state.artifacts.decision_log)}
         />
       ) : (
-        stage.name !== "script" && <p className="text-sm text-text-2">{L.seeBelow(step)}</p>
+        stage.name !== "script" &&
+        (summaries.length > 0 ? (
+          <ArtifactSummaries summaries={summaries} />
+        ) : (
+          <p className="text-sm text-text-2">{L.seeBelow(step)}</p>
+        ))
       )}
 
       {sections.length > 0 && (
-        <details className="rounded-control border border-border-soft px-4 py-3">
-          <summary className="cursor-pointer text-sm font-medium">{L.sectionComments}</summary>
-          <div className="mt-3 space-y-3">
+        <Collapsible label={L.sectionComments}>
+          <div className="space-y-3">
             {sections.map((s) => (
               <label key={s.id} className="block space-y-1 text-sm">
                 <span className="text-text-2">{L.sectionComment(s.label)}</span>
@@ -185,7 +194,7 @@ function ReviewForm({
               </label>
             ))}
           </div>
-        </details>
+        </Collapsible>
       )}
 
       {revising && (

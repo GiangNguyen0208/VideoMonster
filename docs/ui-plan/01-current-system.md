@@ -1,5 +1,7 @@
 # 01 — Current System (As-Is)
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](STATUS.md#phase-f--remove-the-classic-board--done).
+
 This document records how OpenMontage produces a video today. Every claim points to the file it was verified against. The UI must fit this workflow, not replace it.
 
 ## 1. The one fact that shapes the UI
