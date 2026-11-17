@@ -7,5 +7,6 @@ export * from "./results";
 export * from "./session";
 export * from "./settings";
 export * from "./setup";
+export * from "./spec";
 export * from "./uploads";
 export { SSE_DEBOUNCE_MS, useSSE } from "./useSSE";

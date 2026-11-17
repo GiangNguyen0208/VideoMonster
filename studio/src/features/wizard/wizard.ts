@@ -49,6 +49,7 @@ export const wizardSchema = z
     render_runtime_preference: z.enum(["", "remotion", "hyperframes"]),
     composition_mode_preference: z.enum(["", "templated", "atelier"]),
     checkpoint_policy: z.enum(["guided", "manual_all"]),
+    execution_mode: z.enum(["", "spec"]),
     title: z.string().max(120),
   })
   .superRefine((v, ctx) => {
@@ -154,6 +155,7 @@ export const EMPTY_VALUES: WizardValues = {
   render_runtime_preference: "",
   composition_mode_preference: "",
   checkpoint_policy: "guided",
+  execution_mode: "",
   title: "",
 };
 
@@ -207,6 +209,7 @@ export function toIntake(v: WizardValues): IntakeInput {
       composition_mode_preference: v.composition_mode_preference || null,
       checkpoint_policy: v.checkpoint_policy,
       production_mode: v.production_mode || null,
+      execution_mode: v.execution_mode || null,
     },
     music_track: v.music_track || null,
     language: v.language.trim(),

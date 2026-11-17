@@ -42,6 +42,12 @@ Studio (the browser UI at `/studio`, served by Backlot) lets a user describe a v
 5. **Log every applied decision** to `decision_log` with `source: "studio"` (category `approval_policy` for plain approve/revise/abort), then mark it consumed: `python -m backlot consume-decision <id> <decision-id>`.
 6. **Fallback:** if the background wait was not running (new session, `/studio-continue <id>`), run `python -m backlot await-decision <id> --timeout 0` to read a pending decision for any review point.
 
+## Spec Mode — plan once, Gemini executes
+
+**Trigger:** the intake has `advanced.execution_mode: "spec"`, the user asks for a video "planned by Claude, made by Gemini" / minimal Claude tokens, `/spec-reel` is used, or the project already has `artifacts/requirements_brief.json` or `artifacts/production_spec.json`.
+
+**Required behavior:** read `.agents/skills/spec-worker/SKILL.md` and follow it. Do **not** run the 7-stage pipeline, read stage director skills, or read source code for this project. Steps are approved in order (requirements → spec → render); the render is a CLI (`python -m backlot render <id>`) that uses no Claude calls. Rule Zero's "every production goes through a pipeline" is satisfied by this workflow for spec-mode projects: the workflow lives in the skill, the deterministic parts in `python -m backlot requirements|spec|render`.
+
 ## First Interaction — Onboarding
 
 When the user's first message is vague, exploratory, or asks what you can do ("make me a video", "what can you do?", "help me create something", "I want to make content"), read the onboarding skill **before** doing anything else:

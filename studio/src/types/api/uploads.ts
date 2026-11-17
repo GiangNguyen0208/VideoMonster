@@ -1,5 +1,6 @@
 export type MediaKind = "video" | "audio" | "image" | "subtitle";
-export type UploadKind = "footage" | "reference";
+/** `voice`, `character_ref`, `logo` and `music` are creator inputs of spec mode. */
+export type UploadKind = "footage" | "reference" | "voice" | "character_ref" | "logo" | "music";
 
 export interface UploadLimits {
   max_bytes: number;

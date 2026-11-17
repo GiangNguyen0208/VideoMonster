@@ -21,6 +21,8 @@ import { BriefView } from "@/features/project/BriefView";
 import { ConceptView } from "@/features/project/ConceptView";
 import { DecisionsView } from "@/features/project/DecisionsView";
 import { FoundMedia } from "@/features/project/FoundMedia";
+import { SpecFlow } from "@/features/spec/SpecFlow";
+import { stateOf } from "@/features/spec/spec";
 import { KickoffPanel } from "@/features/project/KickoffPanel";
 import { CostPanel } from "@/features/cost/CostPanel";
 import { ResultPanel } from "@/features/result/ResultPanel";
@@ -33,7 +35,7 @@ import { NotifyButton, ReviewPanel } from "@/features/review/ReviewPanel";
 import { InputsPanel } from "@/features/uploads/InputsPanel";
 import { isActive, useUploads } from "@/features/uploads/uploadStore";
 import { useT, type Messages } from "@/i18n";
-import { useKickoff, useProject } from "@/hooks/api";
+import { useKickoff, useProject, useSpecFlow } from "@/hooks/api";
 import { ApiError } from "@/services";
 import type { BoardState } from "@/types/api";
 import { fmtAgo, fmtMoney } from "@/utils/format";
@@ -85,7 +87,11 @@ function ProjectView({ state: live }: { state: BoardState }) {
   );
   const status = boardStatus(state);
   const kickoff = useKickoff(state.project_id).data;
-  const awaitingAgent = status.kind === "empty" && Boolean(kickoff);
+  const specFlow = useSpecFlow(state.project_id).data;
+  const briefStarted =
+    specFlow !== undefined && stateOf(specFlow.steps, "requirements") !== "missing";
+  const specMode = Boolean(kickoff?.spec_mode) || briefStarted;
+  const awaitingAgent = status.kind === "empty" && Boolean(kickoff) && !briefStarted;
   const uploading = useUploads(state.project_id).some(isActive);
   const tabs = buildTabs(state, t);
   const preferred = (status.stage && STAGE_TAB[status.stage]) || "storyboard";
@@ -129,20 +135,22 @@ function ProjectView({ state: live }: { state: BoardState }) {
         }
       />
 
-      <Banner
-        tone={status.tone}
-        title={awaitingAgent ? t.project.banner.awaitingAgentTitle : status.label}
-        action={status.kind === "waiting" && !replaying ? <NotifyButton /> : undefined}
-      >
-        {status.kind === "waiting" && t.project.banner.waiting}
-        {status.kind === "stalled" && t.project.banner.stalled}
-        {status.kind === "working" &&
-          lastEvent?.tool &&
-          t.project.banner.latest(titleCase(lastEvent.tool), lastEvent.event ?? "")}
-        {status.kind === "failed" && t.project.banner.failed}
-        {status.kind === "empty" && !awaitingAgent && t.project.banner.empty}
-        {awaitingAgent && t.project.banner.awaitingAgent}
-      </Banner>
+      {!specMode && (
+        <Banner
+          tone={status.tone}
+          title={awaitingAgent ? t.project.banner.awaitingAgentTitle : status.label}
+          action={status.kind === "waiting" && !replaying ? <NotifyButton /> : undefined}
+        >
+          {status.kind === "waiting" && t.project.banner.waiting}
+          {status.kind === "stalled" && t.project.banner.stalled}
+          {status.kind === "working" &&
+            lastEvent?.tool &&
+            t.project.banner.latest(titleCase(lastEvent.tool), lastEvent.event ?? "")}
+          {status.kind === "failed" && t.project.banner.failed}
+          {status.kind === "empty" && !awaitingAgent && t.project.banner.empty}
+          {awaitingAgent && t.project.banner.awaitingAgent}
+        </Banner>
+      )}
 
       {awaitingAgent && uploading && <Banner tone="accent" title={t.uploads.stillUploading} />}
 
@@ -164,6 +172,7 @@ function ProjectView({ state: live }: { state: BoardState }) {
         <div className="min-w-0 space-y-6">
           {replaying && <Banner tone="info" title={t.project.replay.banner} />}
           {!replaying && awaitingAgent && kickoff && <KickoffPanel kickoff={kickoff} />}
+          {!replaying && specMode && <SpecFlow state={state} />}
           {!replaying && status.kind === "working" && <RunningPanel state={state} />}
           {!replaying && status.kind === "waiting" && <ReviewPanel state={state} />}
           {!state.has_pipeline_state && (

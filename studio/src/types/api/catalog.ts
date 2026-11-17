@@ -66,6 +66,7 @@ export interface IntakeInput {
     render_runtime_preference: "remotion" | "hyperframes" | null;
     composition_mode_preference: "templated" | "atelier" | null;
     checkpoint_policy: "guided" | "manual_all" | null;
+    execution_mode?: "spec" | null;
     production_mode: string | null;
   };
   music_track: string | null;
@@ -82,6 +83,8 @@ export interface KickoffAgent {
 export interface Kickoff {
   project_id: string;
   request: string;
+  /** The project runs plan-once / Gemini-executes (`/spec-reel`). */
+  spec_mode?: boolean;
   agents: KickoffAgent[];
   started?: boolean;
 }

@@ -19,6 +19,7 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
+from backlot import studio_spec
 from backlot.project_store import MissingSource, ProjectFiles, TargetExists
 
 DECISIONS_DIR = "studio/decisions"
@@ -41,6 +42,13 @@ class ProposalPicks(BaseModel):
     voice: Optional[str] = Field(default=None, max_length=200)
 
 
+class SpecPicks(BaseModel):
+    """Answers at the requirements gate of spec mode (ids and short answers)."""
+
+    selected_improvements: list[str] = Field(default_factory=list, max_length=40)
+    answers: dict[str, str] = Field(default_factory=dict, max_length=40)
+
+
 class DecisionIn(BaseModel):
     stage: str = Field(min_length=1, max_length=64, pattern=r"^[a-z0-9_]+$")
     checkpoint_timestamp: str = Field(min_length=1, max_length=64)
@@ -48,6 +56,7 @@ class DecisionIn(BaseModel):
     # The user's words, stored exactly as typed (any language).
     notes: str = Field(default="", max_length=20000)
     proposal: Optional[ProposalPicks] = None
+    spec: Optional[SpecPicks] = None
 
 
 class DecisionError(Exception):
@@ -62,6 +71,8 @@ class DecisionError(Exception):
 
 
 def current_checkpoint(files: ProjectFiles, stage: str) -> Optional[dict[str, Any]]:
+    if stage in studio_spec.SPEC_STAGES:  # spec-mode gates are derived from the artifacts
+        return studio_spec.gate_checkpoint(files, stage)
     return files.read_json(f"checkpoint_{stage}.json")
 
 
@@ -150,6 +161,12 @@ def validate(
     ):
         raise DecisionError(409, "already_decided", "a decision for this review is already waiting")
 
+    if body.spec and body.action == "approve":
+        try:
+            studio_spec.check_picks(files, body.stage, body.spec.selected_improvements, body.spec.answers)
+        except studio_spec.SpecError as exc:
+            raise DecisionError(exc.status, exc.code, exc.detail) from None
+
     picks = body.proposal
     if picks and body.action == "approve":
         if picks.selected_concept_id is not None:
@@ -187,6 +204,7 @@ def record(
         "action": body.action,
         "notes": body.notes,
         "proposal": body.proposal.model_dump() if body.proposal else None,
+        "spec": body.spec.model_dump() if body.spec else None,
         "source": "studio",
         "user": user_id,
     }

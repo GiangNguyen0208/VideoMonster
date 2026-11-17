@@ -168,6 +168,21 @@ export function LookStep({
           />
           <Controller
             control={control}
+            name="execution_mode"
+            render={({ field }) => (
+              <ChipGroup
+                label={L.executionMode}
+                value={field.value}
+                onChange={(v) => field.onChange(v)}
+                options={[
+                  { value: "", label: L.executionStandard },
+                  { value: "spec", label: L.executionSpec },
+                ]}
+              />
+            )}
+          />
+          <Controller
+            control={control}
             name="checkpoint_policy"
             render={({ field }) => (
               <ChipGroup

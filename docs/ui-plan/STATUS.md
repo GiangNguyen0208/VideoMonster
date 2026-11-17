@@ -21,6 +21,7 @@ Status values: `not started` · `in progress` · `blocked` · `done`
 | D | [Design refresh via Stitch](#phase-d--design-refresh-via-google-stitch--done) | done (D.1–D.11; backend placeholders E-1…E-27 open) | 2026-11-11 |
 | F | [Remove the classic board](#phase-f--remove-the-classic-board--done) (port missing flows to Studio, then delete `backlot/ui/`) | done | 2026-11-13 |
 | G | [Unify migrated UI with shared components](#phase-g--unify-migrated-ui-with-shared-components--done) | done | 2026-11-13 |
+| PW | [Claude planner → Gemini worker](../planner-worker/STATUS.md) (own tracker; Studio integration is its Phase 4) | in progress | 2026-11-17 |
 
 ## Resume here — snapshot 2026-11-11
 

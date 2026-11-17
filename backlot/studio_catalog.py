@@ -216,6 +216,8 @@ class Advanced(BaseModel):
     composition_mode_preference: Optional[Literal["templated", "atelier"]] = None
     checkpoint_policy: Optional[Literal["guided", "manual_all"]] = None
     production_mode: Optional[str] = Field(default=None, max_length=64)
+    # "spec": the agent plans once (requirements → spec), Gemini executes.
+    execution_mode: Optional[Literal["spec"]] = None
 
 
 class IntakeIn(BaseModel):
@@ -291,22 +293,26 @@ def new_project_id(title: str, store: ProjectStore) -> str:
 
 
 def has_checkpoint(files: ProjectFiles) -> bool:
-    return bool(files.list("", "checkpoint_*.json"))
+    """The agent has started: a pipeline checkpoint, or (spec mode) the brief."""
+    return bool(files.list("", "checkpoint_*.json")) or (
+        files.stat("artifacts/requirements_brief.json") is not None
+    )
 
 
 # ---- kickoff -------------------------------------------------------------------
 
 
-def kickoff(project_id: str) -> dict[str, Any]:
+def kickoff(project_id: str, spec_mode: bool = False) -> dict[str, Any]:
     request = f"Continue Studio project {project_id}"
     return {
         "project_id": project_id,
         "request": request,
+        "spec_mode": spec_mode,
         "agents": [
             {
                 "id": "claude",
                 "label": "Claude Code",
-                "command": f'claude "/reel {request}"',
+                "command": f'claude "/{"spec-reel" if spec_mode else "reel"} {request}"',
                 "note": "Run from the OpenMontage folder.",
             },
             {

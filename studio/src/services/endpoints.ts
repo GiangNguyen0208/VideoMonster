@@ -47,11 +47,18 @@ export const v1 = {
       upload: (name: string, kind: UploadKind = "footage") =>
         `${base}/uploads?name=${enc(name)}&kind=${kind}`,
       uploadFile: (name: string) => `${base}/uploads/${enc(name)}`,
+      libraryMusic: `${base}/inputs/music`,
       references: `${base}/references`,
       reference: (refId: string) => `${base}/references/${enc(refId)}`,
       results: `${base}/results`,
       export: `${base}/export`,
       cost: `${base}/cost`,
+      specFlow: `${base}/spec-flow`,
+      requirements: `${base}/requirements`,
+      requirementsDecision: `${base}/requirements/decision`,
+      spec: `${base}/spec`,
+      specDecision: `${base}/spec/decision`,
+      render: `${base}/render`,
     };
   },
 };

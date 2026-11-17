@@ -157,6 +157,49 @@ def cmd_consume_decision(project_id: str, decision_id: str) -> int:
     return 0
 
 
+def cmd_render(project_id: str, only: str | None, compose: bool = True) -> int:
+    """Gemini worker executes the sealed spec. No Claude calls."""
+    from lib import spec_render
+
+    files = _project_files(project_id)
+    if files is None:
+        print(f"render: unknown project {project_id!r}", file=sys.stderr)
+        return 3
+    spec = files.read_json("artifacts/production_spec.json")
+    if spec is None:
+        print("render: artifacts/production_spec.json missing — follow .agents/skills/spec-worker/SKILL.md", file=sys.stderr)
+        return 3
+    from backlot.spec_cli import is_spec_approved
+
+    if not is_spec_approved(files, spec):
+        print("render: the user has not approved this spec_hash — run `spec approve` after approval", file=sys.stderr)
+        return 7
+    from backlot.project_store import DiskProjectStore
+    from backlot.state import PROJECTS_DIR
+
+    root = DiskProjectStore(PROJECTS_DIR).project_dir(project_id)
+
+    def show(ev: dict) -> None:
+        print(f"render: [{ev['done']}/{ev['total']}] {ev['job_id']} {ev['status']}", flush=True)
+
+    only_jobs = {j for j in only.split(",") if j} if only else None
+    result = spec_render.render_project(root, spec, only_jobs=only_jobs, compose=compose, on_progress=show)
+    report, rr = result["report"], result["render_report"]
+    if report:
+        for job in report["jobs"]:
+            why = f" — {job['reasons'][0]}" if job.get("reasons") else ""
+            print(f"render: {job['job_id']:<18} {job['status']}{why}")
+        print(f"render: {report['status']} (cost ${report['total_cost_usd']:.4f})")
+    if result["error"]:
+        print(f"render: {result['error']}", file=sys.stderr)
+    if rr:
+        for note in rr["verification_notes"] + [f"warning: {w}" for w in rr["warnings"]]:
+            print(f"render: {note}")
+        out = rr["outputs"][0]
+        print(f"render: {out['path']} {out['resolution']} {out['duration_seconds']}s")
+    return result["code"]
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="backlot", description=__doc__)
     sub = parser.add_subparsers(dest="command")
@@ -178,7 +221,45 @@ def main(argv: list[str] | None = None) -> int:
     p_consume.add_argument("project_id")
     p_consume.add_argument("decision_id")
 
+    p_render = sub.add_parser("render", help="Gemini worker executes the approved production spec")
+    p_render.add_argument("project_id")
+    p_render.add_argument("--only", default=None, help="comma-separated job ids")
+    p_render.add_argument("--no-compose", action="store_true", help="stop after generating assets")
+
+    p_req = sub.add_parser("requirements", help="requirements brief gate (agent use)")
+    req_sub = p_req.add_subparsers(dest="action", required=True)
+    rc = req_sub.add_parser("check")
+    rc.add_argument("project_id")
+    ra = req_sub.add_parser("approve")
+    ra.add_argument("project_id")
+    ra.add_argument("--improvements", default="", help="comma-separated improvement ids the user picked")
+    ra.add_argument("--answer", action="append", default=[], help="question_id=answer (repeatable)")
+
+    p_spec = sub.add_parser("spec", help="production spec gate (agent use)")
+    spec_sub = p_spec.add_subparsers(dest="action", required=True)
+    sc = spec_sub.add_parser("check")
+    sc.add_argument("project_id")
+    sc.add_argument("--offline", action="store_true", help="skip tool availability check")
+    sa = spec_sub.add_parser("approve")
+    sa.add_argument("project_id")
+    ss = spec_sub.add_parser("status")
+    ss.add_argument("project_id")
+
     args = parser.parse_args(argv)
+    if args.command == "requirements":
+        from backlot import spec_cli
+        if args.action == "check":
+            return spec_cli.requirements_check(args.project_id)
+        return spec_cli.requirements_approve(args.project_id, args.improvements, args.answer)
+    if args.command == "spec":
+        from backlot import spec_cli
+        if args.action == "check":
+            return spec_cli.spec_check(args.project_id, args.offline)
+        if args.action == "approve":
+            return spec_cli.spec_approve(args.project_id)
+        return spec_cli.spec_status(args.project_id)
+    if args.command == "render":
+        return cmd_render(args.project_id, args.only, not args.no_compose)
     if args.command == "open":
         return cmd_open(args.project_id)
     if args.command == "serve":
