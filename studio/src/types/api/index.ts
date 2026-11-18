@@ -7,3 +7,4 @@ export type * from "./session";
 export type * from "./settings";
 export type * from "./setup";
 export type * from "./uploads";
+export type * from "./spec";

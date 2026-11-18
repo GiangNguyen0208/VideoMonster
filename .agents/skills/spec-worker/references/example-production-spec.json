@@ -1,0 +1,55 @@
+{
+  "language": "en",
+  "duration_seconds": 12,
+  "aspect_ratio": "16:9",
+  "style_summary": "Warm golden-hour macro nature photography, soft natural light, shallow depth of field, gentle camera movement, calm wonder.",
+  "applied_improvements": ["i1"],
+  "brief": { "topic": "Why bees matter", "audience": "general public", "tone": "warm, wonder-filled" },
+  "script": {
+    "sections": [
+      { "id": "a", "text": "Bee pollination feeds a third of our food." },
+      { "id": "b", "text": "Protect them, and they keep our tables full." }
+    ]
+  },
+  "scenes": [
+    { "id": "s1", "start_seconds": 0, "end_seconds": 6, "script_section_id": "a", "serves": ["g1"],
+      "description": "Macro of a honeybee landing on a flower, golden hour." },
+    { "id": "s2", "start_seconds": 6, "end_seconds": 12, "script_section_id": "b", "serves": ["g2"],
+      "description": "Pull back from the flower to a sunlit orchard and a full harvest table.", "transition_in": "fade" }
+  ],
+  "audio_plan": { "music_volume_db": -12, "music_duck_db": -10, "burn_subtitles": true },
+  "jobs": [
+    { "job_id": "tts_s1", "scene_id": "s1", "kind": "tts", "tool": "gemini_tts",
+      "params": { "text": "Bee pollination feeds a third of our food.", "voice_id": "Kore", "style": "warm, calm, gentle wonder" },
+      "output_path": "assets/audio/s1.wav",
+      "acceptance": { "expected_text": "Bee pollination feeds a third of our food.", "duration_seconds": 6, "max_wer": 0.15 },
+      "retry_ladder": [ { "note": "plainer delivery", "params_patch": { "style": "calm, clear, steady pace" } } ],
+      "estimated_cost_usd": 0.02 },
+    { "job_id": "tts_s2", "scene_id": "s2", "kind": "tts", "tool": "gemini_tts",
+      "params": { "text": "Protect them, and they keep our tables full.", "voice_id": "Kore", "style": "warm, calm, gentle wonder" },
+      "output_path": "assets/audio/s2.wav",
+      "acceptance": { "expected_text": "Protect them, and they keep our tables full.", "duration_seconds": 6, "max_wer": 0.15 },
+      "retry_ladder": [ { "note": "plainer delivery", "params_patch": { "style": "calm, clear, steady pace" } } ],
+      "estimated_cost_usd": 0.02 },
+    { "job_id": "vid_s1", "scene_id": "s1", "kind": "video", "tool": "gemini_omni_video",
+      "params": { "operation": "text_to_video", "aspect_ratio": "16:9",
+        "prompt": "Warm golden-hour macro nature photography, shallow depth of field. A honeybee with fuzzy golden body lands on a white apple blossom, wings fluttering, pollen dusting its legs. Slow gentle camera drift, one continuous shot, soft natural light, calm wonder. No text, no people." },
+      "output_path": "assets/video/s1.mp4",
+      "acceptance": { "must_show": ["Is a bee clearly visible?", "Is the bee on or near a flower?"], "must_not_show": ["Is there any text or watermark?", "Is a person visible?"], "vision_pass_ratio": 1.0, "expect_audio": false },
+      "retry_ladder": [ { "note": "simplify", "params_patch": { "prompt": "Macro shot of a honeybee on a white flower, golden hour light, shallow depth of field, one slow continuous shot. No text, no people." } } ],
+      "estimated_cost_usd": 0.6 },
+    { "job_id": "vid_s2", "scene_id": "s2", "kind": "video", "tool": "gemini_omni_video",
+      "params": { "operation": "text_to_video", "aspect_ratio": "16:9",
+        "prompt": "Warm golden-hour nature photography. Camera slowly pulls back from a blossoming apple branch to reveal a sunlit orchard, then a rustic wooden table full of ripe apples, almonds and berries. One continuous gentle shot, soft natural light, calm wonder. No text, no people." },
+      "output_path": "assets/video/s2.mp4",
+      "acceptance": { "must_show": ["Is a table with fruit or food visible?", "Is it a warm sunlit outdoor setting?"], "must_not_show": ["Is there any text or watermark?", "Is a person visible?"], "vision_pass_ratio": 1.0 },
+      "retry_ladder": [ { "note": "simplify", "params_patch": { "prompt": "Sunlit orchard in golden hour, a wooden table with apples and berries in the foreground, slow gentle camera movement, one continuous shot. No text, no people." } } ],
+      "estimated_cost_usd": 0.6 },
+    { "job_id": "music_bg", "kind": "music", "tool": "google_music",
+      "params": { "model": "lyria-3.5", "duration_seconds": 14, "prompt": "Soft warm acoustic guitar and light piano, slow tempo, gentle and hopeful, instrumental, no vocals" },
+      "output_path": "assets/music/bg.mp3",
+      "acceptance": { "duration_seconds": 12, "duration_tolerance_seconds": 2 },
+      "estimated_cost_usd": 0.1 }
+  ],
+  "estimated_total_cost_usd": 1.34
+}

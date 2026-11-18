@@ -99,6 +99,16 @@ def music_track(name: str) -> Optional[Path]:
     return target if target.is_file() and target.suffix.lower() in AUDIO_EXTENSIONS else None
 
 
+async def iter_file(path: Path, chunk_size: int = 1024 * 1024) -> AsyncIterator[bytes]:
+    """Stream a local file in chunks (to copy a library track into a project)."""
+    with path.open("rb") as handle:
+        while True:
+            block = handle.read(chunk_size)
+            if not block:
+                return
+            yield block
+
+
 async def add_music(name: str, chunks: AsyncIterator[bytes], max_bytes: int) -> Path:
     return await stream_into(music_dir(), name, chunks, max_bytes)
 

@@ -1,0 +1,123 @@
+{
+  "version": "1.0",
+  "project_id": "bees-12s",
+  "request": "Make a short warm video that explains why bees matter for the food on our plate. Mention pollination.",
+  "summary": "A 12-second warm explainer that tells a general audience bees pollinate a third of our food, ending on a call to protect them.",
+  "language": "en",
+  "constraints": {
+    "duration_seconds": 12,
+    "aspect_ratio": "16:9",
+    "platform": "youtube",
+    "tone": "warm, wonder-filled",
+    "budget_cap_usd": 5,
+    "must_include": [
+      "pollination",
+      "a third of our food"
+    ],
+    "avoid": [
+      "pesticide"
+    ]
+  },
+  "goals": [
+    {
+      "id": "g1",
+      "text": "Viewer learns that bees pollinate about a third of our food",
+      "success_check": "Narration says bee pollination feeds a third of our food; a bee on a flower is shown while it is said"
+    },
+    {
+      "id": "g2",
+      "text": "Viewer feels moved to care about bees",
+      "success_check": "Closing scene has a gentle call to protect them"
+    }
+  ],
+  "non_goals": [
+    {
+      "id": "n1",
+      "text": "No statistics beyond 'a third of our food'"
+    },
+    {
+      "id": "n2",
+      "text": "No political or policy positions"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sc1",
+      "viewer": "curious adult scrolling a feed",
+      "situation": "sees the first 3 seconds with sound off",
+      "outcome": "understands the topic from picture and subtitles alone"
+    },
+    {
+      "id": "sc2",
+      "viewer": "parent watching with a child",
+      "situation": "plays it through with sound",
+      "outcome": "can repeat the one-sentence takeaway"
+    }
+  ],
+  "assumptions": [
+    "Narrator voice is neutral and calm",
+    "Footage is generated, not stock"
+  ],
+  "open_questions": [
+    {
+      "id": "q1",
+      "question": "Should the narrator voice be feminine, masculine or neutral?",
+      "default_answer": "neutral"
+    }
+  ],
+  "improvements": [
+    {
+      "id": "i1",
+      "title": "Add soft background music",
+      "benefit": "Warmer mood; masks silence between lines",
+      "cost_delta_usd": 0.1,
+      "risk": "low",
+      "recommended": true,
+      "rationale": "Cheap and lifts a short piece; narration stays clearly on top"
+    },
+    {
+      "id": "i2",
+      "title": "Animate the opening shot from a generated still",
+      "benefit": "More consistent look between shots",
+      "cost_delta_usd": 0.15,
+      "risk": "medium",
+      "recommended": false,
+      "rationale": "Adds a dependent job that can fail; not needed for 12 seconds"
+    }
+  ],
+  "approval": {
+    "status": "pending"
+  },
+  "inputs": [
+    {
+      "id": "in_voice",
+      "label": "Narrator voice",
+      "help": "Pick one of Gemini's voices",
+      "kind": "choice",
+      "required": false,
+      "options": [
+        "Kore",
+        "Puck",
+        "Charon"
+      ],
+      "default_answer": "Kore",
+      "binds": "voice_id"
+    },
+    {
+      "id": "in_subs",
+      "label": "Show subtitles",
+      "kind": "boolean",
+      "required": false,
+      "default_answer": "true",
+      "binds": "subtitles"
+    },
+    {
+      "id": "in_logo",
+      "label": "Logo (shown on the last scene)",
+      "kind": "file",
+      "accept": "image",
+      "required": false,
+      "binds": "logo_file"
+    }
+  ]
+}

@@ -18,4 +18,4 @@ make studio-check                   # lint + typecheck + format + tests + build 
 
 Layout: `src/app` (shell, router, providers), `src/routes` (pages), `src/components/ui`
 (design-system primitives), `src/lib/api` (typed client + `useSSE`), `src/content` (copy/config).
-Design tokens live in `src/index.css` and mirror `backlot/ui/board.css`.
+Design tokens live in `src/index.css` and are Studio's own.

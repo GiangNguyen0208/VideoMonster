@@ -1,5 +1,7 @@
 # Studio UI refresh — "Cinematic Darkroom" (Phase D.4–D.11)
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](../STATUS.md#phase-f--remove-the-classic-board--done).
+
 **Status:** approved plan, tracked in [`../STATUS.md`](../STATUS.md) (Phase D).
 
 Inputs:

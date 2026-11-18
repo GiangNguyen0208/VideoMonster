@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-/** Shared with the classic Backlot board (backlot/ui/board.js, library.js). */
+/** localStorage key for the chosen theme. */
 export const THEME_KEY = "backlot.theme";
 export type Theme = "dark" | "light";
 
@@ -16,7 +16,7 @@ export function useTheme(): [Theme, () => void] {
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
 
-  // Follow changes made in another tab (e.g. the classic board's toggle).
+  // Follow changes made in another tab (e.g. another Studio tab).
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === THEME_KEY) setTheme(readTheme());

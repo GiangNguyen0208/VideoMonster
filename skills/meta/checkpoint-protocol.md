@@ -67,14 +67,14 @@ init_project("my-project", title="My Project", pipeline_type="cinematic")
 ```
 
 This creates the canonical directory layout and writes `project.json` — the
-marker the Backlot board needs to show the project before its first
-checkpoint. Then launch the board: `python -m backlot open my-project`
-(non-fatal if unavailable — the board is an observer, never a blocker).
+marker Studio needs to show the project before its first
+checkpoint. Then open Studio: `python -m backlot open my-project`
+(non-fatal if unavailable — Studio is an observer, never a blocker).
 
 ### Step 4: Intra-Stage Checkpointing (Resume Support + Liveness)
 
 **On entering any stage, write an `in_progress` checkpoint first.** This is
-what tells the user (via the Backlot board) that the stage is live rather
+what tells the user (via Studio) that the stage is live rather
 than stalled — certainty matters more than speed.
 
 Long-running stages (like `assets` or `compose` loops) can fail midway due to API errors, rate limits, or session interruptions. To allow resuming from the exact point of failure (e.g., Scene 4):
@@ -117,7 +117,7 @@ When `human_approval_default: true`:
 
    ### Artifact Summary
    [Key details from the artifact — title, duration, key decisions]
-   [If the Backlot board is running, point to it: the artifact renders there]
+   [If Studio is running, point to it: the artifact renders there]
 
    ### Review Findings
    [Summary from reviewer: N critical (all fixed), N suggestions]
@@ -150,7 +150,7 @@ When `human_approval_default: true`:
 
 6. **The assets gate reviews the storyboard — before any draft render.**
    `assets` now gates in every pipeline: present the generated assets
-   scene-by-scene (the Backlot board's filmstrip is the natural review
+   scene-by-scene (Studio's storyboard is the natural review
    surface), including spend so far and the projected compose cost. A bad
    asset caught here saves a full re-render.
 

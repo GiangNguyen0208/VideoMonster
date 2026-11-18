@@ -1,5 +1,7 @@
 # 03 — Architecture
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](STATUS.md#phase-f--remove-the-classic-board--done).
+
 ## 1. Principle: companion, not controller
 
 The agent stays the **only** process that advances a production and the **only** writer of checkpoints and artifacts. Studio adds a second input channel next to the chat: structured **intents** written to disk. The agent reads and applies them under the same rules it uses for chat replies.

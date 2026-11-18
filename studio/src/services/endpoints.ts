@@ -10,7 +10,7 @@ const V1 = "/api/v1";
 /** Encode each segment of a project-relative path but keep the slashes. */
 export const encodePath = (rel: string) => rel.split("/").map(enc).join("/");
 
-/** Backlot read API (unversioned, shared with the classic board). */
+/** Backlot read API (unversioned). */
 export const board = {
   projects: "/api/projects",
   state: (id: string) => `/api/project/${enc(id)}/state`,
@@ -47,11 +47,18 @@ export const v1 = {
       upload: (name: string, kind: UploadKind = "footage") =>
         `${base}/uploads?name=${enc(name)}&kind=${kind}`,
       uploadFile: (name: string) => `${base}/uploads/${enc(name)}`,
+      libraryMusic: `${base}/inputs/music`,
       references: `${base}/references`,
       reference: (refId: string) => `${base}/references/${enc(refId)}`,
       results: `${base}/results`,
       export: `${base}/export`,
       cost: `${base}/cost`,
+      specFlow: `${base}/spec-flow`,
+      requirements: `${base}/requirements`,
+      requirementsDecision: `${base}/requirements/decision`,
+      spec: `${base}/spec`,
+      specDecision: `${base}/spec/decision`,
+      render: `${base}/render`,
     };
   },
 };

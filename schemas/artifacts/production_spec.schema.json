@@ -1,0 +1,160 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/production_spec",
+  "title": "Production Spec",
+  "description": "Fully resolved, locked production contract. Authored once by the planner (Claude); executed mechanically by the worker (Gemini). The worker makes no creative decisions: every tool, parameter, retry step and acceptance check is decided here.",
+  "type": "object",
+  "required": ["version", "project_id", "language", "duration_seconds", "aspect_ratio", "script", "scenes", "jobs"],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "project_id": { "type": "string" },
+    "language": { "type": "string", "description": "BCP-47 tag of the narration, e.g. vi, en" },
+    "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+    "aspect_ratio": { "type": "string", "enum": ["16:9", "9:16", "1:1"] },
+    "requirements_hash": { "type": "string", "description": "brief_hash of the approved requirements_brief this spec answers" },
+    "applied_improvements": { "type": "array", "items": { "type": "string" }, "description": "Ids of the improvements the user selected; the spec must implement exactly these" },
+    "style_summary": { "type": "string", "description": "One paragraph visual/tonal direction shared by every job" },
+    "brief": {
+      "type": "object",
+      "description": "Echo of the intake brief the plan answers",
+      "properties": {
+        "topic": { "type": "string" },
+        "audience": { "type": "string" },
+        "tone": { "type": "string" },
+        "hook": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "script": {
+      "type": "object",
+      "required": ["sections"],
+      "properties": {
+        "sections": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "text"],
+            "properties": {
+              "id": { "type": "string" },
+              "text": { "type": "string", "description": "Exact narration. TTS must read this verbatim; subtitles are built from it." }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "start_seconds", "end_seconds", "script_section_id", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "start_seconds": { "type": "number", "minimum": 0 },
+          "end_seconds": { "type": "number", "exclusiveMinimum": 0 },
+          "script_section_id": { "type": "string" },
+          "description": { "type": "string" },
+          "serves": { "type": "array", "items": { "type": "string" }, "description": "Requirement goal ids this scene advances" },
+          "transition_in": { "type": "string", "enum": ["cut", "fade", "crossfade", "dip_to_black"], "default": "cut" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "audio_plan": {
+      "type": "object",
+      "properties": {
+        "music_volume_db": { "type": "number", "default": -12, "description": "Music level (dB) while nobody is speaking" },
+        "music_duck_db": { "type": "number", "default": -10, "description": "Extra dB cut applied to the music during narration (music sits at music_volume_db + music_duck_db under speech)" },
+        "burn_subtitles": { "type": "boolean", "default": true }
+      },
+      "additionalProperties": false
+    },
+    "brand_overlay": {
+      "type": "object",
+      "description": "Creator logo shown on the last scene (ffmpeg overlay).",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "description": "Project-relative image, e.g. inputs/logo.png" },
+        "position": { "type": "string", "enum": ["top_left", "top_right", "bottom_left", "bottom_right", "center"], "default": "bottom_right" },
+        "scale": { "type": "number", "exclusiveMinimum": 0, "maximum": 1, "default": 0.2, "description": "Logo width as a fraction of the video width" },
+        "margin": { "type": "integer", "minimum": 0, "default": 24 }
+      },
+      "additionalProperties": false
+    },
+    "jobs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["job_id", "kind", "tool", "params", "output_path", "acceptance"],
+        "properties": {
+          "job_id": { "type": "string" },
+          "scene_id": { "type": "string", "description": "Omit for project-wide jobs such as music" },
+          "kind": { "type": "string", "enum": ["video", "image", "tts", "music"] },
+          "tool": { "type": "string", "description": "Exact registry tool name. The worker calls it directly; no selector routing." },
+          "params": { "type": "object", "description": "Exact input for tool.execute(). Never edited by the worker except through retry_ladder." },
+          "depends_on": { "type": "array", "items": { "type": "string" }, "default": [] },
+          "input_from": {
+            "type": "object",
+            "description": "Maps a param name to the job_id whose output file path is injected, e.g. {\"image_path\": \"img_s1\"}",
+            "additionalProperties": { "type": "string" }
+          },
+          "output_path": { "type": "string", "description": "Relative to the project directory" },
+          "acceptance": {
+            "type": "object",
+            "properties": {
+              "duration_seconds": { "type": "number" },
+              "duration_tolerance_seconds": { "type": "number", "default": 1.0 },
+              "min_width": { "type": "integer" },
+              "min_height": { "type": "integer" },
+              "aspect_ratio": { "type": "string" },
+              "expect_audio": { "type": "boolean" },
+              "must_show": { "type": "array", "items": { "type": "string" }, "description": "Yes/no questions a vision model must answer YES for each sampled frame set" },
+              "must_not_show": { "type": "array", "items": { "type": "string" } },
+              "vision_pass_ratio": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 },
+              "expected_text": { "type": "string", "description": "tts: the verbatim script text the audio must match" },
+              "max_wer": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.15 }
+            },
+            "additionalProperties": false
+          },
+          "retry_ladder": {
+            "type": "array",
+            "description": "Pre-written params overrides applied in order on each failed attempt. Empty means a single attempt.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "note": { "type": "string" },
+                "params_patch": { "type": "object" }
+              },
+              "required": ["params_patch"],
+              "additionalProperties": false
+            },
+            "default": []
+          },
+          "fallback_tool": {
+            "type": "object",
+            "description": "Optional Gemini-family tool to try after the ladder is exhausted",
+            "properties": {
+              "tool": { "type": "string" },
+              "params": { "type": "object" }
+            },
+            "required": ["tool", "params"],
+            "additionalProperties": false
+          },
+          "estimated_cost_usd": { "type": "number", "minimum": 0 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "estimated_total_cost_usd": { "type": "number", "minimum": 0 },
+    "spec_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "sha256 over canonical JSON of {script, scenes, jobs}. Set by the planner after validation; the worker refuses to run on mismatch."
+    }
+  },
+  "additionalProperties": false
+}

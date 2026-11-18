@@ -75,7 +75,7 @@ OpenMontage/
 ├── .agents/skills/         # Layer 3: external technology skills (FFmpeg, HyperFrames, GSAP, etc.)
 ├── styles/                 # Visual style playbooks (YAML) + loader
 ├── remotion-composer/      # Node.js/React — Remotion video composition renderer
-├── backlot/                # Local living-storyboard board (FastAPI + SSE) that watches projects/
+├── backlot/                # Local server (FastAPI + SSE) behind Studio; watches projects/
 ├── ink-theater/            # Hand-drawn ink animation engine + Ink Puppet mocap (JS, HyperFrames runtime)
 ├── scripts/                # Dev scripts: atelier scaffolds, Backlot simulators, provider smoke runs
 ├── tests/                  # Contract tests, QA integration tests, eval harness
@@ -294,7 +294,7 @@ Checkpoints persist pipeline state as JSON in the project's `pipeline/` director
 | `publish_log` | publish | Platform publication entries with status |
 | `review` | (any) | Reviewer feedback and approval records |
 | `cost_log` | (any) | Budget tracking entries |
-| `decision_log` | (any) | Append-only audit trail of every meaningful production choice (the Backlot Decisions rail) |
+| `decision_log` | (any) | Append-only audit trail of every meaningful production choice (Studio's Decisions tab) |
 | `final_review` | compose | Structured self-review of the rendered output |
 | `source_media_review` | (pre-idea) | Review of user-supplied media, written before the first planning stage |
 | `video_analysis_brief` | (pre-idea) | Structured analysis of a reference video from `video_analyzer` |
@@ -498,7 +498,7 @@ Consumed via `npx hyperframes` (no monorepo checkout needed). Runtime floor: Nod
 
 ```
 tests/
-├── backlot/                # Backlot board server, state derivation, UI bug-bash
+├── backlot/                # Backlot server, state derivation, Studio API
 ├── contracts/              # Phase 0-3: tool contract validation, schema checks, registry tests
 ├── fixtures/               # Shared fixtures (provider payloads, sample media)
 ├── lib/                    # lib/ runtime tests (checkpoint, decision log, corpus, scoring)

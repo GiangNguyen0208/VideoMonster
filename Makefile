@@ -146,10 +146,10 @@ studio-dev:
 
 studio-build:
 	cd studio && npm run build
-	@echo "==> Studio built. Run 'make studio-open' (or: $(RUN_PYTHON) -m backlot open --studio)."
+	@echo "==> Studio built. Run 'make studio-open' (or: $(RUN_PYTHON) -m backlot open)."
 
 studio-open: ensure-venv
-	"$(RUN_PYTHON)" -m backlot open --studio
+	"$(RUN_PYTHON)" -m backlot open
 
 studio-test:
 	cd studio && npm test

@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/requirements_brief",
+  "title": "Requirements Brief",
+  "description": "What the user actually asked for, made explicit before any script exists: goals, non-goals, viewer scenarios, assumptions, open questions and proposed improvements. Written for EVERY request, small or large. The user approves it (and picks improvements) before the spec is written; the spec must trace back to it.",
+  "type": "object",
+  "required": ["version", "project_id", "request", "summary", "language", "constraints", "goals", "non_goals", "scenarios", "improvements", "approval"],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "project_id": { "type": "string" },
+    "request": { "type": "string", "description": "The user's request, verbatim (intake topic + notes). Never paraphrased." },
+    "summary": { "type": "string", "description": "One or two sentences: what will exist when this succeeds" },
+    "language": { "type": "string" },
+    "constraints": {
+      "type": "object",
+      "required": ["duration_seconds", "aspect_ratio"],
+      "properties": {
+        "duration_seconds": { "type": "number", "exclusiveMinimum": 0 },
+        "aspect_ratio": { "type": "string", "enum": ["16:9", "9:16", "1:1"] },
+        "platform": { "type": "string" },
+        "tone": { "type": "string" },
+        "budget_cap_usd": { "type": "number", "minimum": 0 },
+        "must_include": { "type": "array", "items": { "type": "string" } },
+        "avoid": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": false
+    },
+    "goals": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["id", "text", "success_check"],
+        "properties": {
+          "id": { "type": "string" },
+          "text": { "type": "string" },
+          "success_check": { "type": "string", "description": "How a reviewer can tell the video achieved this goal" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "non_goals": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["id", "text"],
+        "properties": { "id": { "type": "string" }, "text": { "type": "string" } },
+        "additionalProperties": false
+      }
+    },
+    "scenarios": {
+      "type": "array", "minItems": 1,
+      "description": "Viewer scenarios: who watches, in what situation, what they should know/feel/do afterwards",
+      "items": {
+        "type": "object", "required": ["id", "viewer", "situation", "outcome"],
+        "properties": {
+          "id": { "type": "string" },
+          "viewer": { "type": "string" },
+          "situation": { "type": "string" },
+          "outcome": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "open_questions": {
+      "type": "array", "default": [],
+      "items": {
+        "type": "object", "required": ["id", "question", "default_answer"],
+        "properties": {
+          "id": { "type": "string" },
+          "question": { "type": "string" },
+          "default_answer": { "type": "string", "description": "Used when the user does not answer" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "inputs": {
+      "type": "array", "default": [],
+      "description": "What only the video's creator can supply (language, voice, own recording, character image, music, logo...). Required ones block approval until answered; each answer lands in approval.answers.",
+      "items": {
+        "type": "object", "required": ["id", "label", "kind", "required"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "help": { "type": "string" },
+          "kind": { "type": "string", "enum": ["text", "choice", "file", "boolean"] },
+          "required": { "type": "boolean" },
+          "options": { "type": "array", "items": { "type": "string" }, "description": "choice only" },
+          "accept": { "type": "string", "enum": ["image", "audio"], "description": "file only" },
+          "default_answer": { "type": "string", "description": "Used when an optional input is left empty; boolean defaults are 'true' or 'false'" },
+          "required_if": {
+            "type": "object", "required": ["input", "equals"],
+            "description": "Required only when another input has this answer",
+            "properties": { "input": { "type": "string" }, "equals": { "type": "string" } },
+            "additionalProperties": false
+          },
+          "binds": {
+            "type": "string",
+            "enum": ["language", "voice_source", "voice_id", "voice_style", "voice_file", "dialogue", "character_ref", "character_notes", "music_source", "music_file", "subtitles", "brand_text", "logo_file", "logo_position"],
+            "description": "Which part of the spec this answer must show up in (checked by spec check)"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "improvements": {
+      "type": "array",
+      "description": "Optional upgrades the user can pick. Always include a recommendation.",
+      "items": {
+        "type": "object", "required": ["id", "title", "benefit", "cost_delta_usd", "risk", "recommended", "rationale"],
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "benefit": { "type": "string" },
+          "cost_delta_usd": { "type": "number" },
+          "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+          "recommended": { "type": "boolean" },
+          "rationale": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "approval": {
+      "type": "object", "required": ["status"],
+      "properties": {
+        "status": { "type": "string", "enum": ["pending", "approved"] },
+        "selected_improvements": { "type": "array", "items": { "type": "string" } },
+        "answers": { "type": "object", "additionalProperties": { "type": "string" } },
+        "approved_at": { "type": "string" },
+        "brief_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

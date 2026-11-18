@@ -1,9 +1,8 @@
-import { Badge } from "@/components/ui";
+import { Badge, Fact } from "@/components/ui";
 import { RUNTIME_LABELS, titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
 import { fmtDuration, fmtMoney } from "@/utils/format";
 import { asArray, asRecord, asText } from "./adapters";
-import { Field } from "./Section";
 
 /** Proposal: concept options (selected one highlighted), plan and cost estimate. */
 export function ConceptView({ proposal }: { proposal: unknown }) {
@@ -65,11 +64,11 @@ export function ConceptView({ proposal }: { proposal: unknown }) {
       )}
       <dl className="grid gap-4 sm:grid-cols-3">
         {cost && typeof cost.total_estimated_usd === "number" && (
-          <Field label={L.estimatedCost}>{fmtMoney(cost.total_estimated_usd)}</Field>
+          <Fact label={L.estimatedCost}>{fmtMoney(cost.total_estimated_usd)}</Fact>
         )}
-        {runtime && <Field label={L.engine}>{RUNTIME_LABELS[runtime] ?? runtime}</Field>}
-        {mode && <Field label={L.look}>{mode === "atelier" ? L.lookCustom : L.lookStandard}</Field>}
-        {approval && <Field label={L.planApproval}>{titleCase(approval)}</Field>}
+        {runtime && <Fact label={L.engine}>{RUNTIME_LABELS[runtime] ?? runtime}</Fact>}
+        {mode && <Fact label={L.look}>{mode === "atelier" ? L.lookCustom : L.lookStandard}</Fact>}
+        {approval && <Fact label={L.planApproval}>{titleCase(approval)}</Fact>}
       </dl>
     </div>
   );

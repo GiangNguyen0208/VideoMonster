@@ -50,7 +50,17 @@ MEDIA_EXTENSIONS: dict[str, frozenset[str]] = {
 _GENERIC_TYPES = frozenset({"", "application/octet-stream", "binary/octet-stream"})
 _SUBTITLE_TYPES = frozenset({"application/x-subrip", "text/plain", "text/vtt", "text/x-ssa"})
 
-UploadKind = Literal["footage", "reference"]
+UploadKind = Literal["footage", "reference", "voice", "character_ref", "logo", "music"]
+
+# Kinds that only make sense for one media type (spec-mode creator inputs).
+KIND_MEDIA: dict[str, str] = {"voice": "audio", "music": "audio", "character_ref": "image", "logo": "image"}
+
+
+def check_kind(kind: str, name: str) -> None:
+    """415 when a creator input is the wrong media (a logo that is a video, a voice that is an image)."""
+    want = KIND_MEDIA.get(kind)
+    if want and media_kind(name) != want:
+        raise UploadError(415, "wrong_media", f"a {kind.replace('_', ' ')} must be {want}, not {Path(name).suffix or name}")
 
 
 class UploadError(Exception):
@@ -150,6 +160,16 @@ async def save_music(
     check_type(name, content_type)
     path = await _guarded(machine_store.add_music(name, chunks, _cap(declared_size)))
     return path.name
+
+
+async def copy_library_track(files: ProjectFiles, name: str) -> dict[str, Any]:
+    """Copy a music-library track into the project's ``inputs/`` and register it
+    as the creator's music. The library is shared; the project gets its own copy."""
+    path = music_track(name)
+    info = await _guarded(
+        files.write_stream(INPUTS_DIR, safe_name(Path(name).name), machine_store.iter_file(path), max_upload_bytes())
+    )
+    return add_file(files, info, "audio", "music")
 
 
 def _cap(declared_size: Optional[int]) -> int:

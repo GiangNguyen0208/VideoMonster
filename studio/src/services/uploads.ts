@@ -1,4 +1,10 @@
-import type { InputReference, MusicTrack, ProjectInputs, UploadLimits } from "@/types/api";
+import type {
+  InputFile,
+  InputReference,
+  MusicTrack,
+  ProjectInputs,
+  UploadLimits,
+} from "@/types/api";
 import { v1 } from "./endpoints";
 import {
   api,
@@ -23,6 +29,10 @@ export const addReference = (projectId: string, ref: { url: string; notes: strin
 
 export const removeReference = (projectId: string, refId: string) =>
   api<null>(v1.project(projectId).reference(refId), { method: "DELETE" });
+
+/** Copy a music-library track into the project as the creator's music. */
+export const copyLibraryTrack = (projectId: string, name: string) =>
+  api<InputFile>(v1.project(projectId).libraryMusic, { json: { name } });
 
 export const listMusic = () => api<{ tracks: MusicTrack[] }>(v1.music);
 

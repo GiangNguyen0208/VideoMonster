@@ -21,6 +21,7 @@ export function useProject(projectId: string) {
     queryKeys.inputs(projectId),
     queryKeys.results(projectId),
     queryKeys.cost(projectId),
+    queryKeys.specAll(projectId),
   ]);
   return useQuery({
     queryKey: queryKeys.project(projectId),

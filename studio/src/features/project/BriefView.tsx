@@ -1,8 +1,8 @@
+import { BulletList, Fact } from "@/components/ui";
 import { titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
 import { fmtDuration } from "@/utils/format";
 import { asArray, asRecord, asText } from "./adapters";
-import { BulletList, Field } from "./Section";
 
 /** Brief (idea stage) and research brief, rendered as a readable summary. */
 export function BriefView({ brief, research }: { brief?: unknown; research?: unknown }) {
@@ -31,26 +31,24 @@ export function BriefView({ brief, research }: { brief?: unknown; research?: unk
             {L.heading}
           </h3>
           <dl className="grid gap-4 sm:grid-cols-2">
-            {asText(b.title) && <Field label={L.title}>{asText(b.title)}</Field>}
-            {asText(b.hook) && <Field label={L.hook}>{asText(b.hook)}</Field>}
-            {asText(b.core_message) && (
-              <Field label={L.coreMessage}>{asText(b.core_message)}</Field>
-            )}
+            {asText(b.title) && <Fact label={L.title}>{asText(b.title)}</Fact>}
+            {asText(b.hook) && <Fact label={L.hook}>{asText(b.hook)}</Fact>}
+            {asText(b.core_message) && <Fact label={L.coreMessage}>{asText(b.core_message)}</Fact>}
             {asText(b.target_audience) && (
-              <Field label={L.audience}>{asText(b.target_audience)}</Field>
+              <Fact label={L.audience}>{asText(b.target_audience)}</Fact>
             )}
             {asText(b.target_platform) && (
-              <Field label={L.platform}>{titleCase(asText(b.target_platform)!)}</Field>
+              <Fact label={L.platform}>{titleCase(asText(b.target_platform)!)}</Fact>
             )}
             {typeof b.target_duration_seconds === "number" && (
-              <Field label={L.length}>{fmtDuration(b.target_duration_seconds)}</Field>
+              <Fact label={L.length}>{fmtDuration(b.target_duration_seconds)}</Fact>
             )}
-            {asText(b.tone) && <Field label={L.tone}>{asText(b.tone)}</Field>}
+            {asText(b.tone) && <Fact label={L.tone}>{asText(b.tone)}</Fact>}
           </dl>
           {keyPoints.length > 0 && (
-            <Field label={L.keyPoints}>
+            <Fact label={L.keyPoints}>
               <BulletList items={keyPoints} />
-            </Field>
+            </Fact>
           )}
         </section>
       )}
@@ -60,7 +58,7 @@ export function BriefView({ brief, research }: { brief?: unknown; research?: unk
             {L.research(asText(r.topic))}
           </h3>
           {angles.length > 0 && (
-            <Field label={L.angles}>
+            <Fact label={L.angles}>
               <ul className="space-y-2">
                 {angles.map((a, i) => (
                   <li
@@ -72,12 +70,12 @@ export function BriefView({ brief, research }: { brief?: unknown; research?: unk
                   </li>
                 ))}
               </ul>
-            </Field>
+            </Fact>
           )}
           {dataPoints.length > 0 && (
-            <Field label={L.facts}>
+            <Fact label={L.facts}>
               <BulletList items={dataPoints} />
-            </Field>
+            </Fact>
           )}
           {sources > 0 && <p className="text-sm text-text-3">{L.sources(sources)}</p>}
         </section>

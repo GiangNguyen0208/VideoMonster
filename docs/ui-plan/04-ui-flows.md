@@ -168,7 +168,9 @@ Each use case lists its actor, preconditions, main flow, alternative and error f
   2. The project page loads `GET /api/project/{id}/state` and subscribes to `GET /api/project/{id}/events`.
   3. When the agent writes a checkpoint, artifact or `events.jsonl` line, Backlot's change hub pushes an event; the UI refetches the affected queries.
   4. The page shows the step timeline (done, working, waiting for you, failed), the activity feed, brief, script, storyboard, decisions and inputs.
-- **Alternatives:** if the server stops, the UI shows "server down"; `EventSource` reconnects by itself.
+  5. A step on the timeline opens a drawer with its versions, status history and what it produced. In the storyboard a scene's takes can be switched and an image opened full size.
+  6. **Replay run** scrubs the project back through its history (checkpoint history plus `events.jsonl` timestamps, no extra request). While replaying, the page is read-only; **Back to live** returns to the current state.
+- **Alternatives:** if the server stops, the UI shows "server down"; `EventSource` reconnects by itself. A project with no checkpoints but some snapshots shows a "files found" grid. Old URLs `/` and `/p/<id>` redirect to Studio.
 
 ### UC9 — Review and approve a step
 - **Actor:** User, then Agent.
@@ -215,10 +217,10 @@ Each use case lists its actor, preconditions, main flow, alternative and error f
 - **Errors:** `403` when `STUDIO_READONLY_CONFIG=1`.
 
 ### UC16 — Browse the library
-- **Main flow:** Library lists projects from `GET /api/projects` with search, series grouping and a status filter (all, waiting for you, in progress, needs attention, done) and the spend this month (UC14). A card opens `/p/<id>`. The list updates live (UC8).
+- **Main flow:** Library lists projects from `GET /api/projects` with search, series grouping and a status filter (all, waiting for you, in progress, needs attention, done) the spend this month (UC14) and a series filter (`?series=<name>`). A card opens `/studio/p/<id>`. The list updates live (UC8).
 
 ### UC17 — Switch language
-- **Main flow:** the header language menu switches between English and Tiếng Việt. The choice is saved in `localStorage`; the first visit follows the browser language. All Studio text and API error codes are translated; the classic board is not.
+- **Main flow:** the header language menu switches between English and Tiếng Việt. The choice is saved in `localStorage`; the first visit follows the browser language. All Studio text and API error codes are translated.
 
 ## 4. Sequence diagrams
 

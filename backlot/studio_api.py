@@ -37,6 +37,7 @@ from backlot import (
     studio_results,
     studio_settings,
     studio_setup,
+    studio_spec,
     studio_uploads,
 )
 from backlot.project_store import DiskProjectStore, ProjectFiles, ProjectStore, ProjectStoreError
@@ -56,6 +57,7 @@ FEATURES: dict[str, bool] = {
     "cost": True,
     "results": True,
     "settings": True,
+    "spec_mode": True,
 }
 
 Access = Literal["view", "edit"]
@@ -141,6 +143,20 @@ class EnvVarUpdate(BaseModel):
     value: str = Field(max_length=4096)
 
 
+class SpecDecisionIn(BaseModel):
+    """Answer at a spec-mode gate. ``token`` is the hash the user was shown."""
+
+    action: Literal["approve", "revise", "abort"]
+    token: str = Field(min_length=1, max_length=64)
+    notes: str = Field(default="", max_length=20000)
+    selected_improvements: list[str] = Field(default_factory=list, max_length=40)
+    answers: dict[str, str] = Field(default_factory=dict, max_length=40)
+
+
+class LibraryTrackIn(BaseModel):
+    name: str = Field(min_length=1, max_length=255)
+
+
 PROBE_JOB = "setup_probe"
 
 
@@ -154,7 +170,9 @@ def _ensure_probe() -> None:
         _start_probe()
 
 
-def _coded_error(exc: studio_decisions.DecisionError | studio_uploads.UploadError) -> JSONResponse:
+def _coded_error(
+    exc: studio_decisions.DecisionError | studio_uploads.UploadError | studio_spec.SpecError,
+) -> JSONResponse:
     return JSONResponse({"detail": exc.detail, "code": exc.code}, status_code=exc.status)
 
 
@@ -170,6 +188,35 @@ def _check_choices(intake: studio_catalog.IntakeIn) -> None:
         studio_catalog.validate_choices(intake)
     except studio_catalog.CatalogError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from None
+
+
+def _record_spec_decision(files: ProjectFiles, stage: str, body: SpecDecisionIn, user_id: str):
+    """Record a spec-mode gate answer. Ordering and staleness get their own codes."""
+    if stage != "requirements":
+        brief = files.read_json(studio_spec.BRIEF)
+        if studio_spec.requirements_state(brief) != "approved":
+            raise studio_decisions.DecisionError(
+                409, "step_out_of_order", "approve the requirements first"
+            )
+        if stage == "spec" and files.read_json(studio_spec.REPORT) is not None:
+            stage = "spec_recovery"
+    decision = studio_decisions.DecisionIn(
+        stage=stage,
+        checkpoint_timestamp=body.token,
+        action=body.action,
+        notes=body.notes,
+        spec=studio_decisions.SpecPicks(
+            selected_improvements=body.selected_improvements, answers=body.answers
+        ),
+    )
+    try:
+        return studio_decisions.record(files, decision, user_id=user_id)
+    except studio_decisions.DecisionError as exc:
+        if exc.code == "stale_checkpoint":
+            raise studio_decisions.DecisionError(
+                409, "spec_changed" if stage != "requirements" else "requirements_changed", exc.detail
+            ) from None
+        raise
 
 
 def _studio_project(files: ProjectFiles) -> dict:
@@ -290,7 +337,7 @@ def _build_router() -> APIRouter:
                 )
 
         await asyncio.to_thread(create)
-        return {"project_id": project_id, "kickoff": studio_catalog.kickoff(project_id)}
+        return {"project_id": project_id, "kickoff": studio_catalog.kickoff(project_id, intake.advanced.execution_mode == "spec")}
 
     @router.get("/projects/{project_id}/intake")
     async def get_intake(files: ProjectFiles = viewer) -> dict:
@@ -320,9 +367,10 @@ def _build_router() -> APIRouter:
     @router.get("/projects/{project_id}/kickoff")
     async def get_kickoff(files: ProjectFiles = viewer) -> dict:
         def read() -> dict:
-            _studio_project(files)
+            intake = _studio_project(files)
+            spec_mode = (intake.get("advanced") or {}).get("execution_mode") == "spec"
             return {
-                **studio_catalog.kickoff(files.project_id),
+                **studio_catalog.kickoff(files.project_id, spec_mode),
                 "started": studio_catalog.has_checkpoint(files),
             }
 
@@ -358,6 +406,60 @@ def _build_router() -> APIRouter:
             return _coded_error(exc)
         return Response(status_code=204)
 
+    # ---- spec mode: plan once, Gemini executes ------------------------
+
+    @router.get("/projects/{project_id}/spec-flow")
+    async def spec_flow(files: ProjectFiles = viewer) -> dict:
+        return await asyncio.to_thread(studio_spec.flow_state, files)
+
+    @router.get("/projects/{project_id}/requirements")
+    async def get_requirements(files: ProjectFiles = viewer):
+        try:
+            return await asyncio.to_thread(studio_spec.requirements_view, files)
+        except studio_spec.SpecError as exc:
+            return _coded_error(exc)
+
+    @router.post("/projects/{project_id}/requirements/decision", status_code=201)
+    async def requirements_decision(
+        body: SpecDecisionIn, files: ProjectFiles = editor, user: User = Depends(current_user)
+    ):
+        try:
+            decision = await asyncio.to_thread(
+                _record_spec_decision, files, "requirements", body, user.id
+            )
+        except studio_decisions.DecisionError as exc:
+            return _coded_error(exc)
+        return JSONResponse(decision, status_code=201)
+
+    @router.get("/projects/{project_id}/spec")
+    async def get_spec(files: ProjectFiles = viewer):
+        try:
+            return await asyncio.to_thread(studio_spec.spec_view, files)
+        except studio_spec.SpecError as exc:
+            return _coded_error(exc)
+
+    @router.post("/projects/{project_id}/spec/decision", status_code=201)
+    async def spec_decision(
+        body: SpecDecisionIn, files: ProjectFiles = editor, user: User = Depends(current_user)
+    ):
+        try:
+            decision = await asyncio.to_thread(_record_spec_decision, files, "spec", body, user.id)
+        except studio_decisions.DecisionError as exc:
+            return _coded_error(exc)
+        return JSONResponse(decision, status_code=201)
+
+    @router.post("/projects/{project_id}/render", status_code=202)
+    async def start_render(files: ProjectFiles = editor):
+        try:
+            job = await asyncio.to_thread(studio_spec.start_render, files)
+        except studio_spec.SpecError as exc:
+            return _coded_error(exc)
+        return JSONResponse({"job": job.public()}, status_code=202)
+
+    @router.get("/projects/{project_id}/render")
+    async def get_render(files: ProjectFiles = viewer) -> dict:
+        return await asyncio.to_thread(studio_spec.render_view, files)
+
     # ---- footage & references (Phase 5) -------------------------------
 
     @router.get("/uploads/limits")
@@ -380,6 +482,7 @@ def _build_router() -> APIRouter:
         files: ProjectFiles = editor,
     ):
         try:
+            studio_uploads.check_kind(kind, name)
             info, media = await studio_uploads.save_upload(
                 files,
                 name,
@@ -390,6 +493,15 @@ def _build_router() -> APIRouter:
         except studio_uploads.UploadError as exc:
             return _coded_error(exc)
         entry = await asyncio.to_thread(studio_uploads.add_file, files, info, media, kind)
+        return JSONResponse(entry, status_code=201)
+
+    @router.post("/projects/{project_id}/inputs/music", status_code=201)
+    async def use_library_music(body: LibraryTrackIn, files: ProjectFiles = editor):
+        """Copy a music-library track into the project as the creator's music."""
+        try:
+            entry = await studio_uploads.copy_library_track(files, body.name)
+        except studio_uploads.UploadError as exc:
+            return _coded_error(exc)
         return JSONResponse(entry, status_code=201)
 
     @router.delete("/projects/{project_id}/uploads/{name}", status_code=204)

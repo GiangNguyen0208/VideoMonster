@@ -131,7 +131,7 @@ export interface DecisionView {
 
 /**
  * Collapse the append-only decision log to the CURRENT pick per
- * (category, subject) — same rule as the classic board's Decisions panel.
+ * (category, subject) — the Decisions tab shows the latest pick.
  */
 export function currentDecisions(log: unknown): DecisionView[] {
   const decisions = (log as { decisions?: unknown } | undefined)?.decisions;
@@ -173,10 +173,33 @@ export interface ActivityLine {
   tone: Tone;
 }
 
+/**
+ * A "start" is shown only while its tool+scene has no later finish/error (the
+ * finish line tells the story). Counted, so parallel runs stay visible.
+ */
+function dropClosedStarts(events: ToolEvent[]): ToolEvent[] {
+  const open = new Map<string, number>();
+  const closedAt = new Set<number>();
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i]!;
+    const key = `${e.tool}:${e.scene_id ?? ""}`;
+    if (e.event === "start") {
+      const pending = open.get(key) ?? 0;
+      if (pending > 0) {
+        closedAt.add(i);
+        open.set(key, pending - 1);
+      }
+    } else {
+      open.set(key, (open.get(key) ?? 0) + 1);
+    }
+  }
+  return events.filter((_, i) => !closedAt.has(i));
+}
+
 /** Tool events (events.jsonl) as readable lines, newest first. */
 export function activityLines(events: ToolEvent[], limit = 50): ActivityLine[] {
   const t = msg().activity;
-  return events
+  return dropClosedStarts(events)
     .slice(-limit)
     .reverse()
     .map((e) => {

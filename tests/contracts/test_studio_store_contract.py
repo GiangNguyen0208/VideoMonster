@@ -30,6 +30,7 @@ V1_MODULES = [
     "studio_results",
     "studio_settings",
     "studio_setup",
+    "studio_spec",
     "studio_uploads",
 ]
 STORE_MODULES = ["project_store", "machine_store"]

@@ -1,4 +1,4 @@
-import { Badge, ButtonLink, Card, ComingSoon, InfoBox, Screenplay } from "@/components/ui";
+import { Badge, ButtonLink, Card, ComingSoon, Eyebrow, InfoBox, Screenplay } from "@/components/ui";
 import { CheckCircle2, MessageSquareText, Volume2 } from "@/components/icons";
 import { stageLabel, videoTypeLabel } from "@/content/labels";
 import { asArray, asRecord, asText } from "@/features/project/adapters";
@@ -83,9 +83,7 @@ export function WaitingHero({ project, count }: { project: ProjectSummary; count
           </div>
 
           <Card padding="md" className="space-y-3 self-start">
-            <h3 className="text-xs font-semibold tracking-wider text-text-3 uppercase">
-              {L.quickActions}
-            </h3>
+            <Eyebrow as="h3">{L.quickActions}</Eyebrow>
             <ComingSoon>
               <div className="flex items-center gap-2 rounded-control border border-border bg-surface-low px-3 py-2.5 text-sm">
                 <Volume2 aria-hidden className="size-4 text-text-3" />

@@ -6,7 +6,7 @@ import { useT } from "@/i18n";
 import type { ProjectSummary } from "@/types/api";
 import { fmtAgo, fmtMoney } from "@/utils/format";
 import { projectPath } from "@/utils/routes";
-import { thumbURL } from "@/services";
+import { MediaThumb } from "@/components/MediaThumb";
 
 export function ProjectCard({ project }: { project: ProjectSummary }) {
   const t = useT();
@@ -21,10 +21,10 @@ export function ProjectCard({ project }: { project: ProjectSummary }) {
     >
       <div className="relative aspect-video bg-surface-2">
         {poster ? (
-          <img
-            src={thumbURL(project.project_id, poster, 640)}
-            alt=""
-            loading="lazy"
+          <MediaThumb
+            projectId={project.project_id}
+            path={poster}
+            fallback={t.library.card.noPreview}
             className="h-full w-full object-cover"
           />
         ) : (

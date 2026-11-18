@@ -6,6 +6,7 @@ import {
   listMusic,
   removeReference,
   removeUpload,
+  copyLibraryTrack,
 } from "@/services";
 import { queryKeys } from "./queryKeys";
 
@@ -51,4 +52,13 @@ export function useRemoveReference(projectId: string) {
 
 export function useMusic() {
   return useQuery({ queryKey: queryKeys.music, queryFn: listMusic, select: (d) => d.tracks });
+}
+
+/** Use a music-library track as the creator's music (copies it into the project). */
+export function useUseLibraryTrack(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (name: string) => copyLibraryTrack(projectId, name),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.inputs(projectId) }),
+  });
 }

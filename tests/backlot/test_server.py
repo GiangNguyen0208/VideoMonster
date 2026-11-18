@@ -177,7 +177,6 @@ class TestBacklotHostValidation:
         [
             "/",
             "/p/film",
-            "/ui/board.js",
             "/api/projects",
             "/api/project/film/state",
             "/api/project/film/events",
@@ -254,3 +253,25 @@ class TestFindingsFixes:
         fake_video.write_bytes(b"\x00" * 4096)
         res = client.get("/thumb/vid/renders/final.mp4")
         assert res.status_code == 404  # never the raw video bytes (F-03)
+
+
+class TestOldUrls:
+    """The classic board is gone; old URLs hand over to Studio."""
+
+    def test_root_redirects_to_studio(self, client):
+        response = client.get("/", follow_redirects=False)
+        assert response.status_code == 302
+        assert response.headers["location"] == "/studio"
+
+    def test_project_url_redirects_to_studio_project(self, client):
+        response = client.get("/p/film", follow_redirects=False)
+        assert response.status_code == 302
+        assert response.headers["location"] == "/studio/p/film"
+
+    def test_project_url_is_encoded(self, client):
+        response = client.get("/p/a b", follow_redirects=False)
+        assert response.headers["location"] == "/studio/p/a%20b"
+
+    def test_old_assets_are_gone(self, client):
+        assert client.get("/ui/board.js").status_code == 404
+        assert client.get("/ui/board.css").status_code == 404

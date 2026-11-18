@@ -1,0 +1,19 @@
+{
+  "schema": "studio.intake/1",
+  "goal": "animated-explainer",
+  "pipeline_type": "animated-explainer",
+  "brief": {
+    "topic": "Why bees matter for the food on your plate",
+    "audience": "curious general public",
+    "platform": "youtube",
+    "aspect": "16:9",
+    "duration_seconds": 30,
+    "tone": "warm, wonder-filled",
+    "must_include": ["pollination", "one third of our food"],
+    "avoid": ["stock-footage clichés", "scary tone"]
+  },
+  "language": "en",
+  "style_playbook": "clean-professional",
+  "budget": { "cap_usd": 5, "mode": "cap" },
+  "advanced": { "execution_mode": "spec" }
+}

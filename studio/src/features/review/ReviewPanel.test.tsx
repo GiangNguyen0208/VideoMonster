@@ -212,7 +212,7 @@ describe("Review panel", () => {
     const user = userEvent.setup();
     renderRoute(`/p/${PID}`);
     const panel = await screen.findByRole("region", { name: "Review: Storyboard" });
-    expect(panel).toHaveTextContent("The storyboard is shown in the tab below.");
+    expect(panel).toHaveTextContent("Scene Plan");
     await user.click(within(panel).getByRole("button", { name: "Stop project" }));
     const dialog = await screen.findByRole("dialog", { name: "Stop this project?" });
     expect(posted).toHaveLength(0);

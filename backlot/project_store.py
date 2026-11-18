@@ -119,6 +119,12 @@ class ProjectFiles(Protocol):
         """Zip a folder into a temporary file; call the cleanup when sent."""
         ...
 
+    def work_dir(self) -> Path:
+        """The project folder as a local directory for the render worker
+        (ffmpeg and the Gemini tools need real paths). Disk: the project
+        folder. Hosted: a working copy the store syncs back."""
+        ...
+
     def board_state(self) -> dict[str, Any]:
         """The read-only board view (``backlot.state.load_board_state``)."""
         ...
@@ -375,6 +381,9 @@ class DiskProjectFiles:
 
     def local_file(self, rel: str) -> Path:
         return self.resolve(rel)
+
+    def work_dir(self) -> Path:
+        return self.dir
 
     def zip_dir(self, rel_dir: str) -> tuple[Path, Callable[[], None]]:
         folder = self.resolve(rel_dir)

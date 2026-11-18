@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "openmontage/artifacts/worker_report",
+  "title": "Worker Report",
+  "description": "What the Gemini worker did with a sealed production_spec: per-job status, attempts, verifier scores and cost. Written by lib/spec_executor.py; read by Studio and the replan step.",
+  "type": "object",
+  "required": ["version", "spec_hash", "status", "jobs", "total_cost_usd", "needs_replan"],
+  "properties": {
+    "version": { "type": "string", "const": "1.0" },
+    "spec_hash": { "type": "string" },
+    "status": { "type": "string", "enum": ["complete", "partial", "failed"] },
+    "started_at": { "type": "string" },
+    "finished_at": { "type": "string" },
+    "total_cost_usd": { "type": "number", "minimum": 0 },
+    "needs_replan": { "type": "array", "items": { "type": "string" } },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["job_id", "status", "attempts"],
+        "properties": {
+          "job_id": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "passed", "failed", "needs_replan", "blocked_budget", "skipped_dependency"]
+          },
+          "params_hash": { "type": "string" },
+          "output_path": { "type": "string" },
+          "reasons": { "type": "array", "items": { "type": "string" } },
+          "attempts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["n", "tool", "passed"],
+              "properties": {
+                "n": { "type": "integer", "minimum": 1 },
+                "tool": { "type": "string" },
+                "label": { "type": "string", "description": "original | ladder-<i> | fallback" },
+                "passed": { "type": "boolean" },
+                "reasons": { "type": "array", "items": { "type": "string" } },
+                "warnings": { "type": "array", "items": { "type": "string" } },
+                "scores": { "type": "object" },
+                "cost_usd": { "type": "number", "minimum": 0 }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

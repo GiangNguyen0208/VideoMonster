@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ProjectSummary } from "@/types/api";
-import { filterProjects, groupBySeries, statusFilterOf } from "./filters";
+import { filterProjects, groupBySeries, seriesNames, statusFilterOf } from "./filters";
 
 const p = (over: Partial<ProjectSummary>): ProjectSummary => ({
   project_id: "id",
@@ -39,6 +39,12 @@ const done = p({
 describe("library filters", () => {
   it("classifies status buckets", () => {
     expect([waiting, failed, done].map(statusFilterOf)).toEqual(["waiting", "attention", "done"]);
+  });
+
+  it("filters by series and lists the distinct names", () => {
+    const all = [waiting, failed, done];
+    expect(filterProjects(all, { q: "", status: "all", type: "", series: "S1" })).toEqual([done]);
+    expect(seriesNames([...all, p({ project_id: "e", series: "A" })])).toEqual(["A", "S1"]);
   });
 
   it("filters by search, status and type", () => {

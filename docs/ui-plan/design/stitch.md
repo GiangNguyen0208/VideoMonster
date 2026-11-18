@@ -1,5 +1,7 @@
 # Designing Studio in Google Stitch
 
+> **Note (Phase F, 2026-11-13):** the classic board (`backlot/ui/`) was removed. `/` and `/p/<id>` now redirect to Studio, and mentions of the classic board or `board.css` below describe the state at the time of writing. See [STATUS.md](../STATUS.md#phase-f--remove-the-classic-board--done).
+
 **Status:** Phase D (design refresh). Studio has no designed mockups yet; its look comes from the tokens in `studio/src/index.css`, which mirror the classic board. This document covers three things:
 - connecting the agent to Stitch;
 - what to design there;

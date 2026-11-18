@@ -1,11 +1,14 @@
-import { Badge, EmptyState } from "@/components/ui";
+import { useState } from "react";
+import { MediaThumb } from "@/components/MediaThumb";
+import { Badge, Dialog, EmptyState, selectableClass } from "@/components/ui";
 import { titleCase } from "@/content/labels";
 import { useT } from "@/i18n";
 import type { MediaItem, Scene, Storyboard } from "@/types/api";
+import { cn } from "@/utils/cn";
 import { fmtDuration, isAudio, isVideo } from "@/utils/format";
 import { mediaURL, thumbURL } from "@/services";
 
-/** Scene × narration × assets filmstrip (same join the classic board shows). */
+/** Scene × narration × assets filmstrip (scenes joined with their narration and assets). */
 export function StoryboardView({
   projectId,
   storyboard,
@@ -42,8 +45,12 @@ function SceneCard({
 }) {
   const t = useT();
   const L = t.project.storyboard;
-  const visual = scene.visual && scene.visual.exists !== false ? scene.visual : null;
-  const takes = scene.takes?.length ?? 0;
+  const [picked, setPicked] = useState<number | null>(null);
+  const [zoom, setZoom] = useState(false);
+  const takeList = scene.takes ?? [];
+  const takes = takeList.length;
+  const candidate = picked !== null ? takeList[picked] : scene.visual;
+  const visual = candidate && candidate.exists !== false ? candidate : null;
   const audio = (scene.audio ?? []).find((a) => a.exists !== false && isAudio(a.path));
   const duration =
     scene.duration_seconds ??
@@ -54,7 +61,11 @@ function SceneCard({
   return (
     <li className="overflow-hidden rounded-card border border-border bg-surface">
       <div className="relative aspect-video bg-black">
-        <SceneVisual projectId={projectId} visual={visual} />
+        <SceneVisual
+          projectId={projectId}
+          visual={visual}
+          onZoom={visual && !isVideo(visual.path) ? () => setZoom(true) : undefined}
+        />
         {scene.generating && (
           <span className="absolute inset-0 flex items-center justify-center bg-black/50 text-sm text-white">
             {L.generating(scene.generating_tool ? titleCase(scene.generating_tool) : null)}
@@ -71,6 +82,44 @@ function SceneCard({
           {scene.hero_moment && <Badge tone="accent">{L.heroMoment}</Badge>}
           {takes > 1 && <Badge>{L.takes(takes)}</Badge>}
         </div>
+        {takes > 1 && (
+          <div role="group" aria-label={L.takesLabel(index + 1)} className="flex flex-wrap gap-1.5">
+            {takeList.map((take, n) => {
+              const active =
+                picked === null
+                  ? take.path === scene.visual?.path || take.id === scene.visual?.id
+                  : picked === n;
+              return (
+                <button
+                  key={take.id ?? take.path}
+                  type="button"
+                  aria-pressed={active}
+                  aria-label={L.takeN(n + 1)}
+                  onClick={() => setPicked(n)}
+                  className={cn(
+                    "grid size-11 place-items-center overflow-hidden rounded-control border text-xs",
+                    selectableClass(active),
+                  )}
+                >
+                  {take.exists !== false &&
+                  take.path &&
+                  !isVideo(take.path) &&
+                  !isAudio(take.path) ? (
+                    <MediaThumb
+                      projectId={projectId}
+                      path={take.path}
+                      width={320}
+                      fallback={n + 1}
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    n + 1
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
         {scene.description && scene.description !== scene.section_label && (
           <p className="text-sm text-text-2">{scene.description}</p>
         )}
@@ -89,11 +138,29 @@ function SceneCard({
           />
         )}
       </div>
+      {visual && !isVideo(visual.path) && (
+        <Dialog open={zoom} onClose={() => setZoom(false)} title={L.sceneN(index + 1)}>
+          <img
+            src={mediaURL(projectId, visual.path)}
+            alt={visual.prompt ?? L.sceneN(index + 1)}
+            className="max-h-[70dvh] w-full object-contain"
+          />
+          {visual.prompt && <p className="mt-3 text-sm text-text-2">{visual.prompt}</p>}
+        </Dialog>
+      )}
     </li>
   );
 }
 
-function SceneVisual({ projectId, visual }: { projectId: string; visual: MediaItem | null }) {
+function SceneVisual({
+  projectId,
+  visual,
+  onZoom,
+}: {
+  projectId: string;
+  visual: MediaItem | null;
+  onZoom?: () => void;
+}) {
   const t = useT();
   if (!visual?.path) {
     return (
@@ -114,12 +181,23 @@ function SceneVisual({ projectId, visual }: { projectId: string; visual: MediaIt
       />
     );
   }
-  return (
-    <img
-      src={thumbURL(projectId, visual.path)}
+  const img = (
+    <MediaThumb
+      projectId={projectId}
+      path={visual.path}
       alt={visual.prompt ?? ""}
-      loading="lazy"
       className="h-full w-full object-cover"
     />
+  );
+  if (!onZoom) return img;
+  return (
+    <button
+      type="button"
+      onClick={onZoom}
+      aria-label={t.project.storyboard.enlarge}
+      className="block h-full w-full cursor-zoom-in"
+    >
+      {img}
+    </button>
   );
 }

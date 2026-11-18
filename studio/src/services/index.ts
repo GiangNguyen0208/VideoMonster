@@ -7,4 +7,5 @@ export * from "./projects";
 export * from "./results";
 export * from "./settings";
 export * from "./setup";
+export * from "./spec";
 export * from "./uploads";

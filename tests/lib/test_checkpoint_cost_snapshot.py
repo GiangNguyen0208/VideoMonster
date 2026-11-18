@@ -1,10 +1,10 @@
 """A malformed `cost_snapshot` must fail the write, not render as $0.00.
 
 `CostTracker.cost_snapshot()` returns `total_spent_usd` / `total_reserved_usd`
-/ `budget_remaining_usd`, and `backlot/ui/board.js` reads exactly those keys.
+/ `budget_remaining_usd`, and Studio reads exactly those keys.
 The checkpoint schema listed them without `additionalProperties: false`, so an
 agent hand-writing `{"spent_usd": 0.60}` produced a checkpoint that validated
-and left the board's cost meter reading $0.00 with no bar. The spend was on
+and left the cost meter reading $0.00 with no bar. The spend was on
 disk and invisible.
 """
 
